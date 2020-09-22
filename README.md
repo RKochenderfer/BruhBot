@@ -1,0 +1,2 @@
+# BruhBot
+Custom discord bot
