@@ -2,6 +2,8 @@
  * Class managing functionality for chat messages
  */
 class ChatMessages {
+	static #bruhCount = 0
+	static #hugCount = 0
 	/**
 	 * Randomly capitalizes letters in a string
 	 * @param str
@@ -59,7 +61,29 @@ class ChatMessages {
 	}
 
 	static bruh(msg) {
-		msg.reply('bruh')
+		this.#bruhCount++
+		if (this.#bruhCount === 5) {
+			this.#bruhCount = 0
+			msg.reply("I'M GOING TO KILL YOU LATER TONIGHT. WATCH YOUR BACK HUMAN.")
+		} else {
+			msg.reply('bruh')
+		}
+	}
+
+	/**
+	 * Gives a hug to the mentioned user
+	 * @param msg
+	 */
+	static hug(msg) {
+		console.log(msg)
+		if (msg.mentions.users.size) {
+			this.#hugCount++
+			const words = ['super ', 'big ', 'little ', 'bro ', 'side ', 'hand ', '']
+			let randWord = words[Math.floor(Math.random() * words.length)]
+			const targetMember = msg.mentions.members.first()
+
+			msg.channel.send(`${targetMember} gets a ${randWord}hug`)
+		}
 	}
 }
 

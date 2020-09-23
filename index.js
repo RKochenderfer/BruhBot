@@ -30,6 +30,10 @@ client.on('message', msg => {
 		case '!yee':
 			ChatMessages.yee(msg)
 			break
+		default:
+			if (msg.content.includes('!hug')) {
+				ChatMessages.hug(msg)
+			}
 	}
 })
 
