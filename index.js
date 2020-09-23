@@ -20,7 +20,8 @@ client.on('guildMemberAdd', member => {
 
 // Handles when a user says !corpse_found
 client.on('message', msg => {
-	switch (msg.content) {
+	const prefix = msg.content.split(' ')[0]
+	switch (prefix) {
 		case '!corpse_found':
 			ChatMessages.corpseFound(msg)
 			break
@@ -30,10 +31,9 @@ client.on('message', msg => {
 		case '!yee':
 			ChatMessages.yee(msg)
 			break
-		default:
-			if (msg.content.includes('!hug')) {
-				ChatMessages.hug(msg)
-			}
+		case '!hug':
+			ChatMessages.hug(msg)
+			break
 	}
 })
 
