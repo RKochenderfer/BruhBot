@@ -1,11 +1,23 @@
 {
   "name": "bruhbot",
   "version": "1.0.0",
-  "description": "A custom discord bot for discord server",
+  "description": "A custom discord bot",
   "main": "index.js",
+  "dependencies": {
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RKochenderfer/BruhBot.git"
+  },
   "author": "Ray Kochenderfer",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RKochenderfer/BruhBot/issues"
+  },
+  "homepage": "https://github.com/RKochenderfer/BruhBot#readme"
 }
