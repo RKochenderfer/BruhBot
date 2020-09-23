@@ -1,4 +1,12 @@
+/**
+ * Class managing functionality for chat messages
+ */
 class ChatMessages {
+	/**
+	 * Randomly capitalizes letters in a string
+	 * @param str
+	 * @returns {string}
+	 */
 	static #randomCapitalize(str) {
 		// Randomly capitalize letters
 		const randNumCapital = Math.floor(Math.random() * str.length)
@@ -19,6 +27,10 @@ class ChatMessages {
 		return s.join('')
 	}
 
+	/**
+	 * Randomly chooses a user to be sus
+	 * @param msg
+	 */
 	static corpseFound(msg) {
 		if (msg.content === '!corpse_found') {
 			let users = []
@@ -30,6 +42,10 @@ class ChatMessages {
 		}
 	}
 
+	/**
+	 * Replies to msg with yee with random e's and capitals
+	 * @param msg
+	 */
 	static yee(msg) {
 		let yee = 'yee'
 
