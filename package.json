@@ -4,8 +4,11 @@
   "description": "A custom discord bot",
   "main": "index.js",
   "dependencies": {
+    "@discordjs/opus": "^0.3.2",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
+    "ffmpeg": "^0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "pnpm": "^5.7.0"
   },
   "scripts": {
@@ -20,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/RKochenderfer/BruhBot/issues"
   },
-  "homepage": "https://github.com/RKochenderfer/BruhBot#readme"
+  "homepage": "https://github.com/RKochenderfer/BruhBot#readme",
+  "devDependencies": {
+    "ytdl-core": "^3.2.2"
+  }
 }

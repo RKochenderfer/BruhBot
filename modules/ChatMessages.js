@@ -1,3 +1,5 @@
+const Music = require('./Music')
+
 /**
  * Class managing functionality for chat messages
  */
@@ -75,15 +77,26 @@ class ChatMessages {
 	 * @param msg
 	 */
 	static hug(msg) {
-		console.log(msg)
-		if (msg.mentions.users.size) {
+		if (msg.mentions.users.size && this.#hugCount !== 10) {
 			this.#hugCount++
 			const words = ['super ', 'big ', 'little ', 'bro ', 'side ', 'hand ', '']
 			let randWord = words[Math.floor(Math.random() * words.length)]
 			const targetMember = msg.mentions.members.first()
 
 			msg.channel.send(`${targetMember} gets a ${randWord}hug`)
+		} else if (this.#hugCount === 10) {
+			msg.channel.send('No')
+			this.#hugCount = 0
 		}
+	}
+
+	static leftist_ass(msg) {
+		const song = {
+			title: 'Alex Jones Will Eat Your Leftist Ass (remix) | Song A Day #4145',
+			url: 'https://www.youtube.com/watch?v=o5EKuIus-oE'
+		}
+
+		Music.play(msg, song)
 	}
 }
 

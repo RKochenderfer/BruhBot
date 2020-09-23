@@ -34,6 +34,9 @@ client.on('message', msg => {
 		case '!hug':
 			ChatMessages.hug(msg)
 			break
+		case '!leftist_ass':
+			ChatMessages.leftist_ass(msg)
+			break
 	}
 })
 
