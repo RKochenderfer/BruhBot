@@ -17,6 +17,14 @@ client.on('guildMemberAdd', member => {
 	channel.send(`Welcome to the server, ${member}`);
 });
 
+client.on('message', msg => {
+	if (msg.content === '!corpse_found') {
+		const list = msg.guild.members
+
+		console.log(list)
+	}
+})
+
 // When user says the message "!ping"
 client.on('message', msg => {
 	if (msg.content === '!ping') {
