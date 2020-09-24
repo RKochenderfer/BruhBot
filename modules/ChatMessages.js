@@ -6,8 +6,9 @@ const fetch = require('node-fetch')
  * Class managing functionality for chat messages
  */
 class ChatMessages {
-	static #bruhCount = 0
-	static #hugCount = 0
+	static #refuseHug = 10
+	static #threaten = 10
+	static #niceComment = 10
 	/**
 	 * Randomly capitalizes letters in a string
 	 * @param str
@@ -65,12 +66,11 @@ class ChatMessages {
 	}
 
 	static bruh(msg) {
-		this.#bruhCount++
-		if (this.#bruhCount === 5) {
-			this.#bruhCount = 0
-			msg.reply("I'M GOING TO KILL YOU LATER TONIGHT. WATCH YOUR BACK HUMAN.")
-		} else {
+		const val = Math.floor(Math.random() * 100)
+		if (val > this.#threaten) {
 			msg.reply('bruh')
+		} else {
+			msg.reply("I'M GOING TO KILL YOU LATER TONIGHT. WATCH YOUR BACK HUMAN.")
 		}
 	}
 
@@ -79,16 +79,15 @@ class ChatMessages {
 	 * @param msg
 	 */
 	static hug(msg) {
-		if (msg.mentions.users.size && this.#hugCount !== 10) {
-			this.#hugCount++
+		const val = Math.floor(Math.random() * 100)
+		if (val > this.#refuseHug) {
 			const words = ['super ', 'big ', 'little ', 'bro ', 'side ', 'hand ', '']
 			let randWord = words[Math.floor(Math.random() * words.length)]
 			const targetMember = msg.mentions.members.first()
 
 			msg.channel.send(`${targetMember} gets a ${randWord}hug`)
-		} else if (this.#hugCount === 10) {
+		} else {
 			msg.channel.send('No')
-			this.#hugCount = 0
 		}
 	}
 
@@ -121,11 +120,14 @@ class ChatMessages {
 	static async insult(msg) {
 		if (msg.mentions.users.size) {
 			try {
-				const res = await fetch('https://insult.mattbas.org/api/insult')
-				const text = await res.text()
 				const targetMember = msg.mentions.members.first()
-
-				msg.channel.send(`${targetMember} ${await text}`)
+				const val = Math.floor(Math.random() * 100)
+				if (val > this.#niceComment) {
+					const res = await fetch('https://insult.mattbas.org/api/insult')
+					msg.channel.send(`${targetMember} ${await res.text()}`)
+				} else {
+					msg.channel.send(`No, ${targetMember} is too nice and I don't want to.`)
+				}
 			} catch (e) {
 				console.error(e)
 			}
