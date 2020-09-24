@@ -10,42 +10,49 @@ const messageMap = new Map([
 		'!bruh',
 		{
 			'desc': 'Replies to sender with bruh',
-			func: (msg) => ChatMessages.bruh(msg)
+			func: msg => ChatMessages.bruh(msg)
 		}
 	],
 	[
 		'!corpse_found',
 		{
 			'desc': 'Randomly chooses a user to be "sus"',
-			func: (msg) => ChatMessages.corpseFound(msg)
+			func: msg => ChatMessages.corpseFound(msg)
 		}
 	],
 	[
 		'!yee',
 		{
 			'desc': 'Replies to a user with a random length and capitalized "yee"',
-			func: (msg) => ChatMessages.yee(msg)
+			func: msg => ChatMessages.yee(msg)
 		}
 	],
 	[
 		'!hug',
 		{
 			'desc': 'Sends a hug to a mentioned user',
-			func: (msg) => ChatMessages.hug(msg)
+			func: msg => ChatMessages.hug(msg)
 		}
 	],
 	[
 		'!leftist_ass',
 		{
 			'desc': 'Plays a clip of I will eat you Leftist ass in the same voice channel as the user that summoned it',
-			func: (msg) => ChatMessages.leftistAss(msg)
+			func: msg => ChatMessages.leftistAss(msg)
 		}
 	],
 	[
 		'!bruhbot',
 		{
 			'desc': 'Issues a command directly to bruhbot',
-			func: (msg) => ChatMessages.bruhBot(msg)
+			func: msg => ChatMessages.bruhBot(msg)
+		}
+	],
+	[
+		'!help',
+		{
+			'desc': 'Shows possible top level commands for bruhbot',
+			func: (msg, messageMap) => ChatMessages.help(msg, messageMap)
 		}
 	]
 ])
@@ -69,7 +76,11 @@ client.on('message', msg => {
 	const prefix = msg.content.split(' ')[0]
 	if (messageMap.has(prefix)) {
 		let selected = messageMap.get(prefix)
-		selected.func(msg)
+		if (prefix === '!help') {
+			selected.func(msg, messageMap)
+		} else {
+			selected.func(msg)
+		}
 	}
 })
 

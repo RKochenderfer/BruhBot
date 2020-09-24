@@ -1,4 +1,5 @@
 const Music = require('./Music')
+const BruhBot = require("./BruhBot");
 
 /**
  * Class managing functionality for chat messages
@@ -104,18 +105,18 @@ class ChatMessages {
 	 * @param msg
 	 */
 	static bruhBot(msg) {
-		const statement = msg.content.split(' ')
-		if (statement.length > 1) {
-			switch (statement[1]) {
-				case 'stfu':
-					Music.stop(msg)
-						.catch(err => console.error(err))
-					break
-				default:
-					msg.channel.send('This was an invalid command')
-					break
-			}
+		BruhBot.botCommand(msg)
+	}
+
+	static help(msg, messageMap) {
+		let help = 'Commands:\n'
+		const iter = messageMap[Symbol.iterator]()
+
+		for (const item of iter) {
+			help += `\`${item[0]}\`: ${item[1].desc}\n`
 		}
+
+		msg.channel.send(`${help}`)
 	}
 }
 
