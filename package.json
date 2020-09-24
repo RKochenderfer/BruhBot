@@ -9,6 +9,7 @@
     "dotenv": "^8.2.0",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
+    "node-fetch": "^2.6.1",
     "pnpm": "^5.7.0"
   },
   "scripts": {

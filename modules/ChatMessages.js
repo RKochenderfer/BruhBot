@@ -1,5 +1,6 @@
 const Music = require('./Music')
-const BruhBot = require("./BruhBot");
+const BruhBot = require("./BruhBot")
+const fetch = require('node-fetch')
 
 /**
  * Class managing functionality for chat messages
@@ -91,6 +92,10 @@ class ChatMessages {
 		}
 	}
 
+	/**
+	 * Plays leftist_ass.mp3 clip
+	 * @param msg
+	 */
 	static leftistAss(msg) {
 		const song = {
 			title: 'Alex Jones Will Eat Your Leftist Ass (remix) | Song A Day #4145',
@@ -108,6 +113,30 @@ class ChatMessages {
 		BruhBot.botCommand(msg)
 	}
 
+	/**
+	 * Insults a mentioned user
+	 * @param msg
+	 * @returns {Promise<void>}
+	 */
+	static async insult(msg) {
+		if (msg.mentions.users.size) {
+			try {
+				const res = await fetch('https://insult.mattbas.org/api/insult')
+				const text = await res.text()
+				const targetMember = msg.mentions.members.first()
+
+				msg.channel.send(`${targetMember} ${await text}`)
+			} catch (e) {
+				console.error(e)
+			}
+		}
+	}
+
+	/**
+	 * Gives list of message commands
+	 * @param msg
+	 * @param messageMap
+	 */
 	static help(msg, messageMap) {
 		let help = 'Commands:\n'
 		const iter = messageMap[Symbol.iterator]()

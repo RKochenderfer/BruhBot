@@ -49,6 +49,13 @@ const messageMap = new Map([
 		}
 	],
 	[
+		'!insult',
+		{
+			'desc': 'Insults a mentioned user',
+			func: msg => ChatMessages.insult(msg)
+		}
+	],
+	[
 		'!help',
 		{
 			'desc': 'Shows possible top level commands for bruhbot',
