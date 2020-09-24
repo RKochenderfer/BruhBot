@@ -65,7 +65,7 @@ const messageMap = new Map([
 	[
 		'!socks',
 		{
-			'desc': 'Allows a user to put on or take off their socks',
+			'desc': 'Allows a user to put on or take off their socks with `!socks off` or `!socks on` and can get server status with `!socks status`',
 			func: msg => ChatMessages.socks(msg)
 		}
 	],
