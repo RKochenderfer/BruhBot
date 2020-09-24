@@ -90,13 +90,32 @@ class ChatMessages {
 		}
 	}
 
-	static leftist_ass(msg) {
+	static leftistAss(msg) {
 		const song = {
 			title: 'Alex Jones Will Eat Your Leftist Ass (remix) | Song A Day #4145',
 			url: 'https://www.youtube.com/watch?v=o5EKuIus-oE'
 		}
 
 		Music.play(msg, song)
+	}
+
+	/**
+	 * Follows the first command given after !bruhbot
+	 * @param msg
+	 */
+	static bruhBot(msg) {
+		const statement = msg.content.split(' ')
+		if (statement.length > 1) {
+			switch (statement[1]) {
+				case 'stfu':
+					Music.stop(msg)
+						.catch(err => console.error(err))
+					break
+				default:
+					msg.channel.send('This was an invalid command')
+					break
+			}
+		}
 	}
 }
 

@@ -12,8 +12,21 @@ class Music {
 		return permission
 	}
 
+	static async stop(msg) {
+		const voiceChannel = msg.member.voice.channel
+		if (!voiceChannel) {
+			msg.channel.send('You must be in the voice channel the bot is currently in to use this command.')
+			return
+		}
+		try {
+			voiceChannel.leave()
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
 	static async play(msg, song) {
-		const voiceChannel = msg.member.voice.channel;
+		const voiceChannel = msg.member.voice.channel
 		if (!voiceChannel) {
 			msg.channel.send('You need to be in a voice channel use this command!')
 			return false
