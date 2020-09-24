@@ -18,11 +18,19 @@ class BruhBot {
 		]
 	])
 
+	/**
+	 * Forces the bot to leave the voice channel the user is in
+	 * @param msg
+	 */
 	static #stfu(msg) {
 		Music.stop(msg)
 			.catch(err => console.error(err))
 	}
 
+	/**
+	 * Displays all the possible commands for bruhbot
+	 * @param msg
+	 */
 	static #help(msg) {
 		let help = 'Commands:\n'
 		const iter = this.#bruhBotMap[Symbol.iterator]()
@@ -34,6 +42,10 @@ class BruhBot {
 		msg.channel.send(`${help}`)
 	}
 
+	/**
+	 * Handles a bruhbot command
+	 * @param msg
+	 */
 	static botCommand(msg) {
 		const statement = msg.content.split(' ')
 		if (statement.length > 1) {

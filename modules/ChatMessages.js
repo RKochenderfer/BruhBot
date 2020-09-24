@@ -68,6 +68,10 @@ class ChatMessages {
 		msg.reply(`${this.#randomCapitalize(yee)}`)
 	}
 
+	/**
+	 * Replies to the user with bruh
+	 * @param msg
+	 */
 	static bruh(msg) {
 		const val = Math.random() * 100
 		if (val > this.#threaten) {

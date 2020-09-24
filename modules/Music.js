@@ -3,6 +3,12 @@
 class Music {
 	static #leftistAssPath = 'C:\\Users\\rayjk\\repos\\BruhBot\\songs\\leftist_ass.mp3'
 
+	/**
+	 * Checks if bot has the current permissions to join and speak in a voice channel
+	 * @param channel
+	 * @param msg
+	 * @returns {Readonly<Permissions>|null}
+	 */
 	static #permission(channel, msg) {
 		const permission = channel.permissionsFor(msg.client.user)
 
@@ -14,6 +20,11 @@ class Music {
 		return permission
 	}
 
+	/**
+	 * Stops the bot from playing music in a voice channel
+	 * @param msg
+	 * @returns {Promise<void>}
+	 */
 	static async stop(msg) {
 		const voiceChannel = msg.member.voice.channel
 		if (!voiceChannel) {
@@ -27,6 +38,12 @@ class Music {
 		}
 	}
 
+	/**
+	 * Plays a song. Currently only plays leftist_ass
+	 * @param msg
+	 * @param song
+	 * @returns {Promise<boolean>}
+	 */
 	static async play(msg, song) {
 		const voiceChannel = msg.member.voice.channel
 		if (!voiceChannel) {
