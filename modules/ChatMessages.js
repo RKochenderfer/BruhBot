@@ -12,6 +12,7 @@ class ChatMessages {
 	static #threaten = 10
 	static #niceComment = 10
 	static #socksPath = 'C:\\Users\\rayjk\\repos\\BruhBot\\socks.json'
+
 	/**
 	 * Randomly capitalizes letters in a string
 	 * @param str
@@ -42,14 +43,13 @@ class ChatMessages {
 	 * @param msg
 	 */
 	static corpseFound(msg) {
-		if (msg.content === '!corpse_found') {
-			let users = []
-			msg.guild.members.cache.each(u => {
-				if (u.displayName !== 'BruhBot') users.push(u.id)
-			})
-			const randUser = users[Math.floor(Math.random() * users.length)]
-			msg.channel.send(`<@${randUser}> is kinda sus.`)
-		}
+		let users = []
+		msg.guild.members.cache.each(u => {
+			if (u.displayName !== 'BruhBot') users.push(u.id)
+		})
+		const randUser = users[Math.floor(Math.random() * users.length)]
+		msg.channel.send(`<@${randUser}> is kinda sus.`)
+
 	}
 
 	/**
