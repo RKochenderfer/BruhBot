@@ -1,6 +1,8 @@
-const ytdl = require('ytdl-core')
+// const ytdl = require('ytdl-core')
 
 class Music {
+	static #leftistAssPath = 'C:\\Users\\rayjk\\repos\\BruhBot\\songs\\leftist_ass.mp3'
+
 	static #permission(channel, msg) {
 		const permission = channel.permissionsFor(msg.client.user)
 
@@ -35,8 +37,8 @@ class Music {
 		if (permission === null) return false
 		try {
 			const conn = await voiceChannel.join()
-			const dispatcer = conn
-				.play('C:\\Users\\rayjk\\repos\\BruhBot\\songs\\leftist_ass.mp3')
+			conn
+				.play(this.#leftistAssPath)
 				.on('finish', () => {
 					voiceChannel.leave()
 				})

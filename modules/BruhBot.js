@@ -28,7 +28,7 @@ class BruhBot {
 		const iter = this.#bruhBotMap[Symbol.iterator]()
 
 		for (const item of iter) {
-			help += `\`${item[0]}\`: ${item[1].desc}\n`
+			help += `> \`${item[0]}\`: ${item[1].desc}\n`
 		}
 
 		msg.channel.send(`${help}`)
