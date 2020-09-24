@@ -1,3 +1,4 @@
+const fs = require('fs')
 const Music = require('./Music')
 const BruhBot = require("./BruhBot")
 const fetch = require('node-fetch')
@@ -10,6 +11,7 @@ class ChatMessages {
 	static #refuseHug = 10
 	static #threaten = 10
 	static #niceComment = 10
+	static #socksPath = 'C:\\Users\\rayjk\\repos\\BruhBot\\socks.json'
 	/**
 	 * Randomly capitalizes letters in a string
 	 * @param str
@@ -150,6 +152,60 @@ class ChatMessages {
 		} else {
 			const index = Math.floor(Math.random() * killMessages["kill-self"].length)
 			msg.channel.send(`${user} ${killMessages['kill-self'][index]}`)
+		}
+	}
+
+	/**
+	 * Manages a user's socks
+	 * @param msg
+	 */
+	static socks(msg) {
+		const status = msg.content.split(' ')[1]
+		let raw = fs.readFileSync(this.#socksPath)
+		let socks = JSON.parse(raw)
+		switch (status) {
+			case 'off':
+				if (socks['no-socks'].includes(msg.author.id)) {
+					msg.channel.send('Your socks are already off ;).')
+				} else {
+					socks['no-socks'].push(msg.author.id)
+					msg.channel.send(`${msg.author}'s socks have been removed ;).`)
+				}
+				fs.writeFileSync(this.#socksPath, JSON.stringify(socks))
+				break
+			case 'on':
+				if (socks['no-socks'].includes(msg.author.id)) {
+					msg.channel.send('Your socks are back on.')
+					const index = socks['no-socks'].indexOf(msg.author.id)
+					socks['no-socks'].splice(index, 1)
+					fs.writeFileSync(this.#socksPath, JSON.stringify(socks))
+				} else {
+					msg.channel.send(`Your socks are still on.`)
+				}
+				break
+			case 'status':
+				const users = socks['no-socks'].map(ns => global.client.users.cache.get(ns))
+
+				let str = ''
+				if (users.length > 1) {
+					for (let i = 0; i < users.length; i++) {
+						if (i === users.length - 1) {
+							str += `${users[i].username}`
+						} else {
+							str += `${users[i].username}, `
+						}
+					}
+					str += 'are not wearing socks ;).'
+				} else if (users.length === 1) {
+					str += `${users[0].username} is not wearing socks. Quite the brave one ;)`
+				} else {
+					str = 'Everyone is wearing socks :(.'
+				}
+
+				msg.channel.send(`${str}`)
+				break
+			default:
+				msg.channel.send('You must state that your socks are on or off or ask for the status.')
 		}
 	}
 

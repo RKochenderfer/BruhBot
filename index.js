@@ -2,7 +2,7 @@
 
 require('dotenv').config()
 const Discord = require('discord.js')
-const client = new Discord.Client()
+global.client = new Discord.Client()
 const ChatMessages = require('./modules/ChatMessages')
 
 const messageMap = new Map([
@@ -63,6 +63,13 @@ const messageMap = new Map([
 		}
 	],
 	[
+		'!socks',
+		{
+			'desc': 'Allows a user to put on or take off their socks',
+			func: msg => ChatMessages.socks(msg)
+		}
+	],
+	[
 		'!help',
 		{
 			'desc': 'Shows possible top level commands for bruhbot',
@@ -71,11 +78,11 @@ const messageMap = new Map([
 	]
 ])
 
-client.on('ready', () => {
-	console.log(`Logged in as ${client.user.tag}!`)
+global.client.on('ready', () => {
+	console.log(`Logged in as ${global.client.user.tag}!`)
 })
 
-client.on('guildMemberAdd', member => {
+global.client.on('guildMemberAdd', member => {
 	// Send the message to a designated channel on a server:
 	const channel = member.guild.channels.cache.find(ch => ch.name === 'general');
 	// Do nothing if the channel wasn't found on this server
@@ -84,9 +91,8 @@ client.on('guildMemberAdd', member => {
 	channel.send(`Welcome to the server, ${member}`);
 });
 
-let i = 0
 // Handles when a user says !corpse_found
-client.on('message', msg => {
+global.client.on('message', msg => {
 	const prefix = msg.content.split(' ')[0]
 	if (messageMap.has(prefix)) {
 		let selected = messageMap.get(prefix)
@@ -98,4 +104,4 @@ client.on('message', msg => {
 	}
 })
 
-client.login(process.env.TOKEN)
+global.client.login(process.env.TOKEN)
