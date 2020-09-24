@@ -56,6 +56,13 @@ const messageMap = new Map([
 		}
 	],
 	[
+		'!kill',
+		{
+			'desc': 'Kills the user who sent the message or kills a mentioned user',
+			func: msg => ChatMessages.kill(msg)
+		}
+	],
+	[
 		'!help',
 		{
 			'desc': 'Shows possible top level commands for bruhbot',

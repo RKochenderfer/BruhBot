@@ -1,0 +1,16 @@
+{
+  "kill-self": [
+    "was stabbed in the throat.",
+    "was decapitated.",
+    "fell from a very high place.",
+    "was killed by the architects.",
+    "was never born in the first place",
+    "mixed up the blue Kool-Aid with the windshield wiper fluid."
+  ],
+  "killed-by": [
+    "was stabbed by ?.",
+    "was murdered by ?.",
+    "was run over by ?.",
+    "was temple of doomed by ?."
+  ]
+}

@@ -1,6 +1,7 @@
 const Music = require('./Music')
 const BruhBot = require("./BruhBot")
 const fetch = require('node-fetch')
+const killMessages = require('../killMessages.json')
 
 /**
  * Class managing functionality for chat messages
@@ -66,7 +67,7 @@ class ChatMessages {
 	}
 
 	static bruh(msg) {
-		const val = Math.floor(Math.random() * 100)
+		const val = Math.random() * 100
 		if (val > this.#threaten) {
 			msg.reply('bruh')
 		} else {
@@ -121,7 +122,7 @@ class ChatMessages {
 		if (msg.mentions.users.size) {
 			try {
 				const targetMember = msg.mentions.members.first()
-				const val = Math.floor(Math.random() * 100)
+				const val = Math.random() * 100
 				if (val > this.#niceComment) {
 					const res = await fetch('https://insult.mattbas.org/api/insult')
 					msg.channel.send(`${targetMember} ${await res.text()}`)
@@ -135,16 +136,34 @@ class ChatMessages {
 	}
 
 	/**
+	 * Kills self or kill user depending on if they mention a user or not
+	 * @param msg
+	 */
+	static kill(msg) {
+		const user = msg.author
+		if (msg.mentions.users.size) {
+			const target = msg.mentions.members.first()
+			const index = Math.floor(Math.random() * killMessages["killed-by"].length)
+			let death = killMessages['killed-by'][index]
+			death = death.replace('?', `${user}`)
+			msg.channel.send(`${target} ${death}`)
+		} else {
+			const index = Math.floor(Math.random() * killMessages["kill-self"].length)
+			msg.channel.send(`${user} ${killMessages['kill-self'][index]}`)
+		}
+	}
+
+	/**
 	 * Gives list of message commands
 	 * @param msg
 	 * @param messageMap
 	 */
 	static help(msg, messageMap) {
-		let help = 'Commands:\n'
+		let help = '> Commands:\n'
 		const iter = messageMap[Symbol.iterator]()
 
 		for (const item of iter) {
-			help += `\`${item[0]}\`: ${item[1].desc}\n`
+			help += `> \`${item[0]}\`: ${item[1].desc}\n`
 		}
 
 		msg.channel.send(`${help}`)
