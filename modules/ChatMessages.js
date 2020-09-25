@@ -102,12 +102,14 @@ class ChatMessages {
 	 * @param msg
 	 */
 	static leftistAss(msg) {
-		const song = {
-			title: 'Alex Jones Will Eat Your Leftist Ass (remix) | Song A Day #4145',
-			url: 'https://www.youtube.com/watch?v=o5EKuIus-oE'
-		}
+		Music.play_file(msg, process.env.LEFTIST_ASS_PATH)
+	}
 
-		Music.play(msg, song)
+	static play(msg) {
+		const commands = msg.content.split(' ')
+		if (commands.length > 1) {
+			Music.play_url(msg, commands[1])
+		}
 	}
 
 	/**

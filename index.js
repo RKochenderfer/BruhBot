@@ -5,7 +5,7 @@ const Discord = require('discord.js')
 global.client = new Discord.Client()
 const ChatMessages = require('./modules/ChatMessages')
 
-const messageMap = new Map([
+global.messageMap = new Map([
 	[
 		'!bruh',
 		{
@@ -70,6 +70,13 @@ const messageMap = new Map([
 		}
 	],
 	[
+		'!play',
+		{
+			'desc': 'Plays a youtube video from the link provided (Ex: `!play https://www.youtube.com/watch?v=dQw4w9WgXcQ`)',
+			func: msg => ChatMessages.play(msg)
+		}
+	],
+	[
 		'!help',
 		{
 			'desc': 'Shows possible top level commands for bruhbot',
@@ -94,8 +101,8 @@ global.client.on('guildMemberAdd', member => {
 // Handles when a user says !corpse_found
 global.client.on('message', msg => {
 	const prefix = msg.content.split(' ')[0]
-	if (messageMap.has(prefix)) {
-		let selected = messageMap.get(prefix)
+	if (global.messageMap.has(prefix)) {
+		let selected = global.messageMap.get(prefix)
 		if (prefix === '!help') {
 			selected.func(msg, messageMap)
 		} else {
