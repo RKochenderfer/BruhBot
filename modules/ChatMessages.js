@@ -223,7 +223,7 @@ class ChatMessages {
 		try {
 			const res = await fetch('https://api.kanye.rest')
 			const json = await res.json()
-			msg.channel.send(`Kanye West says "${await json.quote}"`)
+			msg.channel.send(`Kanye West says, "${await json.quote}"`)
 		} catch (e) {
 			console.error(e)
 		}
