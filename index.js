@@ -77,6 +77,13 @@ global.messageMap = new Map([
 		}
 	],
 	[
+		'!ye',
+		{
+			'desc': 'Gets a random Kanye West quote',
+			func: msg => ChatMessages.ye(msg)
+		}
+	],
+	[
 		'!help',
 		{
 			'desc': 'Shows possible top level commands for bruhbot',

@@ -215,6 +215,20 @@ class ChatMessages {
 	}
 
 	/**
+	 * Gets a kanye quote
+	 * @param msg
+	 */
+	static async ye(msg) {
+		try {
+			const res = await fetch('https://api.kanye.rest')
+			const json = await res.json()
+			msg.channel.send(`Kanye West says "${await json.quote}"`)
+		} catch (e) {
+			console.error(e)
+		}
+	}
+
+	/**
 	 * Gives list of message commands
 	 * @param msg
 	 * @param messageMap
