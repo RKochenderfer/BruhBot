@@ -11,7 +11,6 @@ class ChatMessages {
 	static #refuseHug = 10
 	static #threaten = 10
 	static #niceComment = 10
-	static #socksPath = 'C:\\Users\\rayjk\\repos\\BruhBot\\socks.json'
 
 	/**
 	 * Randomly capitalizes letters in a string
@@ -165,7 +164,7 @@ class ChatMessages {
 	 */
 	static socks(msg) {
 		const status = msg.content.split(' ')[1]
-		let raw = fs.readFileSync(this.#socksPath)
+		let raw = fs.readFileSync(process.env.SOCKS_PATH)
 		let socks = JSON.parse(raw)
 		switch (status) {
 			case 'off':
@@ -175,14 +174,14 @@ class ChatMessages {
 					socks['no-socks'].push(msg.author.id)
 					msg.channel.send(`${msg.author}'s socks have been removed ;).`)
 				}
-				fs.writeFileSync(this.#socksPath, JSON.stringify(socks))
+				fs.writeFileSync(process.env.SOCKS_PATH, JSON.stringify(socks))
 				break
 			case 'on':
 				if (socks['no-socks'].includes(msg.author.id)) {
 					msg.channel.send('Your socks are back on.')
 					const index = socks['no-socks'].indexOf(msg.author.id)
 					socks['no-socks'].splice(index, 1)
-					fs.writeFileSync(this.#socksPath, JSON.stringify(socks))
+					fs.writeFileSync(process.env.SOCKS_PATH, JSON.stringify(socks))
 				} else {
 					msg.channel.send(`Your socks are still on.`)
 				}
@@ -194,7 +193,7 @@ class ChatMessages {
 				if (users.length > 1) {
 					for (let i = 0; i < users.length; i++) {
 						if (i === users.length - 1) {
-							str += `${users[i].username}`
+							str += `${users[i].username} `
 						} else {
 							str += `${users[i].username}, `
 						}

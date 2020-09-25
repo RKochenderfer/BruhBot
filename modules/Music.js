@@ -55,7 +55,7 @@ class Music {
 		try {
 			const conn = await voiceChannel.join()
 			conn
-				.play(this.#leftistAssPath)
+				.play(process.env.LEFTIST_ASS_PATH)
 				.on('finish', () => {
 					voiceChannel.leave()
 				})
