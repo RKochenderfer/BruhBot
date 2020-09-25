@@ -72,7 +72,7 @@ global.messageMap = new Map([
 	[
 		'!play',
 		{
-			'desc': 'Plays a youtube video from the link provided (Ex: `!play https://www.youtube.com/watch?v=dQw4w9WgXcQ`)',
+			'desc': 'Plays a youtube video from the link provided (ex: `!play https://www.youtube.com/watch?v=dQw4w9WgXcQ`)',
 			func: msg => ChatMessages.play(msg)
 		}
 	],
@@ -81,6 +81,13 @@ global.messageMap = new Map([
 		{
 			'desc': 'Gets a random Kanye West quote',
 			func: msg => ChatMessages.ye(msg)
+		}
+	],
+	[
+		'!roll',
+		{
+			'desc': 'Rolls `count` dice of type `type` (ex: `!roll 2 d20`)',
+			func: msg => ChatMessages.roll(msg)
 		}
 	],
 	[

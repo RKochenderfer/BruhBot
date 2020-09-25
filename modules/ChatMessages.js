@@ -1,6 +1,7 @@
 const fs = require('fs')
 const Music = require('./Music')
-const BruhBot = require("./BruhBot")
+const BruhBot = require('./BruhBot')
+const DiceRoller = require('./DiceRoller')
 const fetch = require('node-fetch')
 const killMessages = require('../killMessages.json')
 
@@ -225,6 +226,24 @@ class ChatMessages {
 			msg.channel.send(`Kanye West says "${await json.quote}"`)
 		} catch (e) {
 			console.error(e)
+		}
+	}
+
+	/**
+	 * Rolls a dice with the passed count and type
+	 * @param msg
+	 */
+	static roll(msg) {
+		const args = msg.content.split(' ')
+		if (args.length === 3) {
+			const values = DiceRoller.roll(msg, args[1], args[2])
+			let diceTense = ''
+			if (args[1] > 1) {
+				diceTense = `${args[2]}'s were`
+			} else {
+				diceTense = `${args[2]} was`
+			}
+			msg.reply(`${args[1]} ${diceTense} rolled. Values [${values.join(', ')}]`)
 		}
 	}
 
