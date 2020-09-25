@@ -236,14 +236,22 @@ class ChatMessages {
 	static roll(msg) {
 		const args = msg.content.split(' ')
 		if (args.length === 3) {
-			const values = DiceRoller.roll(msg, args[1], args[2])
-			let diceTense = ''
-			if (args[1] > 1) {
-				diceTense = `${args[2]}'s were`
+			if (!isNaN(args[1])) {
+				const values = DiceRoller.roll(msg, args[1], args[2])
+				if (values !== null) {
+					let diceTense = ''
+					if (args[1] > 1) {
+						diceTense = `${args[2]}'s were`
+					} else {
+						diceTense = `${args[2]} was`
+					}
+					msg.reply(`${args[1]} ${diceTense} rolled. Values [${values.join(', ')}]`)
+				} else {
+					msg.channel.send(`Invalid dice with count ${args[1]} and type ${args[2]} received.`)
+				}
 			} else {
-				diceTense = `${args[2]} was`
+				msg.channel.send(`${args[1]} is not an integer.`)
 			}
-			msg.reply(`${args[1]} ${diceTense} rolled. Values [${values.join(', ')}]`)
 		}
 	}
 
