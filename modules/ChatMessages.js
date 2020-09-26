@@ -2,6 +2,7 @@ const fs = require('fs')
 const Music = require('./Music')
 const BruhBot = require('./BruhBot')
 const DiceRoller = require('./DiceRoller')
+const RoundTracker = require('./RoundTracker')
 const fetch = require('node-fetch')
 const killMessages = require('../killMessages.json')
 
@@ -196,14 +197,14 @@ class ChatMessages {
 				if (users.length > 1) {
 					for (let i = 0; i < users.length; i++) {
 						if (i === users.length - 1) {
-							str += `${users[i].username} `
+							str += `${users[i].nickname} `
 						} else {
-							str += `${users[i].username}, `
+							str += `${users[i].nickname}, `
 						}
 					}
 					str += 'are not wearing socks ;).'
 				} else if (users.length === 1) {
-					str += `${users[0].username} is not wearing socks. Quite the brave one ;)`
+					str += `${users[0].nickname} is not wearing socks. Quite the brave one ;)`
 				} else {
 					str = 'Everyone is wearing socks :(.'
 				}
@@ -253,6 +254,14 @@ class ChatMessages {
 				msg.channel.send(`${args[1]} is not an integer.`)
 			}
 		}
+	}
+
+	/**
+	 * Passes round tracker interaction to RoundTracker
+	 * @param msg
+	 */
+	static initiativeTracker(msg) {
+		RoundTracker.initiativeTracker(msg)
 	}
 
 	/**

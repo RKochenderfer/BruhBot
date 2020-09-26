@@ -91,6 +91,13 @@ global.messageMap = new Map([
 		}
 	],
 	[
+		'!initiative',
+		{
+			'desc': 'Handles initiative for a roll playing game',
+			func: msg => ChatMessages.initiativeTracker(msg)
+		}
+	],
+	[
 		'!help',
 		{
 			'desc': 'Shows possible top level commands for bruhbot',
