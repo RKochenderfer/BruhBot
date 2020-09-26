@@ -199,21 +199,13 @@ class RoundTracker {
 		let turn
 
 		initiative['current-index']++
-		if (initiative['current-index'] < initiative.entries.length) {
-			if (isNaN(initiative.entries[initiative['current-index']].user_id)) {
-				turn = initiative.entries[initiative['current-index']].user_id
-			} else {
-				const user = msg.guild.members.cache.get(initiative.entries[initiative['current-index']].user_id)
-				turn = `${user.nickname}`
-			}
+		if (initiative['current-index'] >= initiative.entries.length) initiative['current-index'] = 0
+
+		if (isNaN(initiative.entries[initiative['current-index']].user_id)) {
+			turn = initiative.entries[initiative['current-index']].user_id
 		} else {
-			initiative['current-index'] = 0
-			if (isNaN(initiative.entries[initiative['current-index']])) {
-				turn = initiative.entries[0].user_id
-			} else {
-				const user = msg.guild.members.cache.get(initiative.entries[0].user_id)
-				turn = `${user.nickname}`
-			}
+			const user = msg.guild.members.cache.get(initiative.entries[initiative['current-index']].user_id)
+			turn = `${user.nickname}`
 		}
 
 		msg.channel.send(`It is now ${turn}'s turn.`)
