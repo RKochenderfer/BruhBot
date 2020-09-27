@@ -191,15 +191,17 @@ class ChatMessages {
 				}
 				break
 			case 'status':
-				const users = socks['no-socks'].map(ns => global.client.users.cache.get(ns))
+				const users = socks['no-socks'].map(ns => msg.guild.members.cache.get(ns))
 
 				let str = ''
 				if (users.length > 1) {
 					for (let i = 0; i < users.length; i++) {
-						if (i === users.length - 1) {
-							str += `${users[i].nickname} `
-						} else {
-							str += `${users[i].nickname}, `
+						if (users[i] !== undefined) {
+							if (i === users.length - 1) {
+								str += `${users[i].nickname} `
+							} else {
+								str += `${users[i].nickname}, `
+							}
 						}
 					}
 					str += 'are not wearing socks ;).'
