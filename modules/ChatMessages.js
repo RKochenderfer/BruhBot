@@ -154,7 +154,7 @@ class ChatMessages {
 			const target = msg.mentions.members.first()
 			const index = Math.floor(Math.random() * killMessages["killed-by"].length)
 			let death = killMessages['killed-by'][index]
-			death = death.replace('?', `${user}`)
+			death = death.replace(/\?/g, `${user}`)
 			msg.channel.send(`${target} ${death}`)
 		} else {
 			const index = Math.floor(Math.random() * killMessages["kill-self"].length)
