@@ -4,6 +4,7 @@ require('dotenv').config()
 const Discord = require('discord.js')
 global.client = new Discord.Client()
 const ChatMessages = require('./modules/ChatMessages')
+const TeamBuilder = require("./modules/TeamBuilder");
 
 global.messageMap = new Map([
 	[
@@ -108,7 +109,11 @@ global.messageMap = new Map([
 		'!team_builder',
 		{
 			'desc': 'Builds teams for a game',
-			func: msg => TeamBuilder.parseMessage(msg)
+			func: msg => {
+				const teams = TeamBuilder.messageHandler(msg)
+				teams.generateTeams()
+				msg.channel.send(`${teams.getTeams()}`)
+			}
 		}
 	]
 ])

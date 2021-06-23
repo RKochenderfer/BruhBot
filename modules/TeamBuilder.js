@@ -13,35 +13,19 @@ class TeamBuilder {
         this.#players = players
     }
 
-    static numTeamsIsValid(toValidate) {
-        return Number.isInteger(toValidate)
-    }
-
     static validate(args) {
-        if (args.length > 0) {
-            if (!this.numTeamsIsValid(args[0]))
-                throw new TeamBuilderError('Invalid number of teams given.')
-        } else {
-            throw new TeamBuilderError('No arguments were given to team builder.')
-        }
+        if (args.length < 3 || isNaN(args[1]))
+            throw new TeamBuilderError('The second argument must be the number of teams to divide into.')
     }
 
     static parseMessage(msg) {
         const args = msg.content.split(' ')
-        switch (args.length) {
-            case 0:
-                return new TeamBuilder()
-            case 1:
-                this.validate(args)
-                return new TeamBuilder(parseInt(args[0]))
-            default:
-                this.validate(args)
-                return new TeamBuilder(parseInt(args[0]), args.slice(1))
-        }
+        this.validate(args)
+        return new TeamBuilder(parseInt(args[1]), args.slice(2))
     }
 
     static messageHandler(msg) {
-        this.parseMessage(msg)
+        return this.parseMessage(msg)
     }
 
     addPlayer(userId) {
@@ -91,3 +75,5 @@ class TeamBuilder {
         return Math.random()
     }
 }
+
+module.exports = TeamBuilder
