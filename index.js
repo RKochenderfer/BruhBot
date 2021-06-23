@@ -103,6 +103,13 @@ global.messageMap = new Map([
 			'desc': 'Shows possible top level commands for bruhbot',
 			func: (msg, messageMap) => ChatMessages.help(msg, messageMap)
 		}
+	],
+	[
+		'!team_builder',
+		{
+			'desc': 'Builds teams for a game',
+			func: msg => TeamBuilder.parseMessage(msg)
+		}
 	]
 ])
 
