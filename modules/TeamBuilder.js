@@ -62,13 +62,29 @@ class TeamBuilder {
      */
     generateTeams() {
         let builtTeams = this.#createEmptyTeams()
-        this.#buildUnEvenTeams()
+        this.#buildUnEvenTeams(builtTeams)
 
         this.#teams = builtTeams
     }
 
-    getTeams() {
-        return this.#teams
+    buildTeamStrings() {
+        let teamStrings = []
+        for (let i = 0; i < this.#teams.length; i++) {
+            teamStrings.push(`Team ${i + 1}: `)
+        }
+
+        // let team1Players = this.#teams[0]
+        // let team2Players = this.#teams[1]
+        for (let i = 0; i < this.#teams.length; i++) {
+            const players = this.#teams[i]
+            for (let j = 0; j < players.length; j++) {
+                teamStrings[i] += `${players[j]}`
+                if (j !== players.length - 1)
+                    teamStrings[i] += ', '
+            }
+        }
+
+        return teamStrings
     }
 
     randSort() {

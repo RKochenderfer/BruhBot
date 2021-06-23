@@ -110,9 +110,17 @@ global.messageMap = new Map([
 		{
 			'desc': 'Builds teams for a game',
 			func: msg => {
-				const teams = TeamBuilder.messageHandler(msg)
-				teams.generateTeams()
-				msg.channel.send(`${teams.getTeams()}`)
+				try {
+					const teams = TeamBuilder.messageHandler(msg)
+					teams.generateTeams()
+					const strings = teams.buildTeamStrings()
+					for (let i = 0; i < strings.length; i++) {
+						msg.channel.send(strings[i])
+					}
+					// msg.channel.send(`${teams.getTeams()}`)
+				} catch (ex) {
+					msg.channel.send(`Failed to build teams: ${ex}`)
+				}
 			}
 		}
 	]
