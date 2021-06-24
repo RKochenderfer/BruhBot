@@ -28,20 +28,8 @@ class TeamBuilder {
         return this.parseMessage(msg)
     }
 
-    addPlayer(userId) {
-        this.#players.push(userId)
-    }
-
-    getPlayers() {
-        return this.#players
-    }
-
-    setNumTeams(numTeams) {
-        this.numTeams = numTeams
-    }
-
     #buildUnEvenTeams(teams) {
-        const randomized = this.#players.sort(this.randSort)
+        const randomized = TeamBuilder.shuffle(this.#players)
 
         for (let i = 0; i < randomized.length; i++) {
             teams[i % teams.length].push(this.#players[i])
@@ -73,8 +61,6 @@ class TeamBuilder {
             teamStrings.push(`Team ${i + 1}: `)
         }
 
-        // let team1Players = this.#teams[0]
-        // let team2Players = this.#teams[1]
         for (let i = 0; i < this.#teams.length; i++) {
             const players = this.#teams[i]
             for (let j = 0; j < players.length; j++) {
@@ -87,8 +73,22 @@ class TeamBuilder {
         return teamStrings
     }
 
-    randSort() {
-        return Math.random()
+    static shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+        }
+
+        return array;
     }
 }
 
