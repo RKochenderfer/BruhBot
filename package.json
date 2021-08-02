@@ -4,13 +4,13 @@
   "description": "A custom discord bot",
   "main": "index.js",
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
-    "discord.js": "^12.3.1",
-    "dotenv": "^8.2.0",
+    "@discordjs/opus": "^0.3.3",
+    "discord.js": "^12.5.3",
+    "dotenv": "^8.6.0",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
     "node-fetch": "^2.6.1",
-    "pnpm": "^5.7.0"
+    "pnpm": "^5.18.9"
   },
   "scripts": {
     "test": "mocha"
@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/RKochenderfer/BruhBot#readme",
   "devDependencies": {
-    "ytdl-core": "^3.2.2"
+    "ytdl-core": "^3.4.2"
   }
 }
