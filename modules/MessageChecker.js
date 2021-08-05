@@ -1,9 +1,9 @@
-const CumCounter = require('CumCounter')
+const CumCounter = require('./CumCounter')
 
 class MessageChecker {
     static #flagged_expressions = [
         {
-            'regex': /(?i)[cum](?-i)/,
+            'regex': /[cum]/i,
             func: async (msg) => await CumCounter.Counter(msg)
         }
     ]
@@ -14,7 +14,7 @@ class MessageChecker {
      * @constructor
      */
     static async CheckMessage(msg) {
-        for (let i = 0; i < this.#flagged_expressions; i++) {
+        for (let i = 0; i < this.#flagged_expressions.length; i++) {
             const tar = this.#flagged_expressions[i]
             const regex = tar.regex
 

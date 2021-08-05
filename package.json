@@ -10,7 +10,7 @@
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
     "node-fetch": "^2.6.1",
-    "pnpm": "^5.18.9"
+    "ytdl-core": "^3.4.2"
   },
   "scripts": {
     "test": "mocha"
@@ -24,8 +24,5 @@
   "bugs": {
     "url": "https://github.com/RKochenderfer/BruhBot/issues"
   },
-  "homepage": "https://github.com/RKochenderfer/BruhBot#readme",
-  "devDependencies": {
-    "ytdl-core": "^3.4.2"
-  }
+  "homepage": "https://github.com/RKochenderfer/BruhBot#readme"
 }

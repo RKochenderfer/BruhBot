@@ -4,3 +4,5 @@ class CumCounterError extends Error {
         this.name = "CumCounterError"
     }
 }
+
+module.exports = CumCounterError

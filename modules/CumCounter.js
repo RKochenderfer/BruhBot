@@ -1,3 +1,5 @@
+const CumCounterError = require('../errors/CumCounterError')
+
 const { promises: Fs } = require('fs')
 class CumCounter {
     static #cumCounterFilePath = './cum-counter.json'
@@ -24,8 +26,45 @@ class CumCounter {
         return json
     }
 
-    static async #CreateFile() {
+    static async #CreateFile(msg) {
+        // TODO: FINISH ME
+        let json = {}
+        json[msg.guild.id] = new Date()
+        try {
+            await Fs.writeFile(this.#cumCounterFilePath, JSON.stringify(json))
+        } catch (e) {
+            throw new CumCounterError(`Error creating cum_counter.json: ${e}`)
+        }
+        await this.#WriteMessage(msg, `CUM DETECTED. FIRST INSTANCE LOGGED.`)
+    }
 
+    static #CheckElapsedTime(timestamp, currentTime) {
+        const timeLastFound = Date.parse(timestamp)
+
+        let timeDiff = currentTime - timeLastFound;
+        timeDiff /= 1000
+        return timeDiff
+    }
+
+    static async #WriteTimeToFile(data) {
+        try {
+            await Fs.writeFile(this.#cumCounterFilePath, JSON.stringify(data))   
+        } catch (e) {
+            throw new CumCounterError(`Could not write to file: ${e}`)
+        }
+    }
+
+    /**
+     * 
+     * @param {Message} msgClient 
+     * @param {number} elapsedTime 
+     */
+    static async #WriteMessage(msgClient, string) {
+        try {
+            msgClient.channel.send(string)
+        } catch (e) { 
+            throw new CumCounterError(`Error sending message to channgel: ${msgClient.channel.id}`)
+        }
     }
 
     /**
@@ -35,17 +74,18 @@ class CumCounter {
      * @constructor
      */
     static async #AdjustTimer(msg) {
-        const json = this.#ReadFile()
-        if (msg.guild.id in json) {
-            const thisServer = msg.guild.id;
-            const timeLastFound = json.timestamp
-
-
-        } else {
-            json[msg.guild.id] = {
-                timestamp: Date.now()
-            }
+        const json = await this.#ReadFile()
+        let elapsedTime = 0
+        let currentTime = new Date()
+        if (json[msg.guild.id]) {
+            elapsedTime = this.#CheckElapsedTime(json[msg.guild.id], currentTime)
+            await this.#WriteMessage(msg, `CUM DETECTED. SECONDS SINCE LAST FOUND: ${elapsedTime}`)
         }
+        json[msg.guild.id] = {
+            timestamp: currentTime
+        }
+        json[msg.guild.id] = currentTime
+        await this.#WriteTimeToFile(json)
     }
 
     /**
@@ -57,9 +97,9 @@ class CumCounter {
     static async Counter(msg) {
         if (await this.#pathExists(CumCounter.#cumCounterFilePath)) {
             // read the file
-            await this.#AdjustTimer()
+            await this.#AdjustTimer(msg)
         } else {
-            await this.#CreateFile()
+            await this.#CreateFile(msg)
         }
     }
 }
