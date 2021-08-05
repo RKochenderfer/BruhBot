@@ -3,7 +3,7 @@ const CumCounter = require('./CumCounter')
 class MessageChecker {
     static #flagged_expressions = [
         {
-            'regex': /[cum]/i,
+            'regex': /cum/img,
             func: async (msg) => await CumCounter.Counter(msg)
         }
     ]
