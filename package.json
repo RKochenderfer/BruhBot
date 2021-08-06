@@ -4,16 +4,19 @@
   "description": "A custom discord bot",
   "main": "index.js",
   "dependencies": {
-    "@discordjs/opus": "^0.3.3",
-    "discord.js": "^12.5.3",
+    "@discordjs/opus": "^0.5.3",
+    "@discordjs/voice": "^0.5.5",
+    "discord.js": "^13.0.0",
     "dotenv": "^8.6.0",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
+    "libsodium-wrappers": "^0.7.9",
     "node-fetch": "^2.6.1",
     "ytdl-core": "^3.4.2"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node build/index.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +27,18 @@
   "bugs": {
     "url": "https://github.com/RKochenderfer/BruhBot/issues"
   },
-  "homepage": "https://github.com/RKochenderfer/BruhBot#readme"
+  "prettier": {
+    "singleQuote": true,
+    "semi": false,
+    "trailingComma": "all",
+    "tabWidth": 4,
+    "useTabs": true,
+    "arrowParens": "avoid"
+  },
+  "homepage": "https://github.com/RKochenderfer/BruhBot#readme",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "prettier": "2.3.2",
+    "typescript": "^4.3.5"
+  }
 }
