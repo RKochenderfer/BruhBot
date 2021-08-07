@@ -16,7 +16,6 @@ export enum CommandType {
 	YE = 'ye',
 	ROLL = 'roll',
 	INITIATIVE = 'initiative',
-	HELP = 'help',
 	TEAM_BUILDER = 'team_builder',
 }
 
@@ -49,8 +48,6 @@ export class Command {
 				return CommandType.ROLL
 			case CommandType.INITIATIVE.toString():
 				return CommandType.INITIATIVE
-			case CommandType.HELP.toString():
-				return CommandType.HELP
 			case CommandType.TEAM_BUILDER.toString():
 				return CommandType.TEAM_BUILDER
 			default:

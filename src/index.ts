@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { Client, Intents, Message } from 'discord.js'
+import { Client, Intents, ApplicationCommandManager, GuildStickerManager } from 'discord.js'
 import { MessageMap } from './classes/MessageMap'
 import { Command } from './models/Command'
 
@@ -34,13 +34,19 @@ client.on('messageCreate', async message => {
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return
+	// client.application?.commands.delete(interaction.commandId)
+	// interaction.guild?.commands.delete(interaction.commandId)
+	// 	.then(console.log)
+	// 	.catch(console.error)
 	try {
 		const commandType = Command.commandMap(interaction.commandName)
 		if (commandType) {
 			const command = messageMap.getCommand(commandType)
             command.execute(interaction)
 		}
-	} catch (error) {}
+	} catch (error) {
+		interaction.reply({content: 'Something went wrong. The command may not be implemented yet.'})
+	}
 })
 
 client.login(process.env.TOKEN!).then(async () => {
