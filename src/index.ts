@@ -1,9 +1,16 @@
 import 'dotenv/config'
-import { Client, Intents, ApplicationCommandManager, GuildStickerManager } from 'discord.js'
+import {
+	Client,
+	Intents,
+	ApplicationCommandManager,
+	GuildStickerManager,
+} from 'discord.js'
 import { MessageMap } from './classes/MessageMap'
 import { Command } from './models/Command'
+import { MessageChecker } from './classes/MessageChecker'
 
 const messageMap = new MessageMap()
+const messageChecker = new MessageChecker()
 
 const client = new Client({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -23,12 +30,16 @@ client.on('guildMemberAdd', member => {
 })
 
 client.on('messageCreate', async message => {
-	if (message.content.toLowerCase() === '!deploy') {
+	if (message.author.bot) {
+		return
+	} else if (message.content.toLowerCase() === '!deploy') {
 		const data = Command.buildCommandDataMap()
 		const command = await client.guilds.cache
 			.get(message.guildId!)
 			?.commands.set(data)
 		console.log(command)
+	} else {
+		await MessageChecker.CheckMessage(message)
 	}
 })
 
@@ -42,10 +53,14 @@ client.on('interactionCreate', async interaction => {
 		const commandType = Command.commandMap(interaction.commandName)
 		if (commandType) {
 			const command = messageMap.getCommand(commandType)
-            command.execute(interaction)
+			command.execute(interaction)
 		}
 	} catch (error) {
-		interaction.reply({content: 'Something went wrong. The command may not be implemented yet.'})
+		console.error(error)
+		interaction.reply({
+			content:
+				'Something went wrong. The command may not be implemented yet.',
+		})
 	}
 })
 
@@ -54,4 +69,9 @@ client.login(process.env.TOKEN!).then(async () => {
 	// const data = Command.buildCommandDataMap()
 	// const commands = await client.guilds.cache.get('123456789012345678')?.commands.
 	// await client.application?.commands.set(data)
+})
+
+client.on('error', error => {
+	console.error('A')
+	console.error(error)
 })

@@ -6,7 +6,7 @@ export class RoundTrackerAction extends Action {
 		super('Tracks the rounds a player is on')
 	}
 
-	async execute(interactoin: CommandInteraction) {
-		throw new Error('Method not implemented.')
+	async execute(interaction: CommandInteraction) {
+		interaction.reply({content: 'This has not been implemented it'})
 	}
 }

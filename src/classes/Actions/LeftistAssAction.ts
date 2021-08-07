@@ -10,6 +10,7 @@ export class LeftistAssAction extends Action {
 		)
 	}
 	async execute(interaction: CommandInteraction) {
+		// TODO: UNABLE TO JOIN VOICE CHAT ERROR
 		const path = process.env.LEFTIST_ASS_PATH
 		if (!path) {
 			throw new LeftistAssActionError(

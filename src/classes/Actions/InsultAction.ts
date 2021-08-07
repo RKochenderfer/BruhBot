@@ -1,12 +1,11 @@
-import { CommandInteraction, Message } from "discord.js";
-import { Action } from "./Action";
+import { CommandInteraction, Message } from 'discord.js'
+import { Action } from './Action'
 
 export class InsultAction extends Action {
-    constructor() {
-        super("Insults a mentioned user")
-    }
-    async execute(interaction: CommandInteraction) {
-        throw new Error("Method not implemented.");
-    }
-
+	constructor() {
+		super('Insults a mentioned user')
+	}
+	async execute(interaction: CommandInteraction) {
+		interaction.reply({ content: 'This has not been implemented it' })
+	}
 }

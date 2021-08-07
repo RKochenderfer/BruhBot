@@ -6,6 +6,6 @@ export class KillAction extends Action {
 		super('Kills the user who sent the message or kills a mentioned user')
 	}
 	async execute(interaction: CommandInteraction) {
-		throw new Error('Method not implemented.')
+		interaction.reply({content: 'This has not been implemented it'})
 	}
 }

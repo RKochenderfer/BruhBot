@@ -6,6 +6,6 @@ export class PlayAction extends Action {
 		super('Plays a youtube video from the given link')
 	}
 	async execute(interaction: CommandInteraction) {
-		throw new Error('Method not implemented.')
+		interaction.reply({content: 'This has not been implemented it'})
 	}
 }

@@ -6,6 +6,6 @@ export class YeAction extends Action {
 		super('Gets a random Kanye West quote')
 	}
 	async execute(interaction: CommandInteraction) {
-		throw new Error('Method not implemented.')
+		interaction.reply({content: 'This has not been implemented it'})
 	}
 }

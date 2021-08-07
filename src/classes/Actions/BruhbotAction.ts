@@ -1,4 +1,4 @@
-import { Interaction } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Action } from './Action'
 
 export class BruhbotAction extends Action {
@@ -6,7 +6,7 @@ export class BruhbotAction extends Action {
 		super('Issues a command directly to bruhbot')
 	}
 
-	async execute(interaction: Interaction) {
-		throw new Error('Method not implemented.')
+	async execute(interaction: CommandInteraction) {
+		interaction.reply({content: 'This has not been implemented it'})
 	}
 }

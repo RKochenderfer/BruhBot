@@ -7,6 +7,6 @@ export class DiceRollerAction extends Action {
 	}
 
 	async execute(interaction: CommandInteraction) {
-		throw new Error('Method not implemented.')
+		interaction.reply({content: 'This has not been implemented it'})
 	}
 }

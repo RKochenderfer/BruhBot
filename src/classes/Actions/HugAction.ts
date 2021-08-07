@@ -9,7 +9,7 @@ export class HugAction extends Action {
 	}
 
 	async execute(interaction: CommandInteraction) {
-		throw new Error('Not implemented')
+		interaction.reply({content: 'This has not been implemented it'})
 		// const val = Math.floor(Math.random() * 100)
 		// if (val > HugAction.refuseHug) {
 		// 	const words = [
