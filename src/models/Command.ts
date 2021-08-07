@@ -66,6 +66,7 @@ export class Command {
 			const toAdd: ApplicationCommandData = {
 				name: lowercaseVal,
 				description: MessageMap.getDescription(Command.commandMap(lowercaseVal)!),
+				options: MessageMap.getOptions(Command.commandMap(lowercaseVal)!)
 			}
 			data.push(toAdd)
 		}

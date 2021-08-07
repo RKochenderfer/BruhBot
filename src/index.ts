@@ -37,7 +37,6 @@ client.on('messageCreate', async message => {
 		const command = await client.guilds.cache
 			.get(message.guildId!)
 			?.commands.set(data)
-		console.log(command)
 	} else {
 		await MessageChecker.CheckMessage(message)
 	}
@@ -45,19 +44,14 @@ client.on('messageCreate', async message => {
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return
-	
-	try {
-		const commandType = Command.commandMap(interaction.commandName)
-		if (commandType) {
-			const command = messageMap.getCommand(commandType)
-			command.execute(interaction)
-		}
-	} catch (error) {
-		console.error(error)
-		interaction.reply({
-			content:
-				'Something went wrong. The command may not be implemented yet.',
-		})
+	// client.application?.commands.delete(interaction.commandId)
+	// interaction.guild?.commands.delete(interaction.commandId)
+	// 	.then(console.log)
+	// 	.catch(console.error)
+	const commandType = Command.commandMap(interaction.commandName)
+	if (commandType) {
+		const command = messageMap.getCommand(commandType)
+		await command.execute(interaction)
 	}
 })
 

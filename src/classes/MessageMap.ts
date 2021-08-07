@@ -1,3 +1,4 @@
+import { ApplicationCommandOptionData } from "discord.js";
 import { MessageMapError } from "../errors/MessageMapError";
 import { CommandType } from "../models/Command";
 import { Action } from "./Actions/Action";
@@ -51,5 +52,14 @@ export class MessageMap {
 		}
 
 		return action.description
+	}
+
+	static getOptions(command: CommandType): ApplicationCommandOptionData[] | undefined {
+		const action = MessageMap.methodMap.get(command)
+		if (!action) {
+			throw new MessageMapError(`Attempt to get description of unknown command ${command}`)
+		}
+
+		return action.options
 	}
 }
