@@ -5,6 +5,7 @@ import {
 	createAudioResource,
 	VoiceConnection,
 	VoiceConnectionStatus,
+	DiscordGatewayAdapterCreator,
 } from '@discordjs/voice'
 import { MusicError } from '../errors/MusicError'
 
@@ -23,8 +24,7 @@ export class Music {
 		const conn = joinVoiceChannel({
 			channelId: voiceChannel?.id!,
 			guildId: voiceChannel?.guild.id!,
-			// @ts-ignore
-			adapterCreator: voiceChannel?.guild.voiceAdapterCreator!,
+			adapterCreator: voiceChannel?.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
 		})
 
 		return conn
