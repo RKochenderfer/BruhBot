@@ -1,48 +1,165 @@
-import { CommandInteraction, GuildMember, Message } from 'discord.js'
+import { CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js'
 import {
+	AudioPlayer,
 	joinVoiceChannel,
 	createAudioPlayer,
 	createAudioResource,
 	VoiceConnection,
 	VoiceConnectionStatus,
 	DiscordGatewayAdapterCreator,
+	AudioPlayerStatus,
+	NoSubscriberBehavior,
+	entersState,
+	VoiceConnectionDisconnectReason,
+	getVoiceConnection,
 } from '@discordjs/voice'
 import { MusicError } from '../errors/MusicError'
 
-export class Music {
-	private static getVoiceChannel(interaction: CommandInteraction) {
-		const voiceChannel = (interaction.member as GuildMember).voice.channel;
-		/* This will play a youtube video and should be saved but switching to a .mp3 for clips */
-		return voiceChannel
-	}
+import { promisify } from 'util'
 
-	static connectToChannel(interaction: CommandInteraction): VoiceConnection {
-		const voiceChannel = this.getVoiceChannel(interaction)
-		if (!voiceChannel) {
-			throw new MusicError('Unable to connect to voice channel')
-		}
-		const conn = joinVoiceChannel({
-			channelId: voiceChannel?.id!,
-			guildId: voiceChannel?.guild.id!,
-			adapterCreator: voiceChannel?.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
+const wait = promisify(setTimeout)
+
+export class Music {
+	static subscriptions = new Map<string, VoiceConnection>()
+
+	static subscribeToChannel(voiceConnection: VoiceConnection) {
+		const audioPlayer = createAudioPlayer()
+		voiceConnection.on('stateChange', async (_, newState) => {
+			if (newState.status === VoiceConnectionStatus.Disconnected) {
+				if (
+					newState.reason ===
+						VoiceConnectionDisconnectReason.WebSocketClose &&
+					newState.closeCode === 4014
+				) {
+					/*
+						If the WebSocket closed with a 4014 code, this means that we should not manually attempt to reconnect,
+						but there is a chance the connection will recover itself if the reason of the disconnect was due to
+						switching voice channels. This is also the same code for the bot being kicked from the voice channel,
+						so we allow 5 seconds to figure out which scenario it is. If the bot has been kicked, we should destroy
+						the voice connection.
+					*/
+					try {
+						await entersState(
+							voiceConnection,
+							VoiceConnectionStatus.Connecting,
+							5_000,
+						)
+						// Probably moved voice channel
+					} catch {
+						voiceConnection.destroy()
+						// Probably removed from voice channel
+					}
+				} else if (voiceConnection.rejoinAttempts < 5) {
+					/*
+						The disconnect in this case is recoverable, and we also have <5 repeated attempts so we will reconnect.
+					*/
+					await wait((voiceConnection.rejoinAttempts + 1) * 5_000)
+					voiceConnection.rejoin()
+				} else {
+					/*
+						The disconnect in this case may be recoverable, but we have no more remaining attempts - destroy.
+					*/
+					voiceConnection.destroy()
+				}
+			} else if (newState.status === VoiceConnectionStatus.Destroyed) {
+				/*
+					Once destroyed, stop the subscription
+				*/
+			}
 		})
 
-		return conn
+		// Configure audio player
+		audioPlayer.on('stateChange', (oldState, newState) => {
+			if (
+				newState.status === AudioPlayerStatus.Idle &&
+				oldState.status !== AudioPlayerStatus.Idle
+			) {
+				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
+				// The queue is then processed to start playing the next track, if one is available.
+			} else if (newState.status === AudioPlayerStatus.Playing) {
+			}
+		})
+
+		voiceConnection.subscribe(audioPlayer)
 	}
 
-	static playFile(interaction: CommandInteraction, path: string) {
-		const conn = this.connectToChannel(interaction)
-		const resource = createAudioResource(path)
-		const player = createAudioPlayer()
-		player.play(resource)
-		conn.subscribe(player)
-        // conn.on('finish', () => {
-        //     player.stop()
-        //     conn.disconnect()
-        // })
-		// conn.on('error', () => {
-		// 	player.stop()
-        //     conn.disconnect()
-		// })
+	static async playFile(interaction: CommandInteraction, path: string) {
+		if (!interaction.guildId)
+			return
+
+		let voiceConn = getVoiceConnection(interaction.guildId)
+		if (!voiceConn) {
+			if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+				const channel = interaction.member.voice.channel
+				voiceConn = joinVoiceChannel({
+					channelId: channel.id,
+					guildId: channel.guild.id,
+					adapterCreator: channel.guild.voiceAdapterCreator,
+				})
+				voiceConn.on('error', console.warn)				
+			}
+			if (!voiceConn) {
+				await interaction.followUp('Join a channel and try again')
+				return
+			}
+			try {
+				await entersState(voiceConn, VoiceConnectionStatus.Ready, 10e3)
+				voiceConn.disconnect()
+				voiceConn.destroy()
+			} catch (e) {
+				console.warn(e)
+				await interaction.followUp('Failed to join channel in 10 seconds')
+				voiceConn.disconnect()
+				voiceConn.destroy()
+			}
+		} else {
+			voiceConn.destroy()
+		}
+		// if (!interaction.guildId)
+		// 	return
+		// let sub = this.subscriptions.get(interaction.guildId)
+		
+		// if (!sub) {
+		// 	if (
+		// 		interaction.member instanceof GuildMember &&
+		// 		interaction.member.voice.channel
+		// 	) {
+		// 		const channel = interaction.member.voice.channel
+		// 		sub = joinVoiceChannel({
+		// 			channelId: channel.id,
+		// 			guildId: channel.guild.id,
+		// 			adapterCreator: channel.guild.voiceAdapterCreator,
+		// 		})
+		// 		this.subscribeToChannel(sub)
+		// 		sub.on('error', console.warn)
+		// 		if (interaction.guildId)
+		// 			this.subscriptions.set(interaction.guildId, sub)
+		// 	}
+		// }
+
+		// if (!sub) {
+		// 	await interaction.followUp('Join a voice channel and try again')
+		// 	return
+		// }
+
+		// try {
+		// 	await entersState(sub, VoiceConnectionStatus.Ready, 20e3)
+		// } catch (e) {
+		// 	console.warn(e)
+		// 	await interaction.followUp('Failed to join the voice channel within 20 seconds. please try again later!')
+		// }
+
+		// try {
+		// 	const player = createAudioPlayer({
+		// 		behaviors: {
+		// 			noSubscriber: NoSubscriberBehavior.Play,
+		// 		}
+		// 	})
+		// 	setTimeout(() => player.stop())
+		// 	// play
+		// } catch (e) {
+		// 	console.warn(e)
+		// 	await interaction.reply('Failed to play track, please try again')
+		// }
 	}
 }

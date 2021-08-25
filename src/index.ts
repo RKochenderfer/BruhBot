@@ -48,6 +48,7 @@ client.on('interactionCreate', async interaction => {
 	// interaction.guild?.commands.delete(interaction.commandId)
 	// 	.then(console.log)
 	// 	.catch(console.error)
+	
 	const commandType = Command.commandMap(interaction.commandName)
 	if (commandType) {
 		const command = messageMap.getCommand(commandType)

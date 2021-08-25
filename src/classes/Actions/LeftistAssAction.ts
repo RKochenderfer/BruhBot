@@ -10,6 +10,7 @@ export class LeftistAssAction extends Action {
 		)
 	}
 	async execute(interaction: CommandInteraction) {
+		interaction.deferReply()
 		// TODO: UNABLE TO JOIN VOICE CHAT ERROR
 		const path = process.env.LEFTIST_ASS_PATH
 		if (!path) {
@@ -17,6 +18,10 @@ export class LeftistAssAction extends Action {
 				'Env variable LEFTIST_ASS_PATH undefined.',
 			)
 		}
-		Music.playFile(interaction, path)
+		try {
+			await Music.playFile(interaction, path)
+		} catch (e) {
+			// interaction.reply('There was an error playing the file')
+		}
 	}
 }
