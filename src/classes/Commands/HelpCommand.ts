@@ -1,8 +1,8 @@
 import { CommandInteraction, Message } from 'discord.js'
 import { CommandType } from '../../models/Command'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class HelpAction extends Action {
+export class HelpCommand extends Command {
 	// private _messageMap: Map<Command, any>;
 
 	constructor() {

@@ -1,11 +1,10 @@
 import { CommandInteraction } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class SocksAction extends Action {
+export class RollCommand extends Command {
 	constructor() {
-		super('Allows a user to interact with their server socks')
+		super('Rolls `count` dice of type `type` (ex: `!roll 2 d20`)')
 	}
-
 	async execute(interaction: CommandInteraction) {
 		interaction.reply({content: 'This has not been implemented it'})
 	}

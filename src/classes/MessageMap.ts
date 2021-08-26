@@ -1,42 +1,42 @@
 import { ApplicationCommandOptionData } from "discord.js";
 import { MessageMapError } from "../errors/MessageMapError";
 import { CommandType } from "../models/Command";
-import { Action } from "./Actions/Action";
-import { BruhAction } from "./Actions/BruhAction";
-import { BruhbotAction } from "./Actions/BruhbotAction";
-import { CorpseFoundAction } from "./Actions/CorpseFoundAction";
-import { HelpAction } from "./Actions/HelpAction";
-import { HugAction } from "./Actions/HugAction";
-import { InitiativeAction } from "./Actions/InitiativeAction";
-import { InsultAction } from "./Actions/InsultAction";
-import { KillAction } from "./Actions/KillAction";
-import { LeftistAssAction } from "./Actions/LeftistAssAction";
-import { PlayAction } from "./Actions/PlayAction";
-import { RollAction } from "./Actions/RollAction";
-import { SocksAction } from "./Actions/SocksAction";
-import { TeamBuilderAction } from "./Actions/TeamBuilderAction";
-import { YeAction } from "./Actions/YeAction";
-import { YeeAction } from "./Actions/YeeAction";
+import { Command } from "./Commands/Action";
+import { BruhCommand } from "./Commands/BruhCommand";
+import { BruhbotCommand } from "./Commands/BruhbotCommand";
+import { CorpseFoundCommand } from "./Commands/CorpseFoundCommand";
+import { HelpCommand } from "./Commands/HelpCommand";
+import { HugCommand } from "./Commands/HugCommand";
+import { InitiativeCommand } from "./Commands/InitiativeCommand";
+import { InsultCommand } from "./Commands/InsultCommand";
+import { KillCommand } from "./Commands/KillCommand";
+import { LeftistAssCommand } from "./Commands/LeftistAssCommand";
+import { PlayCommand } from "./Commands/PlayCommand";
+import { RollCommand } from "./Commands/RollCommand";
+import { SocksCommand } from "./Commands/SocksCommand";
+import { TeamBuilderCommand } from "./Commands/TeamBuilderCommand";
+import { YeCommand } from "./Commands/YeCommand";
+import { YeeCommand } from "./Commands/YeeCommand";
 
 export class MessageMap {
-	private static methodMap = new Map<CommandType, Action>([
-		[CommandType.BRUH, new BruhAction()],
-		[CommandType.CORPSE_FOUND, new CorpseFoundAction()],
-		[CommandType.YEE, new YeeAction()],
-		[CommandType.HUG, new HugAction()],
-		[CommandType.LEFTIST_ASS, new LeftistAssAction()],
-		[CommandType.BRUHBOT, new BruhbotAction()],
-		[CommandType.INSULT, new InsultAction()],
-		[CommandType.KILL, new KillAction()],
-		[CommandType.SOCKS, new SocksAction()],
-		[CommandType.PLAY, new PlayAction()],
-		[CommandType.YE, new YeAction()],
-		[CommandType.ROLL, new RollAction()],
-		[CommandType.INITIATIVE, new InitiativeAction()],
-		[CommandType.TEAM_BUILDER, new TeamBuilderAction()],
+	private static methodMap = new Map<CommandType, Command>([
+		[CommandType.BRUH, new BruhCommand()],
+		[CommandType.CORPSE_FOUND, new CorpseFoundCommand()],
+		[CommandType.YEE, new YeeCommand()],
+		[CommandType.HUG, new HugCommand()],
+		[CommandType.LEFTIST_ASS, new LeftistAssCommand()],
+		[CommandType.BRUHBOT, new BruhbotCommand()],
+		[CommandType.INSULT, new InsultCommand()],
+		[CommandType.KILL, new KillCommand()],
+		[CommandType.SOCKS, new SocksCommand()],
+		[CommandType.PLAY, new PlayCommand()],
+		[CommandType.YE, new YeCommand()],
+		[CommandType.ROLL, new RollCommand()],
+		[CommandType.INITIATIVE, new InitiativeCommand()],
+		[CommandType.TEAM_BUILDER, new TeamBuilderCommand()],
 	]);
 
-	getCommand(command: CommandType): Action {
+	getCommand(command: CommandType): Command {
 		const commandClass = MessageMap.methodMap.get(command)
 		if (!commandClass) {
 			throw new MessageMapError(`Command ${command} not found`)

@@ -1,7 +1,7 @@
 import { CommandInteraction, GuildMember, Message, UserFlags } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class CorpseFoundAction extends Action {
+export class CorpseFoundCommand extends Command {
 	constructor() {
 		super('Randomly chooses a user to be "sus"')
 	}

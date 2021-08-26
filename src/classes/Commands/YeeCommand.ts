@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class YeeAction extends Action {
+export class YeeCommand extends Command {
 	constructor() {
 		super('Replies to a user with a random length and capitalized "yee"')
 	}
@@ -34,6 +34,6 @@ export class YeeAction extends Action {
 			yee += 'e'
 		}
 		
-		interaction.reply({content: `${YeeAction.randomCapitalize(yee)}`})
+		interaction.reply({content: `${YeeCommand.randomCapitalize(yee)}`})
 	}
 }

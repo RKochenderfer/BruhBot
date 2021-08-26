@@ -1,7 +1,7 @@
 import { CommandInteraction, Interaction } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class BruhAction extends Action {
+export class BruhCommand extends Command {
 	private static threaten = 10
 	private static threatenReply =
 		"I'M GOING TO KILL YOU LATER TONIGHT. WATCH YOUR BACK HUMAN."
@@ -12,10 +12,10 @@ export class BruhAction extends Action {
 
 	async execute(interaction: CommandInteraction) {
 		const val = Math.random() * 100
-		if (val > BruhAction.threaten) {
+		if (val > BruhCommand.threaten) {
 			await interaction.reply('bruh')
 		} else {
-			await interaction.reply(BruhAction.threatenReply)
+			await interaction.reply(BruhCommand.threatenReply)
 		}
 	}
 }

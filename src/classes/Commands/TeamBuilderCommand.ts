@@ -1,7 +1,7 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class TeamBuilderAction extends Action {
+export class TeamBuilderCommand extends Command {
 	constructor() {
 		super('Builds teams')
 	}

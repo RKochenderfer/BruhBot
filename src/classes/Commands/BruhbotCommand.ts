@@ -5,10 +5,10 @@ import {
 	VoiceChannel,
 } from 'discord.js'
 import { getVoiceConnection } from '@discordjs/voice'
-import { Action } from './Action'
+import { Command } from './Action'
 import { BruhbotActionError } from '../../errors/BrubotActionError'
 
-export class BruhbotAction extends Action {
+export class BruhbotCommand extends Command {
 	constructor() {
 		const description = 'Issues a command directly to bruhbot'
 		const options: ApplicationCommandOptionData[] = [

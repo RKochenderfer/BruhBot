@@ -1,11 +1,10 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class DiceRollerAction extends Action {
+export class YeCommand extends Command {
 	constructor() {
-		super('')
+		super('Gets a random Kanye West quote')
 	}
-
 	async execute(interaction: CommandInteraction) {
 		interaction.reply({content: 'This has not been implemented it'})
 	}

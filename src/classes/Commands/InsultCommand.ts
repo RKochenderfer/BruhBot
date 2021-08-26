@@ -1,7 +1,7 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class InsultAction extends Action {
+export class InsultCommand extends Command {
 	constructor() {
 		super('Insults a mentioned user')
 	}

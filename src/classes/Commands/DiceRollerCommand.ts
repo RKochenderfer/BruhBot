@@ -1,9 +1,9 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class RoundTrackerAction extends Action {
+export class DiceRollerCommand extends Command {
 	constructor() {
-		super('Tracks the rounds a player is on')
+		super('')
 	}
 
 	async execute(interaction: CommandInteraction) {

@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class KillAction extends Action {
+export class KillCommand extends Command {
 	constructor() {
 		super('Kills the user who sent the message or kills a mentioned user')
 	}

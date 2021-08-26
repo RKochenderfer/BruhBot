@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class InitiativeAction extends Action {
+export class InitiativeCommand extends Command {
 	constructor() {
 		super('Handles initiative for a roll playing game')
 	}

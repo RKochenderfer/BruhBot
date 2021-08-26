@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionData, CommandInteraction, Interaction } from 'discord.js'
 
-export abstract class Action {
+export abstract class Command {
 	_description: string
 	_options?: ApplicationCommandOptionData[]
 

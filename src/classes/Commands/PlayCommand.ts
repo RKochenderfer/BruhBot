@@ -1,7 +1,7 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Action } from './Action'
+import { Command } from './Action'
 
-export class PlayAction extends Action {
+export class PlayCommand extends Command {
 	constructor() {
 		super('Plays a youtube video from the given link')
 	}
