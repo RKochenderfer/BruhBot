@@ -1,5 +1,6 @@
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction, Interaction } from 'discord.js'
-import { Command } from './Action'
+import { Command } from './Command'
 
 export class BruhCommand extends Command {
 	private static threaten = 10
@@ -7,7 +8,13 @@ export class BruhCommand extends Command {
 		"I'M GOING TO KILL YOU LATER TONIGHT. WATCH YOUR BACK HUMAN."
 
 	constructor() {
-		super('Replies to sender with bruh')
+		super('bruh', 'Replies to sender with bruh')
+	}
+
+	buildCommand(): SlashCommandBuilder {
+		return new SlashCommandBuilder()
+			.setName(this._name)
+			.setDescription(this._description)
 	}
 
 	async execute(interaction: CommandInteraction) {

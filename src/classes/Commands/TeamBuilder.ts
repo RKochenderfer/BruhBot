@@ -1,9 +1,9 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Command } from './Action'
+import { Command } from './Command'
 
 export class TeamBuilder extends Command {
 	constructor() {
-		super('Builds teams for a game')
+		super('team_builder', 'Builds teams for a game')
 	}
 
 	async execute(interaction: CommandInteraction) {

@@ -1,4 +1,5 @@
 import { ApplicationCommandData } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 import { MessageMap } from '../classes/MessageMap'
 import { CommandData } from './CommandData'
 
@@ -59,18 +60,28 @@ export class Command {
         return this.commandMap(command)
     }
 
-	static buildCommandDataMap(): ApplicationCommandData[] {
-		let data: ApplicationCommandData[] = []
+	static buildCommandDataMap(): any {
+		const commands = []
+		
 		for (const val in CommandType) {
-            const lowercaseVal = val.toLowerCase()
-			const toAdd: ApplicationCommandData = {
-				name: lowercaseVal,
-				description: MessageMap.getDescription(Command.commandMap(lowercaseVal)!),
-				options: MessageMap.getOptions(Command.commandMap(lowercaseVal)!)
-			}
-			data.push(toAdd)
+			const lowercaseVal = val.toLowerCase()
+			const builder = MessageMap.getSlashCommandBuilders(Command.commandMap(lowercaseVal)!)
+			
+			commands.push(builder.toJSON())
 		}
 
-		return data
+		return commands
+		// let data: ApplicationCommandData[] = []
+		// for (const val in CommandType) {
+        //     const lowercaseVal = val.toLowerCase()
+		// 	const toAdd: ApplicationCommandData = {
+		// 		name: lowercaseVal,
+		// 		description: MessageMap.getDescription(Command.commandMap(lowercaseVal)!),
+		// 		options: MessageMap.getOptions(Command.commandMap(lowercaseVal)!)
+		// 	}
+		// 	data.push(toAdd)
+		// }
+
+		// return data
 	}
 }

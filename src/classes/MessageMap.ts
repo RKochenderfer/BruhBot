@@ -1,11 +1,11 @@
 import { ApplicationCommandOptionData } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
 import { MessageMapError } from "../errors/MessageMapError";
 import { CommandType } from "../models/Command";
-import { Command } from "./Commands/Action";
+import { Command } from "./Commands/Command";
 import { BruhCommand } from "./Commands/BruhCommand";
 import { BruhbotCommand } from "./Commands/BruhbotCommand";
 import { CorpseFoundCommand } from "./Commands/CorpseFoundCommand";
-import { HelpCommand } from "./Commands/HelpCommand";
 import { HugCommand } from "./Commands/HugCommand";
 import { InitiativeCommand } from "./Commands/InitiativeCommand";
 import { InsultCommand } from "./Commands/InsultCommand";
@@ -45,21 +45,13 @@ export class MessageMap {
         return commandClass
 	}
 
-	static getDescription(command: CommandType): string {
-		const action = MessageMap.methodMap.get(command)
-		if (!action) {
-			throw new MessageMapError(`Attempt to get description of unknown command ${command}`)
+	static getSlashCommandBuilders(commandType: CommandType): SlashCommandBuilder {
+		const command = MessageMap.methodMap.get(commandType)
+
+		if (!command) {
+			throw new MessageMapError(`Attempt to get description of unknown command ${commandType}`)
 		}
 
-		return action.description
-	}
-
-	static getOptions(command: CommandType): ApplicationCommandOptionData[] | undefined {
-		const action = MessageMap.methodMap.get(command)
-		if (!action) {
-			throw new MessageMapError(`Attempt to get description of unknown command ${command}`)
-		}
-
-		return action.options
+		return command.buildCommand()
 	}
 }

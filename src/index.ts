@@ -5,6 +5,8 @@ import {
 	ApplicationCommandManager,
 	GuildStickerManager,
 } from 'discord.js'
+import { REST } from '@discordjs/rest'
+import { Routes } from 'discord-api-types/v9'
 import { MessageMap } from './classes/MessageMap'
 import { Command } from './models/Command'
 import { MessageChecker } from './classes/MessageChecker'
@@ -33,10 +35,20 @@ client.on('messageCreate', async message => {
 	if (message.author.bot) {
 		return
 	} else if (message.content.toLowerCase() === '!deploy') {
-		const data = Command.buildCommandDataMap()
-		const command = await client.guilds.cache
-			.get(message.guildId!)
-			?.commands.set(data)
+		const commands = Command.buildCommandDataMap()
+
+		const rest = new REST({version: '9'}).setToken(process.env.TOKEN!)
+
+		await rest.put(
+			Routes.applicationGuildCommands(
+				'758113760761479189',
+				message.guildId!,
+			),
+			{ body: commands },
+		)
+		// const command = await client.guilds.cache
+		// 	.get(message.guildId!)
+		// 	?.commands.set(data)
 	} else {
 		await MessageChecker.CheckMessage(message)
 	}
@@ -48,7 +60,7 @@ client.on('interactionCreate', async interaction => {
 	// interaction.guild?.commands.delete(interaction.commandId)
 	// 	.then(console.log)
 	// 	.catch(console.error)
-	
+
 	const commandType = Command.commandMap(interaction.commandName)
 	if (commandType) {
 		const command = messageMap.getCommand(commandType)

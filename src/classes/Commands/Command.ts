@@ -1,20 +1,20 @@
 import { ApplicationCommandOptionData, CommandInteraction, Interaction } from 'discord.js'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 export abstract class Command {
+	_name: string
 	_description: string
 	_options?: ApplicationCommandOptionData[]
 
-	constructor(description: string, options?: ApplicationCommandOptionData[]) {
+	constructor(name: string, description: string) {
+		this._name = name
 		this._description = description
-		this._options = options
 	}
 
-	get description(): string {
-		return this._description
-	}
-
-	get options(): ApplicationCommandOptionData[] | undefined {
-		return this._options
+	buildCommand(): SlashCommandBuilder {
+		return new SlashCommandBuilder()
+			.setName(this._name)
+			.setDescription(this._description)
 	}
 
 	abstract execute(interaction: CommandInteraction): Promise<void>

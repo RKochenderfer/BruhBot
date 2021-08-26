@@ -1,9 +1,9 @@
 import { CommandInteraction, Message } from 'discord.js'
-import { Command } from './Action'
+import { Command } from './Command'
 
 export class DiceRollerCommand extends Command {
 	constructor() {
-		super('')
+		super('dice_roller', 'rolls the specified die and the number to be rolled')
 	}
 
 	async execute(interaction: CommandInteraction) {

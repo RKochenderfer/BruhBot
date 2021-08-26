@@ -1,5 +1,6 @@
 import { ApplicationCommandOptionData, CommandInteraction, Message } from 'discord.js'
-import { Command } from './Action'
+import { SlashCommandBuilder } from '@discordjs/builders'
+import { Command } from './Command'
 
 export class HugCommand extends Command {
 	private static refuseHug = 10
@@ -7,14 +8,20 @@ export class HugCommand extends Command {
 
 	constructor() {
 		const description = 'Sends a hug to a mentioned user'
-		const options: ApplicationCommandOptionData[] = [{
-			name: HugCommand.optionName,
-			type: 'MENTIONABLE',
-			description: 'The mentioned user to hug',
-			required: true
-		}]
 
-		super(description, options)
+		super('hug', description)
+	}
+
+	buildCommand(): SlashCommandBuilder {
+		let builder = super.buildCommand()
+
+		builder.addMentionableOption(option =>
+			option.setName('hug')
+				.setDescription('The mentioned user to hug')
+				.setRequired(true)
+			)
+
+		return builder
 	}
 
 	async execute(interaction: CommandInteraction) {

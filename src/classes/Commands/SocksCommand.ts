@@ -1,9 +1,9 @@
 import { CommandInteraction } from 'discord.js'
-import { Command } from './Action'
+import { Command } from './Command'
 
 export class SocksCommand extends Command {
 	constructor() {
-		super('Allows a user to interact with their server socks')
+		super('socks', 'Allows a user to interact with their server socks')
 	}
 
 	async execute(interaction: CommandInteraction) {

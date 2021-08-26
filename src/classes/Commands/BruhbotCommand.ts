@@ -5,29 +5,30 @@ import {
 	VoiceChannel,
 } from 'discord.js'
 import { getVoiceConnection } from '@discordjs/voice'
-import { Command } from './Action'
+import { Command } from './Command'
 import { BruhbotActionError } from '../../errors/BrubotActionError'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 export class BruhbotCommand extends Command {
 	constructor() {
+		const name = 'bruhbot'
 		const description = 'Issues a command directly to bruhbot'
-		const options: ApplicationCommandOptionData[] = [
-			{
-				name: 'method',
-				type: 'SUB_COMMAND_GROUP',
-				description: 'Use a BruhBot method',
-				required: true,
-				options: [
-					{
-						name: 'stfu',
-						type: 'SUB_COMMAND',
-						description:
-							'Forcibly disconnects bruhbot from the voice channel.',
-					},
-				],
-			},
-		]
-		super(description, options)
+
+		super(name, description)
+	}
+
+	buildCommand(): SlashCommandBuilder {
+		let builder = super.buildCommand()
+
+		builder.addSubcommand(option =>
+			option
+				.setName('stfu')
+				.setDescription(
+					'Forcibly disconnects bruhbot from the voice channel.',
+				),
+		)
+
+		return builder
 	}
 
 	stfuAction(interaction: CommandInteraction) {

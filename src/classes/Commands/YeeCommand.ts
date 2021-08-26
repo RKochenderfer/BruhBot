@@ -1,9 +1,9 @@
 import { CommandInteraction } from 'discord.js'
-import { Command } from './Action'
+import { Command } from './Command'
 
 export class YeeCommand extends Command {
 	constructor() {
-		super('Replies to a user with a random length and capitalized "yee"')
+		super('yee', 'Replies to a user with a random length and capitalized "yee"')
 	}
 
 	private static randomCapitalize(str: string) {

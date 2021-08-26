@@ -1,9 +1,10 @@
 import { CommandInteraction, GuildMember, Message, UserFlags } from 'discord.js'
-import { Command } from './Action'
+import { Command } from './Command'
+import { SlashCommandBuilder } from '@discordjs/builders'
 
 export class CorpseFoundCommand extends Command {
 	constructor() {
-		super('Randomly chooses a user to be "sus"')
+		super('corpse_found', 'Randomly chooses a user to be "sus"')
 	}
 
 	async execute(interaction: CommandInteraction) {
