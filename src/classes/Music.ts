@@ -1,9 +1,7 @@
 import { CommandInteraction, GuildMember, Message, Snowflake } from 'discord.js'
 import {
-	AudioPlayer,
 	joinVoiceChannel,
 	createAudioPlayer,
-	StreamType,
 	demuxProbe,
 	createAudioResource,
 	VoiceConnection,
@@ -136,51 +134,5 @@ export class Music {
 		} else {
 			voiceConn.destroy()
 		}
-		// if (!interaction.guildId)
-		// 	return
-		// let sub = this.subscriptions.get(interaction.guildId)
-		
-		// if (!sub) {
-		// 	if (
-		// 		interaction.member instanceof GuildMember &&
-		// 		interaction.member.voice.channel
-		// 	) {
-		// 		const channel = interaction.member.voice.channel
-		// 		sub = joinVoiceChannel({
-		// 			channelId: channel.id,
-		// 			guildId: channel.guild.id,
-		// 			adapterCreator: channel.guild.voiceAdapterCreator,
-		// 		})
-		// 		this.subscribeToChannel(sub)
-		// 		sub.on('error', console.warn)
-		// 		if (interaction.guildId)
-		// 			this.subscriptions.set(interaction.guildId, sub)
-		// 	}
-		// }
-
-		// if (!sub) {
-		// 	await interaction.followUp('Join a voice channel and try again')
-		// 	return
-		// }
-
-		// try {
-		// 	await entersState(sub, VoiceConnectionStatus.Ready, 20e3)
-		// } catch (e) {
-		// 	console.warn(e)
-		// 	await interaction.followUp('Failed to join the voice channel within 20 seconds. please try again later!')
-		// }
-
-		// try {
-		// 	const player = createAudioPlayer({
-		// 		behaviors: {
-		// 			noSubscriber: NoSubscriberBehavior.Play,
-		// 		}
-		// 	})
-		// 	setTimeout(() => player.stop())
-		// 	// play
-		// } catch (e) {
-		// 	console.warn(e)
-		// 	await interaction.reply('Failed to play track, please try again')
-		// }
 	}
 }

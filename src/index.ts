@@ -2,8 +2,6 @@ import 'dotenv/config'
 import {
 	Client,
 	Intents,
-	ApplicationCommandManager,
-	GuildStickerManager,
 } from 'discord.js'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
@@ -46,9 +44,6 @@ client.on('messageCreate', async message => {
 			),
 			{ body: commands },
 		)
-		// const command = await client.guilds.cache
-		// 	.get(message.guildId!)
-		// 	?.commands.set(data)
 	} else {
 		await MessageChecker.CheckMessage(message)
 	}
