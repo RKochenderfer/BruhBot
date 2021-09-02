@@ -15,7 +15,7 @@ const messageMap = new MessageMap()
 const messageChecker = new MessageChecker()
 
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
 })
 
 // Add listeners

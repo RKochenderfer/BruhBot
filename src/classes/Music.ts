@@ -3,6 +3,8 @@ import {
 	AudioPlayer,
 	joinVoiceChannel,
 	createAudioPlayer,
+	StreamType,
+	demuxProbe,
 	createAudioResource,
 	VoiceConnection,
 	VoiceConnectionStatus,
@@ -17,10 +19,17 @@ import { MusicError } from '../errors/MusicError'
 
 import { promisify } from 'util'
 
+import {createReadStream, ReadStream} from 'fs'
+
 const wait = promisify(setTimeout)
 
 export class Music {
 	static subscriptions = new Map<string, VoiceConnection>()
+
+	static async probeAndCreateResource(readableStream: ReadStream) {
+		const { stream, type } = await demuxProbe(readableStream);
+		return createAudioResource(stream, { inputType: type });
+	}
 
 	static subscribeToChannel(voiceConnection: VoiceConnection) {
 		const audioPlayer = createAudioPlayer()
@@ -94,9 +103,9 @@ export class Music {
 				voiceConn = joinVoiceChannel({
 					channelId: channel.id,
 					guildId: channel.guild.id,
-					adapterCreator: channel.guild.voiceAdapterCreator,
+					adapterCreator: channel.guild.voiceAdapterCreator as DiscordGatewayAdapterCreator,
 				})
-				voiceConn.on('error', console.warn)				
+				voiceConn.on('error', console.warn)	
 			}
 			if (!voiceConn) {
 				await interaction.followUp('Join a channel and try again')
@@ -104,7 +113,19 @@ export class Music {
 			}
 			try {
 				await entersState(voiceConn, VoiceConnectionStatus.Ready, 10e3)
-				voiceConn.disconnect()
+				const player = createAudioPlayer()
+				if (!process.env.LEFTIST_ASS_PATH) {
+					throw new MusicError('Leftist Ass path undefined')
+				}
+				const resource = await this.probeAndCreateResource(createReadStream(process.env.LEFTIST_ASS_PATH))
+				player.play(resource)
+				player.on('error', error => {
+					console.error(`Error: ${error}`)
+				})
+				voiceConn.subscribe(player)
+				
+				await interaction.followUp('Playing!')
+				await entersState(player, AudioPlayerStatus.Idle, 10e3)
 				voiceConn.destroy()
 			} catch (e) {
 				console.warn(e)
