@@ -49,6 +49,5 @@ export class RollCommand extends Command {
 		}
 
 		interaction.reply({content: `You rolled: ${values}`})
-		// interaction.reply({content: 'This has not been implemented it'})
 	}
 }
