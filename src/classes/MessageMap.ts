@@ -12,11 +12,11 @@ import { InsultCommand } from "./Commands/InsultCommand";
 import { KillCommand } from "./Commands/KillCommand";
 import { LeftistAssCommand } from "./Commands/LeftistAssCommand";
 import { PlayCommand } from "./Commands/PlayCommand";
-import { RollCommand } from "./Commands/RollCommand";
 import { SocksCommand } from "./Commands/SocksCommand";
 import { TeamBuilderCommand } from "./Commands/TeamBuilderCommand";
 import { YeCommand } from "./Commands/YeCommand";
 import { YeeCommand } from "./Commands/YeeCommand";
+import { RollCommand } from "./Commands/DiceRollerCommand";
 
 export class MessageMap {
 	private static methodMap = new Map<CommandType, Command>([
