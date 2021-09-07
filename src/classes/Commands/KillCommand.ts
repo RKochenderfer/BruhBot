@@ -5,7 +5,6 @@ import { join } from 'path'
 import * as fs from 'fs'
 import { FileHandler } from '../FileHandler'
 import { HugCommand } from './HugCommand'
-import { KillMessage } from '../../models/KillMessage'
 
 export class KillCommand extends Command {
 	private static optionName = 'target'
@@ -43,7 +42,7 @@ export class KillCommand extends Command {
 				KillCommand.optionName,
 			)
 
-			if (target) {
+			if (target && target.valueOf() !== interaction.user.id) {
 				const index = Math.floor(
 					Math.random() * json['killed-by'].length,
 				)
