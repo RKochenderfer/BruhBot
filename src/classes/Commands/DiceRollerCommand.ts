@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { CommandInteraction, Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
 
 export class RollCommand extends Command {
@@ -14,32 +14,36 @@ export class RollCommand extends Command {
 
 		builder
 			.addIntegerOption(option =>
-			option
-				.setName(RollCommand.dieCountName)
-				.setDescription('The number of dice to be rolled')
-				.setRequired(true)
+				option
+					.setName(RollCommand.dieCountName)
+					.setDescription('The number of dice to be rolled')
+					.setRequired(true),
 			)
 			.addIntegerOption(option =>
 				option
-					.setName(RollCommand.diceTypeName)	
+					.setName(RollCommand.diceTypeName)
 					.setDescription('The number of face on the die')
-					.setRequired(true)
+					.setRequired(true),
 			)
 
 		return builder
 	}
 
 	private getRandomInt(type: number) {
-		return Math.floor(Math.random() * (type)) + 1
+		return Math.floor(Math.random() * type) + 1
 	}
 
 	async execute(interaction: CommandInteraction) {
-		const dieCount = interaction.options.getInteger(RollCommand.dieCountName)
+		const dieCount = interaction.options.getInteger(
+			RollCommand.dieCountName,
+		)
 		const dieType = interaction.options.getInteger(RollCommand.diceTypeName)
 
 		if (!dieCount || !dieType) {
-			interaction.reply({content: 'Uh oh, something went wrong!'})
-			console.error(`Error: die count: ${dieCount} | die type: ${dieType}`)
+			interaction.reply({ content: 'Uh oh, something went wrong!' })
+			console.error(
+				`Error: die count: ${dieCount} | die type: ${dieType}`,
+			)
 			return
 		}
 
@@ -48,6 +52,6 @@ export class RollCommand extends Command {
 			values.push(this.getRandomInt(dieType))
 		}
 
-		interaction.reply({content: `You rolled: ${values}`})
+		interaction.reply({ content: `You rolled: ${values}` })
 	}
 }

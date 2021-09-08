@@ -5,7 +5,10 @@ import { FileHandler } from './FileHandler'
 import { join } from 'path'
 
 export class CumCounter {
-	private static cumCounterFilePath = join(__dirname, '../../cum-counter.json')
+	private static cumCounterFilePath = join(
+		__dirname,
+		'../../cum-counter.json',
+	)
 
 	private static async pathExists(path: string) {
 		try {
@@ -21,7 +24,7 @@ export class CumCounter {
 		if (msg.guild?.id) {
 			// @ts-ignore
 			json[msg.guild?.id] = new Date()
-            await fh.writeFile(json)
+			await fh.writeFile(json)
 
 			await this.writeMessage(msg, `CUM DETECTED. FIRST INSTANCE LOGGED.`)
 		}

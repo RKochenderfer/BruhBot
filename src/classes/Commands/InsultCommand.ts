@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { CommandInteraction, Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
 
 const fetch = require('node-fetch')
@@ -36,13 +36,14 @@ export class InsultCommand extends Command {
 		interaction.reply({ content: 'Bro, are you ok?' })
 	}
 
-	private async insultTarget(interaction: CommandInteraction, target: string) {
+	private async insultTarget(
+		interaction: CommandInteraction,
+		target: string,
+	) {
 		try {
 			const val = Math.random() * 100
 			if (val > InsultCommand.niceComment) {
-				const res = await fetch(
-					'https://insult.mattbas.org/api/insult',
-				)
+				const res = await fetch('https://insult.mattbas.org/api/insult')
 				interaction.reply({
 					content: `${target} ${await res.text()}`,
 				})
@@ -66,8 +67,14 @@ export class InsultCommand extends Command {
 			this.noTarget(interaction)
 		} else if (target.valueOf() === interaction.user.valueOf()) {
 			this.selfTarget(interaction)
-		} else if ((await interaction.guild?.members.fetch(target?.valueOf() as string))?.user.bot) {
-			interaction.reply({content: 'No.'})
+		} else if (
+			(
+				await interaction.guild?.members.fetch(
+					target?.valueOf() as string,
+				)
+			)?.user.bot
+		) {
+			interaction.reply({ content: 'No.' })
 		} else {
 			await this.insultTarget(interaction, target.valueOf() as string)
 		}

@@ -1,4 +1,4 @@
-import { CommandInteraction, Message } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Music } from '../Music'
 import { Command } from './Command'
 import { LeftistAssActionError } from '../../errors/LeftistAssActionError'

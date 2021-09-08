@@ -6,6 +6,6 @@ export class InitiativeCommand extends Command {
 		super('initiative', 'Handles initiative for a roll playing game')
 	}
 	async execute(interaction: CommandInteraction) {
-		interaction.reply({content: 'This has not been implemented it'})
+		interaction.reply({ content: 'This has not been implemented it' })
 	}
 }

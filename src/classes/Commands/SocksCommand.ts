@@ -57,10 +57,12 @@ export class SocksCommand extends Command {
 
 	private getServerStatus(interaction: CommandInteraction, json: any) {
 		if (!json['no-socks']) {
-			interaction.followUp({content: 'Everyone is wearing socks :(.'})
+			interaction.followUp({ content: 'Everyone is wearing socks :(.' })
 			return
 		}
-		const users = json['no-socks'].map((ns: string) => interaction.guild?.members.cache.get(ns))
+		const users = json['no-socks'].map((ns: string) =>
+			interaction.guild?.members.cache.get(ns),
+		)
 
 		let str = ''
 		if (users.length > 1) {
@@ -80,7 +82,7 @@ export class SocksCommand extends Command {
 			str = 'Everyone is wearing socks :(.'
 		}
 
-		interaction.followUp({content: str})
+		interaction.followUp({ content: str })
 	}
 
 	private getServer(interaction: CommandInteraction, json: any): any {

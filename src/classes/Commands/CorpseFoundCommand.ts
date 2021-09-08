@@ -1,6 +1,5 @@
-import { CommandInteraction, GuildMember, Message, UserFlags } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
-import { SlashCommandBuilder } from '@discordjs/builders'
 
 export class CorpseFoundCommand extends Command {
 	constructor() {

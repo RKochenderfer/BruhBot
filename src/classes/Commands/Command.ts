@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionData, CommandInteraction, Interaction } from 'discord.js'
+import { ApplicationCommandOptionData, CommandInteraction } from 'discord.js'
 import { SlashCommandBuilder } from '@discordjs/builders'
 
 export abstract class Command {

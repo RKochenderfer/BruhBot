@@ -2,9 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
 import { join } from 'path'
-import * as fs from 'fs'
 import { FileHandler } from '../FileHandler'
-import { HugCommand } from './HugCommand'
 
 export class KillCommand extends Command {
 	private static optionName = 'target'

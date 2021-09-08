@@ -3,7 +3,10 @@ import { Command } from './Command'
 
 export class YeeCommand extends Command {
 	constructor() {
-		super('yee', 'Replies to a user with a random length and capitalized "yee"')
+		super(
+			'yee',
+			'Replies to a user with a random length and capitalized "yee"',
+		)
 	}
 
 	private static randomCapitalize(str: string) {
@@ -33,7 +36,7 @@ export class YeeCommand extends Command {
 		for (let i = 0; i < numEs; i++) {
 			yee += 'e'
 		}
-		
-		interaction.reply({content: `${YeeCommand.randomCapitalize(yee)}`})
+
+		interaction.reply({ content: `${YeeCommand.randomCapitalize(yee)}` })
 	}
 }

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
-import { CommandInteraction, Interaction } from 'discord.js'
+import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
 
 export class BruhCommand extends Command {

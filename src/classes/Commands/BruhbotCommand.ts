@@ -1,9 +1,4 @@
-import {
-	ApplicationCommandOptionData,
-	CommandInteraction,
-	GuildMember,
-	VoiceChannel,
-} from 'discord.js'
+import { CommandInteraction, GuildMember, VoiceChannel } from 'discord.js'
 import { getVoiceConnection } from '@discordjs/voice'
 import { Command } from './Command'
 import { BruhbotActionError } from '../../errors/BrubotActionError'
