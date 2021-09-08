@@ -1,8 +1,5 @@
 import 'dotenv/config'
-import {
-	Client,
-	Intents,
-} from 'discord.js'
+import { Client, Intents } from 'discord.js'
 import { REST } from '@discordjs/rest'
 import { Routes } from 'discord-api-types/v9'
 import { MessageMap } from './classes/MessageMap'
@@ -10,10 +7,13 @@ import { Command } from './models/Command'
 import { MessageChecker } from './classes/MessageChecker'
 
 const messageMap = new MessageMap()
-const messageChecker = new MessageChecker()
 
 const client = new Client({
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES],
+	intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_VOICE_STATES,
+	],
 })
 
 // Add listeners
@@ -35,7 +35,7 @@ client.on('messageCreate', async message => {
 	} else if (message.content.toLowerCase() === '!deploy') {
 		const commands = Command.buildCommandDataMap()
 
-		const rest = new REST({version: '9'}).setToken(process.env.TOKEN!)
+		const rest = new REST({ version: '9' }).setToken(process.env.TOKEN!)
 
 		await rest.put(
 			Routes.applicationGuildCommands(
