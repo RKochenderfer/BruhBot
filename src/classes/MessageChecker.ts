@@ -1,5 +1,6 @@
 import { Message } from 'discord.js'
 import { CumCounter } from './CumCounter'
+import { Gonk } from './Gonk'
 
 export class MessageChecker {
 	private static flagged_expressions = [
@@ -7,6 +8,10 @@ export class MessageChecker {
 			regex: /cum/im,
 			func: async (msg: Message) => await CumCounter.Counter(msg),
 		},
+		{
+			regex: /gonk/im,
+			func: async (msg: Message) => await Gonk.sendMessage(msg)
+		}
 	]
 
 	static async CheckMessage(msg: Message) {
@@ -14,7 +19,9 @@ export class MessageChecker {
 			const tar = MessageChecker.flagged_expressions[i]
 			const regex = tar.regex
 
-			if (regex.test(msg.content)) await tar.func(msg)
+			try {
+				if (regex.test(msg.content)) await tar.func(msg)
+			} catch {}
 		}
 	}
 }

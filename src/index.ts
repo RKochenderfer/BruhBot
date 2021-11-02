@@ -7,12 +7,14 @@ import { Command } from './models/Command'
 import { MessageChecker } from './classes/MessageChecker'
 
 const messageMap = new MessageMap()
+let init = false
+let allow = false
 
 const client = new Client({
 	intents: [
 		Intents.FLAGS.GUILDS,
 		Intents.FLAGS.GUILD_MESSAGES,
-		Intents.FLAGS.GUILD_VOICE_STATES,
+		Intents.FLAGS.GUILD_VOICE_STATES
 	],
 })
 
@@ -30,9 +32,9 @@ client.on('guildMemberAdd', member => {
 })
 
 client.on('messageCreate', async message => {
-	if (message.author.bot) {
-		return
-	} else if (message.content.toLowerCase() === '!deploy') {
+	const content = message.content.toLowerCase()
+	if (message.author.bot) return 
+	if (content === '!deploy') {
 		const commands = Command.buildCommandDataMap()
 
 		const rest = new REST({ version: '9' }).setToken(process.env.TOKEN!)
@@ -63,14 +65,14 @@ client.on('interactionCreate', async interaction => {
 	}
 })
 
+client.on('error', error => {
+	console.error('A')
+	console.error(error)
+})
+
 client.login(process.env.TOKEN!).then(async () => {
 	// Update commands when launching
 	// const data = Command.buildCommandDataMap()
 	// const commands = await client.guilds.cache.get('123456789012345678')?.commands.
 	// await client.application?.commands.set(data)
-})
-
-client.on('error', error => {
-	console.error('A')
-	console.error(error)
 })
