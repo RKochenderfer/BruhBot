@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
 import { Attornies } from './Court/Attornies'
+import { Basics } from './Court/Basics'
 import { Court } from './Court/Court'
 import { Deduct } from './Court/Deduct'
 import { Grant } from './Court/Grant'
@@ -9,10 +10,6 @@ import { Trial } from './Court/Trial'
 import { Vote } from './Court/Vote'
 
 export class CourtCommand extends Command {
-	constructor() {
-		super('court', 'handles court proceedings')
-	}
-
 	private readonly voteName = 'vote'
 
 	private readonly voteStartName = 'start'
@@ -45,13 +42,20 @@ export class CourtCommand extends Command {
 
 	private readonly setDefendentName = 'defendent'
 
+    private readonly basicsName = 'basics'
+
 	private readonly commandMap = new Map<string, Court>([
 		[this.voteName, new Vote()],
-        [this.trialName, new Trial()],
-        [this.grantName, new Grant()],
-        [this.deductName, new Deduct()],
-        [this.setAttorneysName, new Attornies()]
+		[this.trialName, new Trial()],
+		[this.grantName, new Grant()],
+		[this.deductName, new Deduct()],
+		[this.setAttorneysName, new Attornies()],
+        [this.basicsName, new Basics()]
 	])
+
+    constructor() {
+		super('court', 'handles court proceedings')
+	}
 
 	buildCommand(): SlashCommandBuilder {
 		let builder = super.buildCommand()
@@ -150,6 +154,12 @@ export class CourtCommand extends Command {
 				),
 		)
 
+        builder.addSubcommand(option =>
+            option
+                .setName(this.basicsName)
+                .setDescription('Replies with the basics of hog court')
+        )
+
 		return builder
 	}
 
@@ -158,7 +168,7 @@ export class CourtCommand extends Command {
 			? interaction.options.getSubcommandGroup.name
 			: interaction.options.getSubcommand.name
 
-        const action = this.commandMap.get(command)
-        action?.performAction(interaction)
+		const action = this.commandMap.get(command)
+		action?.performAction(interaction)
 	}
 }
