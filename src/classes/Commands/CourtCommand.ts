@@ -1,7 +1,11 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
+import { Attornies } from './Court/Attornies'
 import { Court } from './Court/Court'
+import { Deduct } from './Court/Deduct'
+import { Grant } from './Court/Grant'
+import { Trial } from './Court/Trial'
 import { Vote } from './Court/Vote'
 
 export class CourtCommand extends Command {
@@ -43,6 +47,10 @@ export class CourtCommand extends Command {
 
 	private readonly commandMap = new Map<string, Court>([
 		[this.voteName, new Vote()],
+        [this.trialName, new Trial()],
+        [this.grantName, new Grant()],
+        [this.deductName, new Deduct()],
+        [this.setAttorneysName, new Attornies()]
 	])
 
 	buildCommand(): SlashCommandBuilder {
