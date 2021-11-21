@@ -3,6 +3,7 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { MessageMap } from '../classes/MessageMap'
 import { CommandData } from './CommandData'
 
+
 export enum CommandType {
 	BRUH = 'bruh',
 	CORPSE_FOUND = 'corpse_found',
@@ -18,6 +19,7 @@ export enum CommandType {
 	ROLL = 'roll',
 	INITIATIVE = 'initiative',
 	TEAM_BUILDER = 'team_builder',
+	COURT = 'court'
 }
 
 export class Command {
@@ -51,6 +53,8 @@ export class Command {
 				return CommandType.INITIATIVE
 			case CommandType.TEAM_BUILDER.toString():
 				return CommandType.TEAM_BUILDER
+			case CommandType.COURT.toString():
+				return CommandType.COURT
 			default:
 				return undefined
 		}

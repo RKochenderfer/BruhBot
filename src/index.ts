@@ -59,10 +59,14 @@ client.on('interactionCreate', async interaction => {
 	// 	.catch(console.error)
 
 	const commandType = Command.commandMap(interaction.commandName)
-	if (commandType) {
-		const command = messageMap.getCommand(commandType)
-		await command.execute(interaction)
-	}
+	try {
+		if (commandType) {
+			const command = messageMap.getCommand(commandType)
+			await command.execute(interaction)
+		}
+	} catch (ex) {
+		interaction.reply(`There was an error executing that command`)
+	}	
 })
 
 client.on('error', error => {
