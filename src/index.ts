@@ -5,6 +5,11 @@ import { Routes } from 'discord-api-types/v9'
 import { MessageMap } from './classes/MessageMap'
 import { Command } from './models/Command'
 import { MessageChecker } from './classes/MessageChecker'
+import { Database } from './classes/Database'
+
+declare global {
+	var DATABASE: Database
+}
 
 const messageMap = new MessageMap()
 let init = false
@@ -19,8 +24,10 @@ const client = new Client({
 })
 
 // Add listeners
-client.once('ready', () => {
+client.once('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}`)
+	global.DATABASE = new Database()
+	await global.DATABASE.connectToDatabase()
 })
 
 client.on('guildMemberAdd', member => {

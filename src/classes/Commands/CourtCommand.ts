@@ -36,13 +36,15 @@ export class CourtCommand extends Command {
 
 	private readonly trialEndName = 'end'
 
-	private readonly setAttorneysName = 'attornies'
+    private readonly trialNewJudege = 'new_judge'
+
+	private readonly setAttorneysName = 'attorneys'
 
 	private readonly setProsecutorName = 'prosecutor'
 
 	private readonly setDefendentName = 'defendent'
 
-    private readonly basicsName = 'basics'
+	private readonly basicsName = 'basics'
 
 	private readonly commandMap = new Map<string, Court>([
 		[this.voteName, new Vote()],
@@ -50,10 +52,10 @@ export class CourtCommand extends Command {
 		[this.grantName, new Grant()],
 		[this.deductName, new Deduct()],
 		[this.setAttorneysName, new Attornies()],
-        [this.basicsName, new Basics()]
+		[this.basicsName, new Basics()],
 	])
 
-    constructor() {
+	constructor() {
 		super('court', 'handles court proceedings')
 	}
 
@@ -80,6 +82,38 @@ export class CourtCommand extends Command {
 						.setName(this.voteNegativeName)
 						.setDescription('Votes against the motion'),
 				),
+		)
+
+        // Start trial commands
+		builder.addSubcommandGroup(option =>
+			option
+				.setName(this.trialName)
+				.setDescription('Start the court')
+				.addSubcommand(option =>
+                    option
+                        .setName(this.trialStartName)
+                        .setDescription('Starts a trial')
+                )
+                .addSubcommand(option =>
+                    option
+                        .setName(this.trialEndName)
+                        .setDescription('Ends a trial')
+                )
+                .addSubcommand(option =>
+                    option
+                        .setName('new_judge')    
+                        .setDescription('Randomly assigns a new judge to the trial')
+                )
+                .addSubcommand(option =>
+                    option
+                        .setName('assign_judge')
+                        .setDescription('Assigns the judge position to a specific user')
+                        .addUserOption(option =>
+                            option
+                                .setName('judge')    
+                                .setDescription('The user to be assigned to judge position')
+                        )
+                )
 		)
 
 		// Point commands
@@ -118,23 +152,6 @@ export class CourtCommand extends Command {
 						.setRequired(true),
 				),
 		)
-		// Start trial commands
-		builder.addSubcommand(option =>
-			option
-				.setName(this.trialName)
-				.setDescription('Start the court')
-				.addStringOption(option =>
-					option
-						.setName(this.trialStartName)
-						.setDescription('Starts a trial'),
-				)
-				.addStringOption(option =>
-					option
-						.setName(this.trialEndName)
-						.setDescription('Ends a trial'),
-				),
-		)
-
 		// attorneys
 		builder.addSubcommand(option =>
 			option
@@ -154,21 +171,30 @@ export class CourtCommand extends Command {
 				),
 		)
 
-        builder.addSubcommand(option =>
-            option
-                .setName(this.basicsName)
-                .setDescription('Replies with the basics of hog court')
-        )
+		builder.addSubcommand(option =>
+			option
+				.setName(this.basicsName)
+				.setDescription('Replies with the basics of hog court'),
+		)
 
 		return builder
 	}
 
 	async execute(interaction: CommandInteraction): Promise<void> {
-		const command = interaction.options.getSubcommandGroup
-			? interaction.options.getSubcommandGroup.name
-			: interaction.options.getSubcommand.name
+        interaction.deferReply()
+        let command = ''
+        try {
+            command = interaction.options.getSubcommandGroup()
+        } catch (ex) {
+            command = interaction.options.getSubcommand()
+        }
+
+        if (command === '') {
+            interaction.followUp({content: 'There was an error somewhere'})
+        }
 
 		const action = this.commandMap.get(command)
+		interaction.followUp({ content: 'Received' })
 		action?.performAction(interaction)
 	}
 }
