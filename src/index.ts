@@ -73,6 +73,7 @@ client.on('interactionCreate', async interaction => {
 		}
 	} catch (ex) {
 		interaction.reply(`There was an error executing that command`)
+		console.error(ex)
 	}	
 })
 

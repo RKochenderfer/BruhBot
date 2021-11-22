@@ -4,8 +4,9 @@ import { Attorney } from './Attorney';
 
 export class Trial {
     constructor(
-        public judge: Snowflake,
-        public startDate: Date,
+        public guildId: string,
+        public judge: string,
+        public startDate: number,
         public complete: boolean,
         public caseDescription: string,
         public prosecutor?: Attorney,

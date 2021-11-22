@@ -8,51 +8,16 @@ import { Deduct } from './Court/Deduct'
 import { Grant } from './Court/Grant'
 import { Trial } from './Court/Trial'
 import { Vote } from './Court/Vote'
+import * as names from './Court/Names'
 
 export class CourtCommand extends Command {
-	private readonly voteName = 'vote'
-
-	private readonly voteStartName = 'start'
-
-	private readonly voteAffirmativeName = 'yea'
-
-	private readonly voteNegativeName = 'nay'
-
-	private readonly grantName = 'grant'
-
-	private readonly grantAttorneyName = 'attorney'
-
-	private readonly grantPointsAmountName = 'points'
-
-	private readonly deductName = 'deduct'
-
-	private readonly deductAttorneyName = 'attorney'
-
-	private readonly deductPointsAmountName = 'points'
-
-	private readonly trialName = 'trial'
-
-	private readonly trialStartName = 'start'
-
-	private readonly trialEndName = 'end'
-
-    private readonly trialNewJudege = 'new_judge'
-
-	private readonly setAttorneysName = 'attorneys'
-
-	private readonly setProsecutorName = 'prosecutor'
-
-	private readonly setDefendentName = 'defendent'
-
-	private readonly basicsName = 'basics'
-
 	private readonly commandMap = new Map<string, Court>([
-		[this.voteName, new Vote()],
-		[this.trialName, new Trial()],
-		[this.grantName, new Grant()],
-		[this.deductName, new Deduct()],
-		[this.setAttorneysName, new Attornies()],
-		[this.basicsName, new Basics()],
+		[names.voteName, new Vote()],
+		[names.trialName, new Trial()],
+		[names.grantName, new Grant()],
+		[names.deductName, new Deduct()],
+		[names.setAttorneysName, new Attornies()],
+		[names.basicsName, new Basics()],
 	])
 
 	constructor() {
@@ -65,21 +30,21 @@ export class CourtCommand extends Command {
 		// Vote commands
 		builder.addSubcommandGroup(option =>
 			option
-				.setName(this.voteName)
+				.setName(names.voteName)
 				.setDescription('The vote commands')
 				.addSubcommand(option =>
 					option
-						.setName(this.voteStartName)
+						.setName(names.voteStartName)
 						.setDescription('Starts the vote'),
 				)
 				.addSubcommand(option =>
 					option
-						.setName(this.voteAffirmativeName)
+						.setName(names.voteAffirmativeName)
 						.setDescription('Vote in favor of motion'),
 				)
 				.addSubcommand(option =>
 					option
-						.setName(this.voteNegativeName)
+						.setName(names.voteNegativeName)
 						.setDescription('Votes against the motion'),
 				),
 		)
@@ -87,30 +52,36 @@ export class CourtCommand extends Command {
         // Start trial commands
 		builder.addSubcommandGroup(option =>
 			option
-				.setName(this.trialName)
+				.setName(names.trialName)
 				.setDescription('Start the court')
 				.addSubcommand(option =>
                     option
-                        .setName(this.trialStartName)
+                        .setName(names.trialStartName)
                         .setDescription('Starts a trial')
+                        .addStringOption(option =>
+                            option
+                                .setName(names.trialDescriptionName)    
+                                .setDescription('The description of what the trial is about')
+                                .setRequired(true)
+                        )
                 )
                 .addSubcommand(option =>
                     option
-                        .setName(this.trialEndName)
+                        .setName(names.trialEndName)
                         .setDescription('Ends a trial')
                 )
                 .addSubcommand(option =>
                     option
-                        .setName('new_judge')    
+                        .setName(names.trialNewJudgeName)    
                         .setDescription('Randomly assigns a new judge to the trial')
                 )
                 .addSubcommand(option =>
                     option
-                        .setName('assign_judge')
+                        .setName(names.trialAssignJudgeName)
                         .setDescription('Assigns the judge position to a specific user')
                         .addUserOption(option =>
                             option
-                                .setName('judge')    
+                                .setName(names.trialJudgeName)    
                                 .setDescription('The user to be assigned to judge position')
                         )
                 )
@@ -119,17 +90,17 @@ export class CourtCommand extends Command {
 		// Point commands
 		builder.addSubcommand(option =>
 			option
-				.setName(this.grantName)
+				.setName(names.grantName)
 				.setDescription('Grants points to a mentioned attorney')
 				.addMentionableOption(option =>
 					option
-						.setName(this.grantAttorneyName)
+						.setName(names.grantAttorneyName)
 						.setDescription('Attorney to receive court points')
 						.setRequired(true),
 				)
 				.addIntegerOption(option =>
 					option
-						.setName(this.grantPointsAmountName)
+						.setName(names.grantPointsAmountName)
 						.setDescription('The points to grant to an attorney')
 						.setRequired(true),
 				),
@@ -137,17 +108,17 @@ export class CourtCommand extends Command {
 
 		builder.addSubcommand(option =>
 			option
-				.setName(this.deductName)
+				.setName(names.deductName)
 				.setDescription('Deducts points to a mentioned attorney')
 				.addMentionableOption(option =>
 					option
-						.setName(this.deductAttorneyName)
+						.setName(names.deductAttorneyName)
 						.setDescription('Attorney to be deducted court points')
 						.setRequired(true),
 				)
 				.addIntegerOption(option =>
 					option
-						.setName(this.deductPointsAmountName)
+						.setName(names.deductPointsAmountName)
 						.setDescription('The points to deduct from an attorney')
 						.setRequired(true),
 				),
@@ -155,17 +126,17 @@ export class CourtCommand extends Command {
 		// attorneys
 		builder.addSubcommand(option =>
 			option
-				.setName(this.setAttorneysName)
+				.setName(names.setAttorneysName)
 				.setDescription('Set the Prosecutor and Defendent')
 				.addUserOption(option =>
 					option
-						.setName(this.setProsecutorName)
+						.setName(names.setProsecutorName)
 						.setDescription('Sets the prosecutor for the trial')
 						.setRequired(true),
 				)
 				.addUserOption(option =>
 					option
-						.setName(this.setDefendentName)
+						.setName(names.setDefendentName)
 						.setDescription('Sets the defendent for the trial')
 						.setRequired(true),
 				),
@@ -173,7 +144,7 @@ export class CourtCommand extends Command {
 
 		builder.addSubcommand(option =>
 			option
-				.setName(this.basicsName)
+				.setName(names.basicsName)
 				.setDescription('Replies with the basics of hog court'),
 		)
 
