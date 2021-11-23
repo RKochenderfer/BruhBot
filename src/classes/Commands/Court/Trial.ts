@@ -1,11 +1,10 @@
-import {
-	CommandInteraction,
-} from 'discord.js'
+import { CommandInteraction, Guild, GuildMember } from 'discord.js'
 import { Court } from './Court'
 import { Trial as TrialModel } from '../../../models/Court/Trial'
 import * as names from './Names'
 import { Database } from '../../Database'
 import { Reply } from '../../Reply'
+import { ObjectId } from 'mongodb'
 
 export class Trial implements Court {
 	private interaction: CommandInteraction | null = null
@@ -43,20 +42,19 @@ export class Trial implements Court {
 
 		try {
 			const judge = await this.randomJudge()
+
 			const trial = new TrialModel(
 				this.interaction?.guildId!,
-				judge,
+				judge.id,
 				Date.now(),
 				false,
 				description,
 			)
-			const result = (await Database.collections.court?.insertOne(
-				trial,
-			)) as unknown as TrialModel
+			const result = await Database.collections.court?.insertOne(trial)
 
 			if (result) {
 				this.interaction?.followUp({
-					content: `The trial was created and can now proceed! Here is the trial ID: ${result.id}`,
+					content: `The trial was created and can now proceed! Here is the trial ID: ${result.insertedId}`,
 				})
 			} else {
 				this.interaction?.followUp({
@@ -80,12 +78,12 @@ export class Trial implements Court {
 		const newJudge = this.interaction?.options.getUser(names.trialJudgeName)
 		const trialId = this.interaction?.options.getString(names.trialId)
 		const query = {
-			_id: trialId,
+			_id: new ObjectId(trialId!),
 		}
 
 		try {
 			const result = await Database.collections.court?.updateOne(query, {
-				$set: { judge: newJudge },
+				$set: { judge: newJudge!.id },
 			})
 
 			if (result) {
@@ -104,7 +102,7 @@ export class Trial implements Court {
 	private async randomJudgeQuery(
 		query: Object,
 		toIgnore?: string,
-	): Promise<string> {
+	): Promise<GuildMember> {
 		let openTrials = (await Database.collections.court
 			?.find(query)
 			.toArray()) as unknown as TrialModel[]
@@ -116,23 +114,28 @@ export class Trial implements Court {
 		if (openTrials) {
 			const users = this.interaction?.guild?.members.cache.filter(
 				m =>
-					m.presence?.status === ('online' || 'invisible') &&
+					!m.user.bot &&
+					m.presence?.status === 'online' &&
 					!currentJudges.includes(m.id),
 			)
 
-			if (!users) throw new Error('Unable to find a viable judge.')
+			if (!users || users.size === 0)
+				throw new Error('Unable to find a viable judge.')
 
-			return users?.random()?.id!
+			if (!users) throw new Error('No users found')
+
+			return users.random()!
 		} else {
 			const users = this.interaction?.guild?.members.cache.filter(
 				m => m.presence?.status === ('online' || 'invisible'),
 			)
+			if (!users) throw new Error('No users found')
 
-			return users?.random()?.id!
+			return users.random()!
 		}
 	}
 
-	private async randomJudge(): Promise<string> {
+	private async randomJudge(): Promise<GuildMember> {
 		const query = {
 			guildId: this.interaction?.guildId,
 			complete: false,
@@ -147,9 +150,9 @@ export class Trial implements Court {
 	private async newJudge() {
 		const trialId = this.interaction?.options.getString(names.trialId)
 		const currentTrialQuery = {
-			_id: trialId,
+			_id: new ObjectId(trialId!),
 		}
-		
+
 		try {
 			const query = {
 				guildId: this.interaction?.guildId,
@@ -160,7 +163,7 @@ export class Trial implements Court {
 			const result = await Database.collections.court?.updateOne(
 				currentTrialQuery,
 				{
-					$set: { judge: newJudge },
+					$set: { judge: newJudge.id },
 				},
 			)
 
