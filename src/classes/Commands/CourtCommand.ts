@@ -40,70 +40,94 @@ export class CourtCommand extends Command {
 				.addSubcommand(option =>
 					option
 						.setName(names.voteAffirmativeName)
-						.setDescription('Vote in favor of motion'),
+						.setDescription('Vote in favor of motion')
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription('The trial ID')
+								.setRequired(true),
+						),
 				)
 				.addSubcommand(option =>
 					option
 						.setName(names.voteNegativeName)
-						.setDescription('Votes against the motion'),
+						.setDescription('Votes against the motion')
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription('The trial ID')
+								.setRequired(true),
+						),
 				),
 		)
 
-        // Start trial commands
+		// Start trial commands
 		builder.addSubcommandGroup(option =>
 			option
 				.setName(names.trialName)
 				.setDescription('Start the court')
 				.addSubcommand(option =>
-                    option
-                        .setName(names.trialStartName)
-                        .setDescription('Starts a trial')
-                        .addStringOption(option =>
-                            option
-                                .setName(names.trialDescriptionName)    
-                                .setDescription('The description of what the trial is about')
-                                .setRequired(true)
-                        )
-                )
-                .addSubcommand(option =>
-                    option
-                        .setName(names.trialEndName)
-                        .setDescription('Ends a trial')
-                        .addStringOption(option =>
-                            option
-                                .setName(names.trialVerdictName)    
-                                .setDescription('The verdict of the trial')
-                                .setRequired(true)
-                        )
-                )
-                .addSubcommand(option =>
-                    option
-                        .setName(names.trialNewJudgeName)    
-                        .setDescription('Randomly assigns a new judge to the trial')
-						.addStringOption(option =>
-							option	
-								.setName(names.trialId)	
-								.setDescription('The ID of the trial to be assigned a new judge')
-								.setRequired(true)
-						)
-                )
-                .addSubcommand(option =>
-                    option
-                        .setName(names.trialAssignJudgeName)
-                        .setDescription('Assigns the judge position to a specific user')
-                        .addUserOption(option =>
-                            option
-                                .setName(names.trialJudgeName)    
-                                .setDescription('The user to be assigned to judge position')
-								.setRequired(true)
-                        )
+					option
+						.setName(names.trialStartName)
+						.setDescription('Starts a trial')
 						.addStringOption(option =>
 							option
-								.setName(names.trialId)	
-								.setDescription('The ID of the trial to be assigned a new judge')
-								.setRequired(true)
+								.setName(names.trialDescriptionName)
+								.setDescription(
+									'The description of what the trial is about',
+								)
+								.setRequired(true),
+						),
+				)
+				.addSubcommand(option =>
+					option
+						.setName(names.trialEndName)
+						.setDescription('Ends a trial')
+						.addStringOption(option =>
+							option
+								.setName(names.trialVerdictName)
+								.setDescription('The verdict of the trial')
+								.setRequired(true),
+						),
+				)
+				.addSubcommand(option =>
+					option
+						.setName(names.trialNewJudgeName)
+						.setDescription(
+							'Randomly assigns a new judge to the trial',
 						)
-                )
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription(
+									'The ID of the trial to be assigned a new judge',
+								)
+								.setRequired(true),
+						),
+				)
+				.addSubcommand(option =>
+					option
+						.setName(names.trialAssignJudgeName)
+						.setDescription(
+							'Assigns the judge position to a specific user',
+						)
+						.addUserOption(option =>
+							option
+								.setName(names.trialJudgeName)
+								.setDescription(
+									'The user to be assigned to judge position',
+								)
+								.setRequired(true),
+						)
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription(
+									'The ID of the trial to be assigned a new judge',
+								)
+								.setRequired(true),
+						),
+				),
 		)
 
 		// Point commands
@@ -149,9 +173,9 @@ export class CourtCommand extends Command {
 				.setDescription('Set the Prosecutor and Defendent')
 				.addStringOption(option =>
 					option
-						.setName(names.trialId)	
+						.setName(names.trialId)
 						.setDescription('The trial id')
-						.setRequired(true)
+						.setRequired(true),
 				)
 				.addUserOption(option =>
 					option
@@ -177,17 +201,17 @@ export class CourtCommand extends Command {
 	}
 
 	async execute(interaction: CommandInteraction): Promise<void> {
-        interaction.deferReply()
-        let command = ''
-        try {
-            command = interaction.options.getSubcommandGroup()
-        } catch (ex) {
-            command = interaction.options.getSubcommand()
-        }
+		interaction.deferReply()
+		let command = ''
+		try {
+			command = interaction.options.getSubcommandGroup()
+		} catch (ex) {
+			command = interaction.options.getSubcommand()
+		}
 
-        if (command === '') {
-            interaction.followUp({content: 'There was an error somewhere'})
-        }
+		if (command === '') {
+			interaction.followUp({ content: 'There was an error somewhere' })
+		}
 
 		const action = this.commandMap.get(command)
 		// interaction.followUp({ content: 'Received' })
