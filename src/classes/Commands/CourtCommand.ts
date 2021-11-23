@@ -80,6 +80,12 @@ export class CourtCommand extends Command {
                     option
                         .setName(names.trialNewJudgeName)    
                         .setDescription('Randomly assigns a new judge to the trial')
+						.addStringOption(option =>
+							option	
+								.setName(names.trialId)	
+								.setDescription('The ID of the trial to be assigned a new judge')
+								.setRequired(true)
+						)
                 )
                 .addSubcommand(option =>
                     option
@@ -89,7 +95,14 @@ export class CourtCommand extends Command {
                             option
                                 .setName(names.trialJudgeName)    
                                 .setDescription('The user to be assigned to judge position')
+								.setRequired(true)
                         )
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)	
+								.setDescription('The ID of the trial to be assigned a new judge')
+								.setRequired(true)
+						)
                 )
 		)
 

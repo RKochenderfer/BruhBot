@@ -41,3 +41,5 @@ export const setDefendentName = 'defendent'
 export const basicsName = 'basics'
 
 export const trialVerdictName = 'verdict'
+
+export const trialId = 'trial_id'

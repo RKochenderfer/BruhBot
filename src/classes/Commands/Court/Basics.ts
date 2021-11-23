@@ -2,7 +2,7 @@ import { CacheType, CommandInteraction } from 'discord.js'
 import { Court } from './Court'
 
 export class Basics implements Court {
-	performAction(interaction: CommandInteraction): void {
+	async performAction(interaction: CommandInteraction): Promise<void> {
 		interaction.reply(`
         You are rewarded and docked court points depending on actions you take
 You can use those court points for upgrades for instance the prosecution can spend five court points to get a Glock to just shoot the defense attorney.

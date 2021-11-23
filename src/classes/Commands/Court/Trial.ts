@@ -1,34 +1,33 @@
 import {
-	CacheType,
 	CommandInteraction,
-	Snowflake,
-	SnowflakeUtil,
 } from 'discord.js'
 import { Court } from './Court'
 import { Trial as TrialModel } from '../../../models/Court/Trial'
-import { CourtCommand } from '../CourtCommand'
 import * as names from './Names'
 import { Database } from '../../Database'
+import { Reply } from '../../Reply'
 
 export class Trial implements Court {
 	private interaction: CommandInteraction | null = null
+	private reply: Reply | null = null
 
-	performAction(interaction: CommandInteraction): void {
+	async performAction(interaction: CommandInteraction): Promise<void> {
 		const subCommand = interaction.options.getSubcommand()
 		this.interaction = interaction
+		this.reply = new Reply(interaction)
 
 		switch (subCommand) {
 			case 'new_judge':
-				this.newJudge()
+				await this.newJudge()
 				break
 			case 'assign_judge':
-				this.assignJudge()
+				await this.assignJudge()
 				break
 			case 'start':
-				this.startTrial()
+				await this.startTrial()
 				break
 			case 'end':
-				this.endTrial()
+				await this.endTrial()
 				break
 			default:
 				console.error(`How da fuck did you get here?: ${subCommand}`)
@@ -36,29 +35,28 @@ export class Trial implements Court {
 	}
 
 	private async startTrial() {
-		const judge = this.randomJudge()
 		const description = this.interaction!.options.getString(
 			names.trialDescriptionName,
 		)
 
 		if (!description) throw new Error('No description found for trial')
 
-		const trial = new TrialModel(
-			this.interaction?.guildId!,
-			judge,
-			Date.now(),
-			false,
-			description,
-		)
-
-		// TODO: Add a check to make sure the judge is only the judge for one trial at a time in a server
-
 		try {
-			const result = await Database.collections.court?.insertOne(trial)
+			const judge = await this.randomJudge()
+			const trial = new TrialModel(
+				this.interaction?.guildId!,
+				judge,
+				Date.now(),
+				false,
+				description,
+			)
+			const result = (await Database.collections.court?.insertOne(
+				trial,
+			)) as unknown as TrialModel
 
 			if (result) {
 				this.interaction?.followUp({
-					content: 'The trial was created and can now proceed!',
+					content: `The trial was created and can now proceed! Here is the trial ID: ${result.id}`,
 				})
 			} else {
 				this.interaction?.followUp({
@@ -78,32 +76,110 @@ export class Trial implements Court {
 	/**
 	 * Assigns a directly mentioned user to be judge
 	 */
-	private assignJudge() {
-		// takes the user that is mentioned to be judge
-		// make sure they are not an attorney
-		// update the value in the database
+	private async assignJudge() {
+		const newJudge = this.interaction?.options.getUser(names.trialJudgeName)
+		const trialId = this.interaction?.options.getString(names.trialId)
+		const query = {
+			_id: trialId,
+		}
+
+		try {
+			const result = await Database.collections.court?.updateOne(query, {
+				$set: { judge: newJudge },
+			})
+
+			if (result) {
+				this.reply!.followUp(
+					`${newJudge} has been assigned to trial ${trialId}`,
+				)
+			}
+		} catch (error) {
+			console.error(error)
+			this.reply!.followUp(
+				`There was an error assiging the new judge ${newJudge} to trial ${trialId}`,
+			)
+		}
 	}
 
-	private randomJudge(): string {
-		// Get all users in the guild
+	private async randomJudgeQuery(
+		query: Object,
+		toIgnore?: string,
+	): Promise<string> {
+		let openTrials = (await Database.collections.court
+			?.find(query)
+			.toArray()) as unknown as TrialModel[]
 
-		// Pick a random user
+		if (toIgnore) openTrials = openTrials.filter(t => t.judge !== toIgnore)
 
-		// Return user's id
+		const currentJudges = openTrials.map(t => t.judge)
 
-		return this.interaction?.user.id! // TODO:: SETUP THIS LOGIC
+		if (openTrials) {
+			const users = this.interaction?.guild?.members.cache.filter(
+				m =>
+					m.presence?.status === ('online' || 'invisible') &&
+					!currentJudges.includes(m.id),
+			)
+
+			if (!users) throw new Error('Unable to find a viable judge.')
+
+			return users?.random()?.id!
+		} else {
+			const users = this.interaction?.guild?.members.cache.filter(
+				m => m.presence?.status === ('online' || 'invisible'),
+			)
+
+			return users?.random()?.id!
+		}
+	}
+
+	private async randomJudge(): Promise<string> {
+		const query = {
+			guildId: this.interaction?.guildId,
+			complete: false,
+		}
+
+		return await this.randomJudgeQuery(query)
 	}
 
 	/**
 	 * Picks a random user to be the current judge
 	 */
-	private newJudge() {
-		// get the current judge
-		// randomly get a new judge till it's different than the current one
+	private async newJudge() {
+		const trialId = this.interaction?.options.getString(names.trialId)
+		const currentTrialQuery = {
+			_id: trialId,
+		}
+		
+		try {
+			const query = {
+				guildId: this.interaction?.guildId,
+				complete: false,
+			}
+			const newJudge = await this.randomJudgeQuery(query)
+
+			const result = await Database.collections.court?.updateOne(
+				currentTrialQuery,
+				{
+					$set: { judge: newJudge },
+				},
+			)
+
+			if (result) {
+				this.reply!.followUp(
+					`${newJudge} is the new judge for trial ${trialId}!`,
+				)
+			} else {
+				this.reply!.followUp(
+					`Unable to update trial ${trialId} with new judge ${newJudge}. Is this the correct trial number?`,
+				)
+			}
+		} catch (error) {
+			console.error(error)
+			this.reply!.followUp('Unable to assign a new random judge.')
+		}
 	}
 
 	private async endTrial() {
-		// set the trial to be complete
 		const userId = this.interaction?.user.id
 		const guildId = this.interaction?.guildId
 		const verdict = this.interaction?.options.getString(
@@ -122,21 +198,17 @@ export class Trial implements Court {
 			})
 
 			if (result) {
-				this.interaction?.followUp({
-					content: 'This trial has been concluded!',
-				})
+				this.reply!.followUp('This trial has been concluded!')
 			} else {
-				this.interaction?.followUp({
-					content:
-						"Unable to end trial. Are you sure you're a judge?",
-				})
+				this.reply!.followUp(
+					"Unable to end trial. Are you sure you're a judge?",
+				)
 			}
 		} catch (error) {
 			console.error(error)
-			this.interaction?.followUp({
-				content:
-					'There was an error ending the trial. Please try again.',
-			})
+			this.reply!.followUp(
+				'There was an error ending the trial. Please try again.',
+			)
 		}
 	}
 }
