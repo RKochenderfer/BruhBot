@@ -69,6 +69,12 @@ export class CourtCommand extends Command {
                     option
                         .setName(names.trialEndName)
                         .setDescription('Ends a trial')
+                        .addStringOption(option =>
+                            option
+                                .setName(names.trialVerdictName)    
+                                .setDescription('The verdict of the trial')
+                                .setRequired(true)
+                        )
                 )
                 .addSubcommand(option =>
                     option
@@ -165,7 +171,7 @@ export class CourtCommand extends Command {
         }
 
 		const action = this.commandMap.get(command)
-		interaction.followUp({ content: 'Received' })
+		// interaction.followUp({ content: 'Received' })
 		action?.performAction(interaction)
 	}
 }

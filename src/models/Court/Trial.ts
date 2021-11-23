@@ -11,7 +11,7 @@ export class Trial {
         public caseDescription: string,
         public prosecutor?: Attorney,
         public defender?: Attorney,
-        public ruling?: string,
+        public verdict?: string,
         public id?: ObjectId
     ) {}
 }
