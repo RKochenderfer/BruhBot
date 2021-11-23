@@ -3,8 +3,7 @@ import { ObjectId } from 'mongodb'
 
 export class Attorney {
 	constructor(
-		public userId: Snowflake,
-		public points?: number,
-		public id?: ObjectId,
+		public userId: string,
+		public points: number = 0,
 	) {}
 }

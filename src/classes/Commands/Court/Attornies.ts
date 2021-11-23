@@ -4,17 +4,20 @@ import { Court } from './Court'
 import * as names from './Names'
 import { Database } from '../../Database'
 import { Reply } from '../../Reply'
+import { Attorney } from '../../../models/Court/Attorney'
 
 export class Attornies implements Court {
 	private reply: Reply | null = null
 	async performAction(
 		interaction: CommandInteraction<CacheType>,
 	): Promise<void> {
-        // TODO: FIX THE MODEL TO INCLUDE THE ATTORNEY MODEL AND NOT JUST THE ID
 		this.reply = new Reply(interaction)
 		const trialId = interaction.options.getString(names.trialId)
-		const prosecutor = interaction.options.getUser(names.setProsecutorName)!
-		const defender = interaction.options.getUser(names.setDefendentName)!
+		const prosecutorUser = interaction.options.getUser(names.setProsecutorName)!
+		const defenderUser = interaction.options.getUser(names.setDefendentName)!
+
+        const prosecutor = new Attorney(prosecutorUser.id)
+        const defender = new Attorney(defenderUser.id)
 
 		const query = {
 			_id: new ObjectId(trialId!),
@@ -22,14 +25,14 @@ export class Attornies implements Court {
 		try {
 			const result = await Database.collections.court?.updateOne(query, {
 				$set: {
-					prosecutor: prosecutor.id,
-					defender: defender.id,
+					prosecutor: prosecutor,
+					defender: defender,
 				},
 			})
 
 			if (result) {
 				this.reply!.followUp(
-					`${prosecutor} is now the prosecutor and ${defender} is now the defender for trial ${trialId}!`,
+					`${prosecutorUser} is now the prosecutor and ${defenderUser} is now the defender for trial ${trialId}!`,
 				)
 			}
 		} catch (error) {
