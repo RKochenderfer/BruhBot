@@ -54,7 +54,7 @@ export class Trial implements Court {
 
 			if (result) {
 				this.interaction?.followUp({
-					content: `The trial was created and can now proceed! Here is the trial ID: ${result.insertedId}`,
+					content: `The trial was created with ${judge} as the judge and can now proceed! Here is the trial ID: ${result.insertedId}`,
 				})
 			} else {
 				this.interaction?.followUp({
@@ -90,6 +90,8 @@ export class Trial implements Court {
 				this.reply!.followUp(
 					`${newJudge} has been assigned to trial ${trialId}`,
 				)
+			} else {
+				throw new Error(`Unable to assign ${newJudge} as the new judge`)
 			}
 		} catch (error) {
 			console.error(error)

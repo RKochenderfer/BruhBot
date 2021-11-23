@@ -147,6 +147,12 @@ export class CourtCommand extends Command {
 			option
 				.setName(names.setAttorneysName)
 				.setDescription('Set the Prosecutor and Defendent')
+				.addStringOption(option =>
+					option
+						.setName(names.trialId)	
+						.setDescription('The trial id')
+						.setRequired(true)
+				)
 				.addUserOption(option =>
 					option
 						.setName(names.setProsecutorName)

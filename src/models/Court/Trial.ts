@@ -1,6 +1,7 @@
 import { Snowflake } from 'discord.js';
 import { ObjectId } from 'mongodb'
 import { Attorney } from './Attorney';
+import { Vote } from './Vote';
 
 export class Trial {
     constructor(
@@ -12,6 +13,6 @@ export class Trial {
         public prosecutor?: Attorney,
         public defender?: Attorney,
         public verdict?: string,
-        public id?: ObjectId
+        public votes?: Vote[]
     ) {}
 }
