@@ -40,8 +40,8 @@ export class CourtCommand extends Command {
 							option
 								.setName(names.trialId)
 								.setDescription('The trial ID')
-								.setRequired(true)
-						)
+								.setRequired(true),
+						),
 				)
 				.addSubcommand(option =>
 					option
@@ -51,8 +51,8 @@ export class CourtCommand extends Command {
 							option
 								.setName(names.trialId)
 								.setDescription('The trial ID')
-								.setRequired(true)
-						)
+								.setRequired(true),
+						),
 				)
 				.addSubcommand(option =>
 					option
@@ -78,11 +78,37 @@ export class CourtCommand extends Command {
 				),
 		)
 
+		// history commands
+
 		// trial commands
 		builder.addSubcommandGroup(option =>
 			option
 				.setName(names.trialName)
-				.setDescription('Start the court')
+				.setDescription('Trial commands')
+				.addSubcommand(option =>
+					option
+						.setName(names.trialHistoryName)
+						.setDescription(
+							"Get's previous trials and their verdicts",
+						)
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription('The trial ID'),
+						)
+						.addNumberOption(option =>
+							option
+								.setName(names.trialPreviousWeeksName)
+								.setDescription(
+									'Trials completed within this amount of weeks',
+								),
+						)
+						.addUserOption(option =>
+							option	
+								.setName(names.trialJudgeName)
+								.setDescription('Trials where this judge presided')
+						)
+				)
 				.addSubcommand(option =>
 					option
 						.setName(names.trialStartName)

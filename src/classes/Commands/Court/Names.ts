@@ -22,6 +22,10 @@ export const deductPointsAmountName = 'points'
 
 export const trialName = 'trial'
 
+export const trialHistoryName = 'history'
+
+export const trialPreviousWeeksName = 'weeks'
+
 export const trialPreviousName = 'previous'
 
 export const trialStartName = 'start'
