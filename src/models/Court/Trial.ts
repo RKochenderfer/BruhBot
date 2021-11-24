@@ -13,6 +13,7 @@ export class Trial {
         public prosecutor?: Attorney,
         public defender?: Attorney,
         public verdict?: string,
-        public votes?: Vote[]
+        public votingIsOpen?: boolean,
+        public votes?: Vote[],
     ) {}
 }

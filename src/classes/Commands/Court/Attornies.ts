@@ -31,13 +31,13 @@ export class Attornies implements Court {
 			})
 
 			if (result) {
-				this.reply!.followUp(
+				await this.reply!.followUp(
 					`${prosecutorUser} is now the prosecutor and ${defenderUser} is now the defender for trial ${trialId}!`,
 				)
 			}
 		} catch (error) {
 			console.error(error)
-			this.reply.followUp(
+			await this.reply.followUp(
 				`Unable to assign ${prosecutor} as prosecutor and ${defender} as defender`,
 			)
 		}

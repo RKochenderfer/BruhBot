@@ -7,11 +7,11 @@ export class Reply {
         this.interaction = interaction
     }    
 
-    public reply(message: string) {
-        this.interaction.reply({content: message})
+    public async reply(message: string) {
+        await this.interaction.reply({content: message})
     }
 
-    public followUp(message: string) {
-        this.interaction.followUp({content: message})
+    public async followUp(message: string) {
+        await this.interaction.followUp({content: message})
     }
 }

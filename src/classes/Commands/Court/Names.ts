@@ -2,6 +2,8 @@ export const voteName = 'vote'
 
 export const voteStartName = 'start'
 
+export const voteEndName = 'end'
+
 export const voteAffirmativeName = 'yea'
 
 export const voteNegativeName = 'nay'

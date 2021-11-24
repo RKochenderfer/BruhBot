@@ -35,7 +35,24 @@ export class CourtCommand extends Command {
 				.addSubcommand(option =>
 					option
 						.setName(names.voteStartName)
-						.setDescription('Starts the vote'),
+						.setDescription('Starts the vote')
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription('The trial ID')
+								.setRequired(true)
+						)
+				)
+				.addSubcommand(option =>
+					option
+						.setName(names.voteEndName)
+						.setDescription('Ends the vote')
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription('The trial ID')
+								.setRequired(true)
+						)
 				)
 				.addSubcommand(option =>
 					option

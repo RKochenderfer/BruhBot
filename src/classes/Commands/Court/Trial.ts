@@ -53,18 +53,18 @@ export class Trial implements Court {
 			const result = await Database.collections.court?.insertOne(trial)
 
 			if (result) {
-				this.interaction?.followUp({
+				await this.interaction?.followUp({
 					content: `The trial was created with ${judge} as the judge and can now proceed! Here is the trial ID: ${result.insertedId}`,
 				})
 			} else {
-				this.interaction?.followUp({
+				await this.interaction?.followUp({
 					content:
 						'There was an error creating the trial. Please try again.',
 				})
 			}
 		} catch (error) {
 			console.error(error)
-			this.interaction?.followUp({
+			await this.interaction?.followUp({
 				content:
 					'There was an error creating the trial. Please try again.',
 			})
@@ -87,7 +87,7 @@ export class Trial implements Court {
 			})
 
 			if (result) {
-				this.reply!.followUp(
+				await this.reply!.followUp(
 					`${newJudge} has been assigned to trial ${trialId}`,
 				)
 			} else {
@@ -95,7 +95,7 @@ export class Trial implements Court {
 			}
 		} catch (error) {
 			console.error(error)
-			this.reply!.followUp(
+			await this.reply!.followUp(
 				`There was an error assiging the new judge ${newJudge} to trial ${trialId}`,
 			)
 		}
@@ -170,17 +170,17 @@ export class Trial implements Court {
 			)
 
 			if (result) {
-				this.reply!.followUp(
+				await this.reply!.followUp(
 					`${newJudge} is the new judge for trial ${trialId}!`,
 				)
 			} else {
-				this.reply!.followUp(
+				await this.reply!.followUp(
 					`Unable to update trial ${trialId} with new judge ${newJudge}. Is this the correct trial number?`,
 				)
 			}
 		} catch (error) {
 			console.error(error)
-			this.reply!.followUp('Unable to assign a new random judge.')
+			await this.reply!.followUp('Unable to assign a new random judge.')
 		}
 	}
 
@@ -203,15 +203,15 @@ export class Trial implements Court {
 			})
 
 			if (result) {
-				this.reply!.followUp('This trial has been concluded!')
+				await this.reply!.followUp('This trial has been concluded!')
 			} else {
-				this.reply!.followUp(
+				await this.reply!.followUp(
 					"Unable to end trial. Are you sure you're a judge?",
 				)
 			}
 		} catch (error) {
 			console.error(error)
-			this.reply!.followUp(
+			await this.reply!.followUp(
 				'There was an error ending the trial. Please try again.',
 			)
 		}
