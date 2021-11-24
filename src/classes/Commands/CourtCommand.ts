@@ -178,11 +178,19 @@ export class CourtCommand extends Command {
 			option
 				.setName(names.grantName)
 				.setDescription('Grants points to a mentioned attorney')
-				.addMentionableOption(option =>
+				.addStringOption(option =>
+					option
+						.setName(names.trialId)	
+						.setDescription('The trial id')
+						.setRequired(true)
+				)
+				.addStringOption(option =>
 					option
 						.setName(names.grantAttorneyName)
 						.setDescription('Attorney to receive court points')
-						.setRequired(true),
+						.setRequired(true)
+						.addChoice(names.setProsecutorName, names.setProsecutorName)
+						.addChoice(names.setDefendentName, names.setDefendentName)
 				)
 				.addIntegerOption(option =>
 					option
@@ -196,7 +204,13 @@ export class CourtCommand extends Command {
 			option
 				.setName(names.deductName)
 				.setDescription('Deducts points to a mentioned attorney')
-				.addMentionableOption(option =>
+				.addStringOption(option =>
+					option
+						.setName(names.trialId)	
+						.setDescription('The trial id')
+						.setRequired(true)
+				)
+				.addUserOption(option =>
 					option
 						.setName(names.deductAttorneyName)
 						.setDescription('Attorney to be deducted court points')
@@ -207,7 +221,7 @@ export class CourtCommand extends Command {
 						.setName(names.deductPointsAmountName)
 						.setDescription('The points to deduct from an attorney')
 						.setRequired(true),
-				),
+				)
 		)
 		// attorneys
 		builder.addSubcommand(option =>
