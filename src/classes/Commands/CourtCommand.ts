@@ -78,7 +78,7 @@ export class CourtCommand extends Command {
 				),
 		)
 
-		// Start trial commands
+		// trial commands
 		builder.addSubcommandGroup(option =>
 			option
 				.setName(names.trialName)
