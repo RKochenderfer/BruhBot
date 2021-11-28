@@ -196,6 +196,7 @@ export class Trial implements Court {
 				guildId: guildId,
 				judge: userId,
 				complete: false,
+				votingIsOpen: false,
 			}
 
 			const result = await Database.collections.court?.updateOne(query, {
