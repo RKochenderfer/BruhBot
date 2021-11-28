@@ -5,11 +5,11 @@ import { Gonk } from './Gonk'
 export class MessageChecker {
 	private static flagged_expressions = [
 		{
-			regex: /c\s*u\s*m/im,
+			regex: /cum/im,
 			func: async (msg: Message) => await CumCounter.Counter(msg),
 		},
 		{
-			regex: /g\s*o\s*n\s*k/im,
+			regex: /gonk/im,
 			func: async (msg: Message) => await Gonk.sendMessage(msg)
 		}
 	]

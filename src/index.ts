@@ -5,6 +5,7 @@ import { Routes } from 'discord-api-types/v9'
 import { MessageMap } from './classes/MessageMap'
 import { Command } from './models/Command'
 import { MessageChecker } from './classes/MessageChecker'
+import { Database } from './classes/Database'
 
 const messageMap = new MessageMap()
 let init = false
@@ -14,13 +15,16 @@ const client = new Client({
 	intents: [
 		Intents.FLAGS.GUILDS,
 		Intents.FLAGS.GUILD_MESSAGES,
-		Intents.FLAGS.GUILD_VOICE_STATES
+		Intents.FLAGS.GUILD_VOICE_STATES,
+		Intents.FLAGS.GUILD_PRESENCES,
 	],
 })
 
 // Add listeners
-client.once('ready', () => {
+client.once('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}`)
+	const db = new Database()
+	await db.connectToDatabase()
 })
 
 client.on('guildMemberAdd', member => {
@@ -33,7 +37,7 @@ client.on('guildMemberAdd', member => {
 
 client.on('messageCreate', async message => {
 	const content = message.content.toLowerCase()
-	if (message.author.bot) return 
+	if (message.author.bot) return
 	if (content === '!deploy') {
 		const commands = Command.buildCommandDataMap()
 
@@ -59,10 +63,15 @@ client.on('interactionCreate', async interaction => {
 	// 	.catch(console.error)
 
 	const commandType = Command.commandMap(interaction.commandName)
-	if (commandType) {
-		const command = messageMap.getCommand(commandType)
-		await command.execute(interaction)
-	}
+	try {
+		if (commandType) {
+			const command = messageMap.getCommand(commandType)
+			await command.execute(interaction)
+		}
+	} catch (ex) {
+		interaction.reply(`There was an error executing that command`)
+		console.error(ex)
+	}	
 })
 
 client.on('error', error => {
