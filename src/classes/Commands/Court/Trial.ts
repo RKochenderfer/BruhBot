@@ -5,6 +5,7 @@ import * as names from './Names'
 import { Database } from '../../Database'
 import { Reply } from '../../Reply'
 import { ObjectId } from 'mongodb'
+import { TrialHistory } from './Trial/TrialHistory'
 
 export class Trial implements Court {
 	private interaction: CommandInteraction | null = null
@@ -16,21 +17,45 @@ export class Trial implements Court {
 		this.reply = new Reply(interaction)
 
 		switch (subCommand) {
-			case 'new_judge':
+			case names.trialNewJudgeName:
 				await this.newJudge()
 				break
-			case 'assign_judge':
+			case names.trialAssignJudgeName:
 				await this.assignJudge()
 				break
-			case 'start':
+			case names.trialStartName:
 				await this.startTrial()
 				break
-			case 'end':
+			case names.trialEndName:
 				await this.endTrial()
+				break
+			case names.trialHistoryName:
+				await this.trialHistory()
 				break
 			default:
 				console.error(`How da fuck did you get here?: ${subCommand}`)
 		}
+	}
+
+	private async trialHistory() {
+		const trialIdSearch = this.interaction?.options.getString(names.trialId)
+		const weekRangeSearch = this.interaction?.options.getNumber(names.trialPreviousWeeksName)
+		const judgeSearch = this.interaction?.options.getUser(names.trialJudgeName)
+
+		if (trialIdSearch) {
+			// search trials by id
+			const history = new TrialHistory(this.interaction!, trialIdSearch)
+			history.searchTrialId()
+		} else if (weekRangeSearch) {
+			// search trials by week range
+			const history = new TrialHistory(this.interaction!, undefined, weekRangeSearch)
+			history.searchWeeks()
+		} else {
+			// search trials by judge user id
+			const history = new TrialHistory(this.interaction!, undefined, undefined, judgeSearch!)
+			history.searchJudgeId()
+		}
+
 	}
 
 	private async startTrial() {
@@ -42,11 +67,12 @@ export class Trial implements Court {
 
 		try {
 			const judge = await this.randomJudge()
+			const date = new Date()
 
 			const trial = new TrialModel(
 				this.interaction?.guildId!,
 				judge.id,
-				Date.now(),
+				date.toISOString(),
 				false,
 				description,
 			)
@@ -85,6 +111,8 @@ export class Trial implements Court {
 			const result = await Database.collections.court?.updateOne(query, {
 				$set: { judge: newJudge!.id },
 			})
+
+			console.log(result)
 
 			if (result) {
 				await this.reply!.followUp(

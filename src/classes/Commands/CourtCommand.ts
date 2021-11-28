@@ -40,8 +40,8 @@ export class CourtCommand extends Command {
 							option
 								.setName(names.trialId)
 								.setDescription('The trial ID')
-								.setRequired(true)
-						)
+								.setRequired(true),
+						),
 				)
 				.addSubcommand(option =>
 					option
@@ -51,8 +51,8 @@ export class CourtCommand extends Command {
 							option
 								.setName(names.trialId)
 								.setDescription('The trial ID')
-								.setRequired(true)
-						)
+								.setRequired(true),
+						),
 				)
 				.addSubcommand(option =>
 					option
@@ -78,11 +78,37 @@ export class CourtCommand extends Command {
 				),
 		)
 
-		// Start trial commands
+		// history commands
+
+		// trial commands
 		builder.addSubcommandGroup(option =>
 			option
 				.setName(names.trialName)
-				.setDescription('Start the court')
+				.setDescription('Trial commands')
+				.addSubcommand(option =>
+					option
+						.setName(names.trialHistoryName)
+						.setDescription(
+							"Get's previous trials and their verdicts",
+						)
+						.addStringOption(option =>
+							option
+								.setName(names.trialId)
+								.setDescription('The trial ID'),
+						)
+						.addNumberOption(option =>
+							option
+								.setName(names.trialPreviousWeeksName)
+								.setDescription(
+									'Trials completed within this amount of weeks',
+								),
+						)
+						.addUserOption(option =>
+							option	
+								.setName(names.trialJudgeName)
+								.setDescription('Trials where this judge presided')
+						)
+				)
 				.addSubcommand(option =>
 					option
 						.setName(names.trialStartName)
@@ -152,11 +178,19 @@ export class CourtCommand extends Command {
 			option
 				.setName(names.grantName)
 				.setDescription('Grants points to a mentioned attorney')
-				.addMentionableOption(option =>
+				.addStringOption(option =>
+					option
+						.setName(names.trialId)	
+						.setDescription('The trial id')
+						.setRequired(true)
+				)
+				.addStringOption(option =>
 					option
 						.setName(names.grantAttorneyName)
 						.setDescription('Attorney to receive court points')
-						.setRequired(true),
+						.setRequired(true)
+						.addChoice(names.setProsecutorName, names.setProsecutorName)
+						.addChoice(names.setDefendentName, names.setDefendentName)
 				)
 				.addIntegerOption(option =>
 					option
@@ -170,7 +204,13 @@ export class CourtCommand extends Command {
 			option
 				.setName(names.deductName)
 				.setDescription('Deducts points to a mentioned attorney')
-				.addMentionableOption(option =>
+				.addStringOption(option =>
+					option
+						.setName(names.trialId)	
+						.setDescription('The trial id')
+						.setRequired(true)
+				)
+				.addUserOption(option =>
 					option
 						.setName(names.deductAttorneyName)
 						.setDescription('Attorney to be deducted court points')
@@ -181,7 +221,7 @@ export class CourtCommand extends Command {
 						.setName(names.deductPointsAmountName)
 						.setDescription('The points to deduct from an attorney')
 						.setRequired(true),
-				),
+				)
 		)
 		// attorneys
 		builder.addSubcommand(option =>
