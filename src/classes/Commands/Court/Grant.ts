@@ -32,7 +32,13 @@ export class Grant implements Court {
                     result = Database.collections.court?.updateOne(query, {
                         $set: {defender: trial.defender}
                     })
-                }                
+                }     
+                
+                if (result) {
+                    reply.followUp(`The ${attorney} was given ${points} points!`)
+                } else {
+                    reply.followUp('Unable to update points.')
+                }
             } else {
                 reply.followUp('The trial was not found.')
             }

@@ -36,6 +36,12 @@ export class Deduct implements Court {
 						$set: { defender: trial.defender },
 					})
 				}
+
+				if (result) {
+                    reply.followUp(`The ${attorney} was deducted ${points} points! Get fucked.`)
+                } else {
+                    reply.followUp('Unable to update points.')
+                }
 			} else {
 				reply.followUp('The trial was not found.')
 			}
