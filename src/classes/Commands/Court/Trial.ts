@@ -231,7 +231,7 @@ export class Trial implements Court {
 			})
 
 			if (result) {
-				await this.reply!.followUp('This trial has been concluded!')
+				await this.reply!.followUp(`Verdict: ${verdict}. This trial has been concluded!`)
 			} else {
 				await this.reply!.followUp(
 					"Unable to end trial. Are you sure you're a judge?",
