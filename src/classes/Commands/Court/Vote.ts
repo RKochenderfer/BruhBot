@@ -18,17 +18,6 @@ export class Vote implements Court {
 		this.reply = new Reply(interaction)
 		this.interaction = interaction
 
-        let found = false
-        this.trialEntry?.votes?.forEach(v => {
-            if (v.userId === this.interaction?.user.id) {
-                this.reply?.followUp("You're only allowed to vote once!")
-                found = true
-                return
-            }
-        })
-
-        if (found) return
-
 		try {
 			const result = await this.getTrialEntry()
 
@@ -64,6 +53,17 @@ export class Vote implements Court {
 		}
 	}
 
+	private hasVoted() {
+        this.trialEntry?.votes?.forEach(v => {
+            if (v.userId === this.interaction?.user.id) {
+                this.reply?.followUp("You're only allowed to vote once!")
+                return true
+            }
+        })
+
+        return false
+	}
+
 	private async performCommand() {
 		const subCommand = this.interaction!.options.getSubcommand()
 
@@ -75,9 +75,11 @@ export class Vote implements Court {
 				await this.endVote()
 				break
 			case names.voteAffirmativeName:
+				if (this.hasVoted()) return
 				await this.voteAffirmative()
 				break
 			case names.voteNegativeName:
+				if (this.hasVoted()) return
 				await this.voteNegative()
 				break
 			default:
