@@ -146,7 +146,8 @@ export class Trial implements Court {
 				m =>
 					!m.user.bot &&
 					m.presence?.status === 'online' &&
-					!currentJudges.includes(m.id),
+					m.roles.cache.find(r => r.name === 'court') !== undefined &&
+					!currentJudges.includes(m.id) 
 			)
 
 			if (!users || users.size === 0)
