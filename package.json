@@ -12,6 +12,7 @@
     "discord.js": "^13.1.0",
     "dotenv": "^8.6.0",
     "libsodium-wrappers": "^0.7.9",
+    "mongodb": "^4.2.0",
     "node-fetch": "^2.6.2",
     "ytdl-core": "^3.4.2"
   },
