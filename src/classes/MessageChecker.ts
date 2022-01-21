@@ -1,16 +1,21 @@
 import { Message } from 'discord.js'
 import { CumCounter } from './CumCounter'
 import { Gonk } from './Gonk'
+import { ThankYou } from './ThanksYou'
 
 export class MessageChecker {
 	private static flagged_expressions = [
 		{
-			regex: /cum/im,
+			regex: /c\s*u\s*m/im,
 			func: async (msg: Message) => await CumCounter.Counter(msg),
 		},
 		{
 			regex: /gonk/im,
-			func: async (msg: Message) => await Gonk.sendMessage(msg)
+			func: async (msg: Message) => await Gonk.sendMessage(msg),
+		},
+		{
+			regex: /thank\s*you\s*bruhbot/im,
+			func: async (msg: Message) => await ThankYou.sendMessage(msg),
 		}
 	]
 
