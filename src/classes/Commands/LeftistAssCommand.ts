@@ -11,18 +11,20 @@ export class LeftistAssCommand extends Command {
 		)
 	}
 	async execute(interaction: CommandInteraction) {
-		interaction.deferReply()
-		// TODO: UNABLE TO JOIN VOICE CHAT ERROR
-		const path = process.env.LEFTIST_ASS_PATH
-		if (!path) {
-			throw new LeftistAssActionError(
-				'Env variable LEFTIST_ASS_PATH undefined.',
-			)
-		}
-		try {
-			await Music.playFile(interaction, path)
-		} catch (e) {
-			// interaction.reply('There was an error playing the file')
-		}
+		interaction.reply({ content: 'This has not been implemented it' })
+		return
+		// interaction.deferReply()
+		// // TODO: UNABLE TO JOIN VOICE CHAT ERROR
+		// const path = process.env.LEFTIST_ASS_PATH
+		// if (!path) {
+		// 	throw new LeftistAssActionError(
+		// 		'Env variable LEFTIST_ASS_PATH undefined.',
+		// 	)
+		// }
+		// try {
+		// 	await Music.playFile(interaction, path)
+		// } catch (e) {
+		// 	// interaction.reply('There was an error playing the file')
+		// }
 	}
 }
