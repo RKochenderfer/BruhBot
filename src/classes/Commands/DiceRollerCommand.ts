@@ -31,13 +31,13 @@ export class RollCommand extends Command {
 	private buildRollInfo(dieCount: number, dieType: number): string {
 		// todo: test this
 		let built = ``
-		const test = `
-		===========================
-		| Dice Rolled | Dice Type |
-		| ----------- | --------- |
-		|     10      |    d6     |
-		===========================
-		`
+		// const test = `
+		// ===========================
+		// | Dice Rolled | Dice Type |
+		// | ----------- | --------- |
+		// |     10      |    d6     |
+		// ===========================
+		// `
 		const outSideBar = '==========================='
 		const tableHeader = `
 		| Dice Rolled | Dice Type |
@@ -105,7 +105,7 @@ export class RollCommand extends Command {
 		const rollInfoTable = this.buildRollInfo(dieCount, dieType)
 
 		const rollResultsTable = this.rollResultsTable(values)
-		
+
 		return `
 		${rollInfoTable}
 		${rollResultsTable}
@@ -155,6 +155,8 @@ export class RollCommand extends Command {
 			values.push(this.getRandomInt(dieType))
 		}
 
-		interaction.reply({ content: `${this.displayRoll(dieCount, dieType, values)}` })
+		interaction.reply({
+			content: `${this.displayRoll(dieCount, dieType, values)}`,
+		})
 	}
 }
