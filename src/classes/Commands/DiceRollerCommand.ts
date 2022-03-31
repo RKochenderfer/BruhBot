@@ -15,15 +15,17 @@ export class RollCommand extends Command {
 	private displayRoll(
 		dieCount: number,
 		dieType: number,
+		modifier: number,
 		values: number[],
 	): string {
 		const data = [
-			['Die Count', 'Die Type', 'Values', 'Total'],
+			['Die Count', 'Die Type', 'Values', 'Modifier', 'Total'],
 			[
 				dieCount,
 				`d${dieType}`,
 				values.toString(),
-				values.reduce((prev, curr) => prev + curr, 0),
+				modifier,
+				values.reduce((prev, curr) => prev + curr, 0) + modifier,
 			],
 		]
 		const asciiTable = new AsciiTable('Roll Info')
@@ -50,17 +52,32 @@ export class RollCommand extends Command {
 	}
 
 	async execute(interaction: CommandInteraction) {
-		const regex = /^\d+d\d+$/
+		const regex = /^\d+d\d+[+|-]\d/
 
-		const rollString = interaction.options.getString(RollCommand.rollTypeName)!
+		const rollString = interaction.options.getString(
+			RollCommand.rollTypeName,
+		)!
 		if (!regex.test(rollString)) {
-			interaction.reply({ content: 'Your roll must be formatted as #d#' })
+			interaction.reply({
+				content: 'Your roll must be formatted as `#d#` or `#d#[+|-]#`',
+			})
 			return
 		}
 
-		const split = rollString.split('d')
+		let split = rollString.split('d')
+		let dieType = 0
+		let modifier = 0
+
+		if (split[1].includes('+')) {
+			const modSplit = split[1].split('+')
+			dieType = Number.parseInt(modSplit[0])
+			modifier = Number.parseInt(modSplit[1])
+		} else if (split[1].includes('-')) {
+			const modSplit = split[1].split('-')
+			dieType = Number.parseInt(modSplit[0])
+			modifier = -1 * Number.parseInt(modSplit[1])
+		}
 		const dieCount = Number.parseInt(split[0])
-		const dieType = Number.parseInt(split[1])
 
 		let values = []
 		for (let i = 0; i < dieCount; i++) {
@@ -68,7 +85,7 @@ export class RollCommand extends Command {
 		}
 
 		interaction.reply({
-			content: this.displayRoll(dieCount, dieType, values)
+			content: this.displayRoll(dieCount, dieType, modifier, values),
 		})
 	}
 }
