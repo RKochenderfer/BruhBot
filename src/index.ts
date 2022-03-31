@@ -23,8 +23,8 @@ const client = new Client({
 // Add listeners
 client.once('ready', async () => {
 	console.log(`Logged in as ${client.user?.tag}`)
-	const db = new Database()
-	await db.connectToDatabase()
+	// const db = new Database()
+	// await db.connectToDatabase()
 })
 
 client.on('guildMemberAdd', member => {
@@ -71,7 +71,7 @@ client.on('interactionCreate', async interaction => {
 	} catch (ex) {
 		interaction.reply(`There was an error executing that command`)
 		console.error(ex)
-	}	
+	}
 })
 
 client.on('error', error => {

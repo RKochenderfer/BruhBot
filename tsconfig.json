@@ -8,7 +8,8 @@
       "forceConsistentCasingInFileNames": true,
       "noImplicitAny": true,
       "outDir": "build/",
-      "sourceMap": true
+      "sourceMap": true,
+      "allowJs": true
     },
     "$schema": "https://json.schemastore.org/tsconfig",
     "display": "Recommended",
