@@ -1,8 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders'
 import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
-
-var AsciiTable = require('../AsciiTable/ascii-data-table')
+import { AsciiTable } from '../AsciiTable'
 
 export class RollCommand extends Command {
 	private static dieCountName = 'count'
@@ -17,13 +16,19 @@ export class RollCommand extends Command {
 		dieType: number,
 		values: number[],
 	): string {
-		var items = [
-			['x', 'y'],
-			['a', 'b'],
-			['c', 'd'],
+		const data = [
+			['Die Count', 'Die Type', 'Values', 'Total'],
+			[
+				dieCount,
+				`d${dieType}`,
+				values.toString(),
+				values.reduce((prev, curr) => prev + curr, 0),
+			],
 		]
-		return AsciiTable.default.table(items)
+		const asciiTable = new AsciiTable('Roll Info')
+		let string = asciiTable.render(data)
 
+		return string
 		// return AsciiTable.default.run([['x', 'y'], ['a', 'b'], ['c', 'd']])
 	}
 
