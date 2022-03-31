@@ -18,13 +18,21 @@ export class RollCommand extends Command {
 		modifier: number,
 		values: number[],
 	): string {
+
+		let rollEntry = ''
+		if (modifier > 0) {
+			rollEntry = `${dieCount}d${dieType}+${modifier}`
+		} else if (modifier < 0) {
+			rollEntry = `${dieCount}d${dieType}-${modifier}`
+		} else {
+			rollEntry = `${dieCount}d${dieType}`
+		}
+		
 		const data = [
-			['Count', 'Type', 'Values', 'Modifier', 'Total'],
+			['Roll', 'Values','Total'],
 			[
-				dieCount,
-				`d${dieType}`,
+				rollEntry,
 				values.toString(),
-				modifier,
 				values.reduce((prev, curr) => prev + curr, 0) + modifier,
 			],
 		]
