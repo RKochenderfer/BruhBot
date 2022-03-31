@@ -19,7 +19,7 @@ export class RollCommand extends Command {
 		values: number[],
 	): string {
 		const data = [
-			['Die Count', 'Die Type', 'Values', 'Modifier', 'Total'],
+			['Count', 'Type', 'Values', 'Modifier', 'Total'],
 			[
 				dieCount,
 				`d${dieType}`,
@@ -52,7 +52,7 @@ export class RollCommand extends Command {
 	}
 
 	async execute(interaction: CommandInteraction) {
-		const regex = /^\d+d\d+[+|-]\d/
+		const regex = /^\d+d\d+([+|-]\d)?/
 
 		const rollString = interaction.options.getString(
 			RollCommand.rollTypeName,
@@ -76,6 +76,8 @@ export class RollCommand extends Command {
 			const modSplit = split[1].split('-')
 			dieType = Number.parseInt(modSplit[0])
 			modifier = -1 * Number.parseInt(modSplit[1])
+		} else {
+			dieType = Number.parseInt(split[1])
 		}
 		const dieCount = Number.parseInt(split[0])
 

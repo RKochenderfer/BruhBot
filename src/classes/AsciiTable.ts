@@ -5,6 +5,11 @@ export class AsciiTable {
 		this._heading = heading
 	}
 
+	/**
+	 * Render table
+	 * @param rows Data to be entered. First row is the column headers
+	 * @returns
+	 */
 	render(rows: any[][]): string {
 		return '`' + this.buildRows(rows) + '`'
 	}
@@ -53,8 +58,6 @@ export class AsciiTable {
 		return Math.max(...builtRows.map(row => row.length))
 	}
 
-	private buildHeader() {}
-
 	private getWidthOfColumns(data: any[][]): number[] {
 		let widths = []
 		for (let i = 0; i < data[0].length; i++) {
@@ -66,13 +69,5 @@ export class AsciiTable {
 		}
 
 		return widths
-	}
-
-	private getColumnWidth(data: any[][], colNumber: number): number {
-		let lengths: number[] = data.map(
-			row => row[colNumber].toString().length,
-		)
-
-		return Math.max(...lengths)
 	}
 }
