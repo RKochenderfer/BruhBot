@@ -7,52 +7,39 @@ export enum Align {
 	Auto,
 }
 
-export interface TableOptions {
-	name: string
-	nameAlign: Align
-	rows: []
-	maxCells: number
-	aligns: []
-	colMaxes: []
-	spacing: number
-	headingAlign: Align
-	heading: string | null
-	border: boolean
-    edge: string
-    fill: string
-    top: string
-    bottom: string
-}
-
-export class TableOptionsBuilder {
-    static default(): TableOptions {
-        return {
-            name: '',
-            nameAlign: Align.Center,
-            rows: [],
-            maxCells: 0,
-            aligns: [],
-            colMaxes: [],
-            spacing: 0,
-            headingAlign: Align.Center,
-            heading: null,
-            border: true,
-            edge: '|',
-            fill: '-',
-            top: '.',
-            bottom: "'"
-        } as TableOptions
-    }
-}
-
 export class AsciiTable {
 	private name: string
-	private options: TableOptions
-    private border = false
+	private nameAlign: Align
+	private rows: any[]
+	private maxCells: number
+	private aligns: Align[]
+	private colMaxes: any
+	private spacing: number
+	private headingAlign: Align
+	private heading: string | null
+	private border: boolean
+	private edge: string
+	private fill: string
+	private top: string
+	private bottom: string
+	private justify: boolean
 
-	constructor(name: string, options?: TableOptions) {
-		this.name = name
-		this.options = options ? options : ({} as TableOptions)
+	constructor(name?: string) {
+		this.name = name || ''
+		this.nameAlign = Align.Center
+		this.rows = []
+		this.maxCells = 0
+		this.aligns = []
+		this.colMaxes = []
+		this.spacing = 0
+		this.headingAlign = Align.Center
+		this.heading = null
+		this.border = true
+		this.edge = '|'
+		this.fill = '-'
+		this.top = '.'
+		this.bottom = "'"
+		this.justify = false
 	}
 
 	static align(
@@ -192,13 +179,170 @@ export class AsciiTable {
 		return array
 	}
 
-	private clear(name: string): TableOptions { // TODO: Pick up from here. This is the clear on line 191
-		const options = TableOptionsBuilder.default()
+	default() {
+		this.name = ''
+		this.nameAlign = Align.Center
+		this.rows = []
+		this.maxCells = 0
+		this.aligns = []
+		this.colMaxes = []
+		this.spacing = 0
+		this.headingAlign = Align.Center
+		this.heading = null
+		this.border = true
+		this.edge = '|'
+		this.fill = '-'
+		this.top = '.'
+		this.bottom = "'"
+	}
+
+	private clear(name: string) {
+		// TODO: Pick up from here. This is the clear on line 191
+		const options = this.default()
 
 		if (toString.call(name) === '[object String]') {
 			this.name = name
 		}
+	}
 
-        return options
+	/**
+	 * Sets the table border
+	 * @param edge
+	 * @param fill
+	 * @param top
+	 * @param bottom
+	 */
+	setBorer(edge?: string, fill?: string, top?: string, bottom?: string) {
+		this.border = true
+
+		this.edge = edge || '|'
+		this.fill = fill || '-'
+		this.top = top || '.'
+		this.bottom = bottom || "'"
+	}
+
+	/**
+	 * Removes the table border
+	 */
+	removeBorder() {
+		this.border = false
+		this.edge = ' '
+		this.fill = ' '
+	}
+
+	/**
+	 * Adds row to table
+	 * @param row
+	 */
+	addRow(row: any[]) {
+		this.maxCells = Math.max(this.maxCells, row.length)
+		this.rows.push(row)
+	}
+
+	/**
+	 * 
+	 * @returns The rows
+	 */
+	getRows() {
+		return this.rows.slice().map(row => row.slice())
+	}
+
+	/**
+	 * Adds a row matrix to rows
+	 * @param rows 
+	 */
+	addRowMatrix(rows: any[]) {
+		for (let i = 0; i < rows.length; i++) {
+			this.addRow(rows[i])
+		}
+	}
+
+	addData(data: any[], rowCallback: any, asMatrix: boolean) {
+		for (let index = 0, limit = data.length; index < limit; index++) {
+			let row = rowCallback(data[index])
+			if (asMatrix) {
+				this.addRowMatrix(row)
+			} else {
+				this.addRow(row)
+			}
+		}
+	}
+
+	clearRows() {
+		this.rows = []
+		this.maxCells = 0
+		this.colMaxes = []
+	}
+
+	setJustify(val: boolean) {
+		this.justify = val
+	}
+
+	render() {
+		let self = this,
+			body = [],
+			mLen = this.maxCells,
+			max = AsciiTable.arrayFill(mLen, 0),
+			total = mLen * 3,
+			rows = this.rows,
+			justify = 0,
+			border = this.border,
+			all = this.heading ? [this.heading].concat(rows) : rows
+
+		// Calculate max table cell lengths across all rows
+		for (var i = 0; i < all.length; i++) {
+			var row = all[i]
+			for (var k = 0; k < mLen; k++) {
+				var cell = row[k]
+				max[k] = Math.max(max[k], cell ? cell.toString().length : 0)
+			}
+		}
+		this.colMaxes = max
+		justify = this.justify ? Math.max.apply(null, max) : 0
+
+		// Get
+		max.forEach(function (x) {
+			total += justify ? justify : x + self.spacing
+		})
+		justify && (total += max.length)
+		total -= this.spacing
+
+		// Heading
+		border && body.push(this.separator(total - mLen + 1, this.top))
+		if (this.name) {
+			body.push(this.renderTitle(total - mLen + 1))
+			border && body.push(this.separator(total - mLen + 1))
+		}
+		if (this.heading) {
+			body.push(this.renderRow(this.heading, ' ', this.headingAlign))
+			body.push(this.rowSeperator(mLen, this.fill))
+		}
+		for (var i = 0; i < this.__rows.length; i++) {
+			body.push(this.renderRow(this.rows[i], ' '))
+		}
+		border && body.push(this.separator(total - mLen + 1, this.bottom))
+
+		var prefix = this.options.prefix || ''
+		return prefix + body.join('\n' + prefix)
+	}
+
+	private separator(length: number, sideValue?: string): string {
+		sideValue || (sideValue = this.edge)
+
+		return sideValue + AsciiTable.alignRight(sideValue, length, this.fill)
+	}
+
+	private rowSeparator() {
+		const blanks = AsciiTable.arrayFill(this.maxCells, this.fill)
+
+		return this.renderRow(blanks, this.fill)
+	}
+
+	private renderTitle(length: number): string {
+
+	}
+
+	private renderRow() {
+
 	}
 }
