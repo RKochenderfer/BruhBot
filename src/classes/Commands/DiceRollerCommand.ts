@@ -93,6 +93,10 @@ export class RollCommand extends Command {
 			values.push(this.getRandomInt(dieType))
 		}
 
+		console.log(
+			`Die Count: ${dieCount}\nDie Type: ${dieType}\nModifier: ${modifier}\nValues: ${values}`,
+		)
+
 		interaction.reply({
 			content: this.displayRoll(dieCount, dieType, modifier, values),
 		})

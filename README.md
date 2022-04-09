@@ -3,9 +3,11 @@
 Custom discord bot
 
 ## Build commands
-`docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t gimpflamingo/bruhbot --push .`
+
+`docker build . -t ghcr.io/rkochenderfer/bruhbot --push`
 
 ## Adding a new command
+
 1. Add the command to the Command enum at Command.ts
 2. Add the command to the methodMao in MessageMap.ts
 
@@ -17,6 +19,7 @@ Custom discord bot
             <th>Command</th>
             <th>Description</th>
             <th>Subcommands</th>
+            <th>Examples</th>
         </tr>
         <tr>
             <td>court</td>
@@ -37,11 +40,71 @@ Custom discord bot
                     <li>store - lists items in the store</li>
                 </ul>
             </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>bruh</td>
+            <td>Replies to the user with bruh</td>
+            <td></td>
+            <td>/bruh</td>
+        </tr>
+        <tr>
+            <td>roll</td>
+            <td>roll dice</td>
+            <td></td>
+            <td>/roll 2d6+1</td>
+        </tr>
+        <tr>
+            <td>hug</td>
+            <td>hug a user</td>
+            <td></td>
+            <td>/hug @user</td>
+        </tr>
+        <tr>
+            <td>insult</td>
+            <td>insult a user</td>
+            <td></td>
+            <td>/insult @user</td>
+        </tr>
+        <tr>
+            <td>kill</td>
+            <td>kill a user</td>
+            <td></td>
+            <td>/kill @user</td>
+        </tr>
+        <tr>
+            <td>socks</td>
+            <td>the socks commands</td>
+            <td>
+                <ul>
+                    <li>on - put your socks on</li>
+                    <li>off - take your socks off</li>
+                    <li>status - get the status of people's socks</li>
+                </ul>
+            </td>
+            <td>/socks on</td>
+        </tr>
+        <tr>
+            <td>ye</td>
+            <td>get a Ye quote</td>
+            <td></td>
+            <td>/ye</td>
+        </tr>
+        <tr>
+            <td>yee</td>
+            <td>bruhbot says yee</td>
+            <td></td>
+            <td>/yee</td>
         </tr>
     </tbody>
 </table>
 
+### Flagged Messages
+<table>
+
+</table>
+
 ## Troubleshooting
 
-* If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
-* ffmpeg is also required for the code to function
+-   If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
+-   ffmpeg is also required for the code to function
