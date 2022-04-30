@@ -7,6 +7,7 @@ export class RollCommand extends Command {
 	private static dieCountName = 'count'
 	private static diceTypeName = 'type'
 	private static rollTypeName = 'roll'
+	private static isWhisperName = 'whisper'
 
 	constructor() {
 		super('roll', 'rolls the specified die and the number to be rolled')
@@ -50,6 +51,12 @@ export class RollCommand extends Command {
 				.setDescription('number and type of dice to roll. ex: 2d6')
 				.setRequired(true),
 		)
+		builder.addBooleanOption(option =>
+			option
+				.setName(RollCommand.isWhisperName)
+				.setDescription('whisper the roll the user')
+				.setRequired(false),
+		)
 
 		return builder
 	}
@@ -64,6 +71,9 @@ export class RollCommand extends Command {
 		const rollString = interaction.options.getString(
 			RollCommand.rollTypeName,
 		)!
+		const isWhisper = interaction.options.getBoolean(
+			RollCommand.isWhisperName,
+		)
 		if (!regex.test(rollString)) {
 			interaction.reply({
 				content: 'Your roll must be formatted as `#d#` or `#d#[+|-]#`',
@@ -99,6 +109,7 @@ export class RollCommand extends Command {
 
 		interaction.reply({
 			content: this.displayRoll(dieCount, dieType, modifier, values),
+			ephemeral: isWhisper ? true : false,
 		})
 	}
 }
