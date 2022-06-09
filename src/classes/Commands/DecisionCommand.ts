@@ -16,7 +16,7 @@ export class DecisionCommand extends Command {
 			option
 				.setName(DecisionCommand.decisionName)
 				.setDescription(
-					'The options to choose from. Format: "option1, option2, option3"',
+					'The options to choose from. Format: "option1, option2, option3" or "option1 option2 option3"',
 				)
 				.setRequired(true),
 		)
@@ -29,7 +29,26 @@ export class DecisionCommand extends Command {
 			DecisionCommand.decisionName,
 		)
 
-		const split = options!.split(',').map(s => s.trim())
+        let split: string[] = [];
+        if (options!.includes(',')) {
+            split = options!.split(',')
+        } else if (options!.includes(' ')) {
+            split = options!.split(' ')
+        } else {
+            interaction.reply({
+                content: 'Your options must be formatted as `option1, option2, option3` or `option1 option2 option3`',
+            });
+            return
+        }
+		// if (options?.includes(',')) {
+		// 	split = options!.split(',').map(s => s.trim())
+		// } else if {
+        //     split = options!.split(' ').map(s => s.trim())
+        // } else {
+        //     interaction.reply({
+        //         content: 'Your options must be formatted as `option1, option2, option3` or `option1 option2 option3`',
+        //     })
+        // }
 
 		interaction.reply({
 			content: `I choose: ${

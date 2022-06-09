@@ -17,6 +17,7 @@ import { YeCommand } from './Commands/YeCommand'
 import { YeeCommand } from './Commands/YeeCommand'
 import { RollCommand } from './Commands/DiceRollerCommand'
 import { CourtCommand } from './Commands/CourtCommand'
+import { DecisionCommand } from './Commands/DecisionCommand'
 
 export class MessageMap {
 	private static methodMap = new Map<CommandType, Command>([
@@ -34,7 +35,8 @@ export class MessageMap {
 		[CommandType.ROLL, new RollCommand()],
 		[CommandType.INITIATIVE, new InitiativeCommand()],
 		[CommandType.TEAM_BUILDER, new TeamBuilderCommand()],
-		[CommandType.COURT, new CourtCommand()]
+		[CommandType.COURT, new CourtCommand()],
+		[CommandType.DECISION, new DecisionCommand()],
 	])
 
 	getCommand(command: CommandType): Command {
