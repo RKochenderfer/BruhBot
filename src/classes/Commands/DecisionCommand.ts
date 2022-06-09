@@ -40,15 +40,6 @@ export class DecisionCommand extends Command {
             });
             return
         }
-		// if (options?.includes(',')) {
-		// 	split = options!.split(',').map(s => s.trim())
-		// } else if {
-        //     split = options!.split(' ').map(s => s.trim())
-        // } else {
-        //     interaction.reply({
-        //         content: 'Your options must be formatted as `option1, option2, option3` or `option1 option2 option3`',
-        //     })
-        // }
 
 		interaction.reply({
 			content: `I choose: ${
