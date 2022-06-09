@@ -3,7 +3,6 @@ import { SlashCommandBuilder } from '@discordjs/builders'
 import { MessageMap } from '../classes/MessageMap'
 import { CommandData } from './CommandData'
 
-
 export enum CommandType {
 	BRUH = 'bruh',
 	CORPSE_FOUND = 'corpse_found',
@@ -19,7 +18,8 @@ export enum CommandType {
 	ROLL = 'roll',
 	INITIATIVE = 'initiative',
 	TEAM_BUILDER = 'team_builder',
-	COURT = 'court'
+	COURT = 'court',
+	DECISION = 'decision',
 }
 
 export class Command {
@@ -55,29 +55,33 @@ export class Command {
 				return CommandType.TEAM_BUILDER
 			case CommandType.COURT.toString():
 				return CommandType.COURT
+			case CommandType.DECISION.toString():
+				return CommandType.DECISION
 			default:
 				return undefined
 		}
 	}
 
-    static getCommandEnum(command: string): CommandType | undefined {
-        return this.commandMap(command)
-    }
+	static getCommandEnum(command: string): CommandType | undefined {
+		return this.commandMap(command)
+	}
 
 	static buildCommandDataMap(): any {
 		const commands = []
-		
+
 		for (const val in CommandType) {
 			const lowercaseVal = val.toLowerCase()
-			const builder = MessageMap.getSlashCommandBuilders(Command.commandMap(lowercaseVal)!)
-			
+			const builder = MessageMap.getSlashCommandBuilders(
+				Command.commandMap(lowercaseVal)!,
+			)
+
 			commands.push(builder.toJSON())
 		}
 
 		return commands
 		// let data: ApplicationCommandData[] = []
 		// for (const val in CommandType) {
-        //     const lowercaseVal = val.toLowerCase()
+		//     const lowercaseVal = val.toLowerCase()
 		// 	const toAdd: ApplicationCommandData = {
 		// 		name: lowercaseVal,
 		// 		description: MessageMap.getDescription(Command.commandMap(lowercaseVal)!),
