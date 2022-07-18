@@ -16,7 +16,15 @@ export class MessageChecker {
 		{
 			regex: /thank\s*you\s*bruhbot/im,
 			func: async (msg: Message) => await ThankYou.sendMessage(msg),
-		}
+		},
+		{
+			regex: /https:\/\/redgifs.com/i,
+			func: async (msg: Message) => await msg.delete(),
+		},
+		{
+			regex: /https:\/\/pornhub.com/i,
+			func: async (msg: Message) => await msg.delete(),
+		},
 	]
 
 	static async CheckMessage(msg: Message) {
