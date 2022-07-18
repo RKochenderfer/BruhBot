@@ -3,7 +3,6 @@ import { MessageMapError } from '../errors/MessageMapError'
 import { CommandType } from '../models/Command'
 import { Command } from './Commands/Command'
 import { BruhCommand } from './Commands/BruhCommand'
-import { BruhbotCommand } from './Commands/BruhbotCommand'
 import { CorpseFoundCommand } from './Commands/CorpseFoundCommand'
 import { HugCommand } from './Commands/HugCommand'
 import { InitiativeCommand } from './Commands/InitiativeCommand'
@@ -26,7 +25,6 @@ export class MessageMap {
 		[CommandType.YEE, new YeeCommand()],
 		[CommandType.HUG, new HugCommand()],
 		[CommandType.LEFTIST_ASS, new LeftistAssCommand()],
-		[CommandType.BRUHBOT, new BruhbotCommand()],
 		[CommandType.INSULT, new InsultCommand()],
 		[CommandType.KILL, new KillCommand()],
 		[CommandType.SOCKS, new SocksCommand()],
