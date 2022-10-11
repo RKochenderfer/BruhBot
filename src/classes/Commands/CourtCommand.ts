@@ -104,10 +104,12 @@ export class CourtCommand extends Command {
 								),
 						)
 						.addUserOption(option =>
-							option	
+							option
 								.setName(names.trialJudgeName)
-								.setDescription('Trials where this judge presided')
-						)
+								.setDescription(
+									'Trials where this judge presided',
+								),
+						),
 				)
 				.addSubcommand(option =>
 					option
@@ -180,17 +182,25 @@ export class CourtCommand extends Command {
 				.setDescription('Grants points to a mentioned attorney')
 				.addStringOption(option =>
 					option
-						.setName(names.trialId)	
+						.setName(names.trialId)
 						.setDescription('The trial id')
-						.setRequired(true)
+						.setRequired(true),
 				)
 				.addStringOption(option =>
 					option
 						.setName(names.grantAttorneyName)
 						.setDescription('Attorney to receive court points')
 						.setRequired(true)
-						.addChoice(names.setProsecutorName, names.setProsecutorName)
-						.addChoice(names.setDefendentName, names.setDefendentName)
+						.addChoices(
+							{
+								name: names.setProsecutorName,
+								value: names.setProsecutorName,
+							},
+							{
+								name: names.setDefendantName,
+								value: names.setDefendantName,
+							},
+						),
 				)
 				.addNumberOption(option =>
 					option
@@ -206,24 +216,32 @@ export class CourtCommand extends Command {
 				.setDescription('Deducts points to a mentioned attorney')
 				.addStringOption(option =>
 					option
-						.setName(names.trialId)	
+						.setName(names.trialId)
 						.setDescription('The trial id')
-						.setRequired(true)
+						.setRequired(true),
 				)
 				.addStringOption(option =>
 					option
 						.setName(names.grantAttorneyName)
 						.setDescription('Attorney to receive court points')
 						.setRequired(true)
-						.addChoice(names.setProsecutorName, names.setProsecutorName)
-						.addChoice(names.setDefendentName, names.setDefendentName)	
-				)					
+						.addChoices(
+							{
+								name: names.setProsecutorName,
+								value: names.setProsecutorName,
+							},
+							{
+								name: names.setDefendantName,
+								value: names.setDefendantName,
+							},
+						),
+				)
 				.addNumberOption(option =>
 					option
 						.setName(names.deductPointsAmountName)
 						.setDescription('The points to deduct from an attorney')
 						.setRequired(true),
-				)
+				),
 		)
 		// attorneys
 		builder.addSubcommand(option =>
@@ -244,7 +262,7 @@ export class CourtCommand extends Command {
 				)
 				.addUserOption(option =>
 					option
-						.setName(names.setDefendentName)
+						.setName(names.setDefendantName)
 						.setDescription('Sets the defendent for the trial')
 						.setRequired(true),
 				),

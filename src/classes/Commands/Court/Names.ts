@@ -44,7 +44,7 @@ export const setAttorneysName = 'attorneys'
 
 export const setProsecutorName = 'prosecutor'
 
-export const setDefendentName = 'defendent'
+export const setDefendantName = 'defendent'
 
 export const basicsName = 'basics'
 
