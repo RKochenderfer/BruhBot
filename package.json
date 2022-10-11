@@ -10,6 +10,7 @@
     "discord-api-types": "^0.37.12",
     "discord.js": "^13.12.0",
     "dotenv": "^8.6.0",
+    "expr-eval": "^2.0.2",
     "libsodium-wrappers": "^0.7.10",
     "mongodb": "^4.10.0",
     "node-fetch": "^2.6.7",
