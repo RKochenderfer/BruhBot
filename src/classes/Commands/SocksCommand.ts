@@ -20,9 +20,20 @@ export class SocksCommand extends Command {
 				.setName(SocksCommand.optionName)
 				.setDescription('The socks option')
 				.setRequired(true)
-				.addChoice('status', 'status')
-				.addChoice('off', 'off')
-				.addChoice('on', 'on'),
+				.addChoices(
+					{
+						name: 'status',
+						value: 'status'
+					},
+					{
+						name: 'off',
+						value: 'off'
+					},
+					{
+						name: 'on',
+						value: 'on'
+					}
+				)
 		)
 
 		return builder

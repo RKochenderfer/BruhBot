@@ -14,7 +14,7 @@ export class Attornies implements Court {
 		this.reply = new Reply(interaction)
 		const trialId = interaction.options.getString(names.trialId)
 		const prosecutorUser = interaction.options.getUser(names.setProsecutorName)!
-		const defenderUser = interaction.options.getUser(names.setDefendentName)!
+		const defenderUser = interaction.options.getUser(names.setDefendantName)!
 
         const prosecutor = new Attorney(prosecutorUser.id)
         const defender = new Attorney(defenderUser.id)
