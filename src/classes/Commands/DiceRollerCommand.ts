@@ -23,12 +23,14 @@ export class RollCommand extends Command {
 	): string {
 		let rollEntry = `${dieCount}d${dieType}${modifier}`
 
+		let mod = modifier === '' ? 0 : RollCommand.parser.evaluate(modifier)
+
 		const data = [
 			['Roll', 'Values', 'Total'],
 			[
 				rollEntry,
 				values.toString(),
-				values.reduce((prev, curr) => prev + curr, 0) + RollCommand.parser.evaluate(modifier),
+				values.reduce((prev, curr) => prev + curr, 0) + mod,
 			],
 		]
 		const asciiTable = new AsciiTable('Roll Info')
