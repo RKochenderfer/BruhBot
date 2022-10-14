@@ -50,6 +50,10 @@ client.on('messageCreate', async message => {
 			),
 			{ body: commands },
 		)
+
+		console.log(
+			`Deploying new commands to guild: ${message.guild?.name} id: ${message.guildId}`,
+		)
 	} else {
 		await MessageChecker.CheckMessage(message)
 	}
