@@ -104,7 +104,6 @@ client.on(Events.MessageCreate, async message => {
 		await updateCommands(message)
 		return
 	}
-	return
 	try {
 		await MessageChecker.CheckMessage(message)
 	} catch (error) {
@@ -127,7 +126,7 @@ client.on(
 			interaction.commandName,
 		) as Command
 
-		if (!command || interaction.commandName !== 'leftist') {
+		if (!command) {
 			logger.log(
 				'ERROR',
 				`No command matching ${interaction.commandName} was found`,
