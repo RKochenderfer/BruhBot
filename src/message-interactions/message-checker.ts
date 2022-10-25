@@ -27,8 +27,12 @@ export class MessageChecker {
 			func: async (msg: Message) => await msg.delete(),
 		},
 		{
-			regex: /how\sare\syou\sbruh\s?bot\??/i,
+			regex: /how\sare\syou(\sdoing)?\sbruh\s?bot\??/i,
 			func: async (msg: Message) => await HowAreYou.sendMessage(msg),
+		},
+		{
+			regex: /say\shi\sbruh\s?bot/i,
+			func: async (msg: Message) => await msg.channel.send('Hi'),
 		},
 	]
 
