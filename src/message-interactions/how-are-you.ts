@@ -8,7 +8,6 @@ export class HowAreYou {
 
 	public static async sendMessage(msg: Message) {
 		const val = Math.floor(Math.random() * 100)
-		console.log(val)
 		let file: AttachmentBuilder | null = null
 
 		if (val < sadRate) {
