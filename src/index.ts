@@ -138,7 +138,7 @@ client.on(
 			await command.execute(interaction)
 		} catch (error) {
 			logger.log('ERROR', error)
-			await interaction.followUp({
+			await interaction.reply({
 				content: 'There was an error executing this command!',
 				ephemeral: true,
 			})
