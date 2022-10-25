@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from '@discordjs/builders'
+import { SlashCommandBuilder } from 'discord.js'
 import { MessageMapError } from '../errors/MessageMapError'
 import { CommandType } from '../models/Command'
 import { Command } from './Commands/Command'

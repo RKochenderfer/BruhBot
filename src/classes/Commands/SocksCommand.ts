@@ -1,7 +1,6 @@
-import { CommandInteraction } from 'discord.js'
+import { CommandInteraction, SlashCommandBuilder, CommandInteractionOptionResolver } from 'discord.js'
 import { Command } from './Command'
 import { join } from 'path'
-import { SlashCommandBuilder } from '@discordjs/builders'
 import { FileHandler } from '../FileHandler'
 
 export class SocksCommand extends Command {
@@ -107,8 +106,9 @@ export class SocksCommand extends Command {
 		return json[interaction.guildId]
 	}
 
-	async execute(interaction: CommandInteraction) {
+	async execute(interaction: any) {
 		interaction.deferReply()
+		const resolver = interaction as CommandInteractionOptionResolver;
 		const option = interaction.options.getString(SocksCommand.optionName)
 
 		if (!option) {

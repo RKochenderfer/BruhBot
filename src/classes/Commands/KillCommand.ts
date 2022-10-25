@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from '@discordjs/builders'
+import { SlashCommandBuilder } from 'discord.js'
 import { CommandInteraction } from 'discord.js'
 import { Command } from './Command'
 import { join } from 'path'

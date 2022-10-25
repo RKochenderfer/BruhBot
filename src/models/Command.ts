@@ -1,5 +1,5 @@
 import { ApplicationCommandData } from 'discord.js'
-import { SlashCommandBuilder } from '@discordjs/builders'
+import { SlashCommandBuilder } from 'discord.js'
 import { MessageMap } from '../classes/MessageMap'
 import { CommandData } from './CommandData'
 

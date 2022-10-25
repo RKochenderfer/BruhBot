@@ -1,5 +1,5 @@
-import { ApplicationCommandOptionData, CommandInteraction } from 'discord.js'
-import { SlashCommandBuilder } from '@discordjs/builders'
+import { ApplicationCommandOptionData, CommandInteraction, CommandInteractionOptionResolver } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 
 export abstract class Command {
 	_name: string
@@ -17,5 +17,5 @@ export abstract class Command {
 			.setDescription(this._description)
 	}
 
-	abstract execute(interaction: CommandInteraction): Promise<void>
+	abstract execute(interaction: CommandInteraction | CommandInteractionOptionResolver): Promise<void>
 }
