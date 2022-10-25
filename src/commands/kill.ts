@@ -1,5 +1,12 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
+import {
+	AttachmentBuilder,
+	ChatInputCommandInteraction,
+	GuildMember,
+	SlashCommandBuilder,
+} from 'discord.js'
 import { FileHandler } from '../message-interactions/file-handler'
+import { botUserId } from '../../config.json'
+
 const KILL_MESSAGES_PATH = './killMessages.json'
 
 module.exports = {
@@ -17,7 +24,21 @@ module.exports = {
 		const fh = new FileHandler(KILL_MESSAGES_PATH)
 		try {
 			const json: any = await fh.readFile()
-			const target = interaction.options.getMentionable('user')
+			const target = interaction.options.getMentionable(
+				'user',
+			) as GuildMember
+
+			console.log(target.user.id)
+
+			// if the target user is bruh bot refuse
+			if (target.user.id === botUserId) {
+				const file = new AttachmentBuilder(
+					'./assets/gifs/no-i-dont-think-i-will.gif',
+				)
+
+				interaction.reply({ files: [file] })
+				return
+			}
 
 			if (target && target.valueOf() !== interaction.user.id) {
 				const index = Math.floor(
