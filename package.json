@@ -10,13 +10,13 @@
     "dotenv": "^8.6.0",
     "expr-eval": "^2.0.2",
     "libsodium-wrappers": "^0.7.10",
-    "mongodb": "^4.10.0",
     "node-fetch": "^2.6.7",
     "ytdl-core": "^3.4.2"
   },
   "scripts": {
     "test": "mocha",
-    "start": "tsc && node build/index.js"
+    "start": "tsc && node build/src/index.js",
+    "lint": "npx eslint ."
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,9 @@
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
     "@types/jest": "^27.5.2",
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "eslint": "^8.26.0",
     "jest": "^27.5.1",
     "prettier": "2.3.2",
     "ts-jest": "^27.1.5",

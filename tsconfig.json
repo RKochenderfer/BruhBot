@@ -9,9 +9,11 @@
       "noImplicitAny": true,
       "outDir": "build/",
       "sourceMap": true,
-      "allowJs": true
+      "allowJs": true,
+      "useUnknownInCatchVariables": false,
+      "resolveJsonModule": true
     },
     "$schema": "https://json.schemastore.org/tsconfig",
     "display": "Recommended",
-    "include": ["./src/**/*"]
+    "include": ["src/**/*"]
   }
