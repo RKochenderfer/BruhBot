@@ -14,6 +14,7 @@ import { Logger } from './log'
 import { token } from '../config.json'
 import BotClient from './bot-client'
 import Command from './commands/command'
+import { MessageChecker } from './message-interactions/message-checker'
 
 const logger = new Logger()
 
@@ -49,12 +50,19 @@ const client: BotClient = new Client({
 		GatewayIntentBits.GuildMessages,
 		GatewayIntentBits.GuildVoiceStates,
 		GatewayIntentBits.GuildPresences,
+		GatewayIntentBits.MessageContent,
 	],
 	partials: [Partials.Message, Partials.Channel],
 })
 
-client.on(Events.MessageCreate, message => {
-	console.log('message found', message)
+client.on(Events.MessageCreate, async message => {
+	if (message.author.bot) return
+
+	try {
+		await MessageChecker.CheckMessage(message)
+	} catch (error) {
+		logger.log('ERROR', error)
+	}
 })
 
 /**

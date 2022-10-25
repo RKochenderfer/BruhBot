@@ -1,5 +1,5 @@
 import { REST, Routes } from 'discord.js'
-import { token, clientId, guildId } from '../config.json'
+import { token, clientId } from '../config.json'
 
 const commands: any[] = []
 const rest = new REST({ version: '10' }).setToken(token)
