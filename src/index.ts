@@ -21,6 +21,7 @@ import { MessageChecker } from './message-interactions/message-checker'
 
 export const logger = new Logger()
 
+
 /**
  * Reads the files in commands and builds the commands
  * @param client The bot client instance
@@ -55,7 +56,7 @@ const client: BotClient = new Client({
 		GatewayIntentBits.GuildPresences,
 		GatewayIntentBits.MessageContent,
 	],
-	partials: [Partials.Message, Partials.Channel],
+	partials: [Partials.Message, Partials.Channel, Partials.User],
 })
 
 const updateCommands = async (message: Message) => {
@@ -103,7 +104,7 @@ client.on(Events.MessageCreate, async message => {
 		await updateCommands(message)
 		return
 	}
-
+	return
 	try {
 		await MessageChecker.CheckMessage(message)
 	} catch (error) {
@@ -126,7 +127,7 @@ client.on(
 			interaction.commandName,
 		) as Command
 
-		if (!command) {
+		if (!command || interaction.commandName !== 'leftist') {
 			logger.log(
 				'ERROR',
 				`No command matching ${interaction.commandName} was found`,

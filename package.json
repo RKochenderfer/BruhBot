@@ -4,6 +4,7 @@
   "description": "A custom discord bot",
   "main": "index.js",
   "dependencies": {
+    "@discordjs/voice": "^0.13.0",
     "bson": "^4.7.0",
     "discord-api-types": "^0.37.12",
     "discord.js": "^14.6.0",
