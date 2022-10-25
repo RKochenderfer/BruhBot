@@ -7,16 +7,19 @@ import {
 	Collection,
 	Events,
 	GatewayIntentBits,
+	Message,
 	Partials,
+	REST,
+	Routes,
 } from 'discord.js'
 import { Logger } from './log'
 
-import { token } from '../config.json'
+import { token, clientId } from '../config.json'
 import BotClient from './bot-client'
-import Command from './commands/command'
+import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
 
-const logger = new Logger()
+export const logger = new Logger()
 
 /**
  * Reads the files in commands and builds the commands
@@ -55,8 +58,51 @@ const client: BotClient = new Client({
 	partials: [Partials.Message, Partials.Channel],
 })
 
+const updateCommands = async (message: Message) => {
+	logger.log('INFO', `Updating commands for guild: ${message.guildId} at ${getTimestamp()}`)
+	const commands: any[] = []
+	const rest = new REST({ version: '10' }).setToken(token)
+
+	try {
+		const commandsPath = path.join(__dirname, 'commands')
+		const commandFiles = fs
+			.readdirSync(commandsPath)
+			.filter(file => file.endsWith('.js'))
+
+		for (const file of commandFiles) {
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
+			const command = require(`./commands/${file}`)
+			commands.push(command.data.toJSON())
+		}
+
+		logger.log(
+			'INFO',
+			`Started refreshing ${commands.length} application (/) commands`,
+		)
+
+		if (!message.guildId) return
+
+		const data: any = await rest.put(
+			Routes.applicationGuildCommands(clientId, message.guildId),
+			{ body: commands },
+		)
+
+		logger.log(
+			'INFO',
+			`Successfully reloaded ${data.length} application (/) commands`,
+		)
+	} catch (error) {
+		logger.log('ERROR', error)
+	}
+}
+
 client.on(Events.MessageCreate, async message => {
 	if (message.author.bot) return
+
+	if (message.content === '!deploy' && message.author.id === '208376655129870346') {
+		await updateCommands(message)
+		return
+	}
 
 	try {
 		await MessageChecker.CheckMessage(message)
@@ -92,13 +138,20 @@ client.on(
 			await command.execute(interaction)
 		} catch (error) {
 			logger.log('ERROR', error)
-			await interaction.reply({
+			await interaction.followUp({
 				content: 'There was an error executing this command!',
 				ephemeral: true,
 			})
 		}
 	},
 )
+
+const getTimestamp = () => {
+	const pad = (n: any, s = 2) => (`${new Array(s).fill(0)}${n}`).slice(-s)
+	const d = new Date()
+
+	return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
+}
 
 try {
 	client.commands = new Collection()
@@ -107,7 +160,7 @@ try {
 
 	// Log that client is online
 	client.once('ready', async (c: any) => {
-		logger.log('INFO', `Ready! logged in as ${c.user.tag} at ${Date.now()}`)
+		logger.log('INFO', `Ready! logged in as ${c.user.tag} at ${getTimestamp()}`)
 	})
 
 	client.login(token)
