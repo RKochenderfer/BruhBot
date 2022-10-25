@@ -2,6 +2,7 @@ import { Message } from 'discord.js'
 import { CumCounter } from './cum-counter'
 import { Gonk } from './gonk'
 import { ThankYou } from './thank-you'
+import { HowAreYou } from './how-are-you'
 
 export class MessageChecker {
 	private static flagged_expressions = [
@@ -24,6 +25,10 @@ export class MessageChecker {
 		{
 			regex: /https:\/\/pornhub.com/i,
 			func: async (msg: Message) => await msg.delete(),
+		},
+		{
+			regex: /how\sare\syou\sbruh\s?bot\??/i,
+			func: async (msg: Message) => await HowAreYou.sendMessage(msg),
 		},
 	]
 
