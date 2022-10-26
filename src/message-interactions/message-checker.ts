@@ -36,12 +36,15 @@ export class MessageChecker {
 		},
 	]
 
-	static async CheckMessage(msg: Message) {
+	static async CheckMessage(msg: Message): Promise<string | undefined> {
 		for (let i = 0; i < MessageChecker.flagged_expressions.length; i++) {
 			const tar = MessageChecker.flagged_expressions[i]
 			const regex = tar.regex
 
-			if (regex.test(msg.content)) await tar.func(msg)
+			if (regex.test(msg.content)) {
+				await tar.func(msg)
+				return regex.toString()
+			}
 		}
 	}
 }

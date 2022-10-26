@@ -28,7 +28,6 @@ if (!process.env.TOKEN) {
 	throw new Error('Bot user ID not found in env.')
 }
 
-
 /**
  * Reads the files in commands and builds the commands
  * @param client The bot client instance
@@ -65,8 +64,14 @@ const client: BotClient = new Client({
 	partials: [Partials.Message, Partials.Channel, Partials.User],
 })
 
+/**
+ * Updates the / commands for a server
+ * @param message The sent message
+ */
 const updateCommands = async (message: Message) => {
-	logger.logInfo(`Updating commands for guild: ${message.guildId} at ${getTimestamp()}`)
+	logger.logInfo(
+		`Updating commands for guild: ${message.guildId} at ${getTimestamp()}`,
+	)
 	const commands: any[] = []
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
 
@@ -89,7 +94,10 @@ const updateCommands = async (message: Message) => {
 		if (!message.guildId) return
 
 		const data: any = await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
+			Routes.applicationGuildCommands(
+				process.env.CLIENT_ID!,
+				message.guildId,
+			),
 			{ body: commands },
 		)
 
@@ -103,15 +111,30 @@ const updateCommands = async (message: Message) => {
 
 client.on(Events.MessageCreate, async message => {
 	if (message.author.bot) return
-
-	if (message.content === '!deploy' && message.author.id === '208376655129870346') {
+	if (
+		message.content === '!deploy' &&
+		message.author.id === '208376655129870346'
+	) {
 		await updateCommands(message)
 		return
 	}
+
+	const start = Date.now()
+	let phrase: string | undefined
 	try {
-		await MessageChecker.CheckMessage(message)
+		phrase = await MessageChecker.CheckMessage(message)
 	} catch (error) {
 		logger.logError(error)
+	}
+
+	if (phrase) {
+		logger.logInfo(
+			`Time to complete checker on phrase: ${phrase} - ${
+				Date.now() - start
+			}ms`,
+		)
+	} else {
+		logger.logInfo(`Time to complete checker - ${Date.now() - start}ms`)
 	}
 })
 
@@ -137,6 +160,7 @@ client.on(
 			return
 		}
 
+		const start = Date.now()
 		try {
 			await command.execute(interaction)
 		} catch (error) {
@@ -146,14 +170,24 @@ client.on(
 				ephemeral: true,
 			})
 		}
+		logger.logInfo(
+			`Time to complete command ${interaction.commandName} - ${
+				Date.now() - start
+			}ms`,
+		)
 	},
 )
 
 const getTimestamp = () => {
-	const pad = (n: any, s = 2) => (`${new Array(s).fill(0)}${n}`).slice(-s)
+	const pad = (n: any, s = 2) => `${new Array(s).fill(0)}${n}`.slice(-s)
 	const d = new Date()
 
-	return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
+	return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(
+		d.getDate(),
+	)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(
+		d.getMilliseconds(),
+		3,
+	)}`
 }
 
 try {
