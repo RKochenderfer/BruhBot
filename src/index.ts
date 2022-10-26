@@ -115,6 +115,7 @@ const logMessage = (message: Message, start: number, regexString?: string, error
 		discordInfo: {
 			channelId: message.channelId,
 			guildId: message.guildId,
+			guildName: message.guild?.name,
 			content: message.content,
 			regex: regexString == undefined ? null : regexString,
 			isError: error != null,
@@ -162,6 +163,7 @@ const logInteraction = (interaction: BaseInteraction, commandType: string, comma
 		discordInfo: {
 			channelId: interaction.channelId,
 			guildId: interaction.guildId,
+			guildName: interaction.guild?.name,
 			command: commandName,
 			commandType: commandType,
 			isError: error != undefined,
