@@ -31,7 +31,7 @@ export class MessageChecker {
 			func: async (msg: Message) => await HowAreYou.sendMessage(msg),
 		},
 		{
-			regex: /say\shi\sbruh\s?bot/i,
+			regex: /(say\s)?hi\sbruh\s?bot/i,
 			func: async (msg: Message) => await msg.channel.send('Hi'),
 		},
 	]
