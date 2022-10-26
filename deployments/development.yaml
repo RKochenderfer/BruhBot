@@ -6,7 +6,6 @@ services:
     volumes: 
       - ../build:/app/build
       - data:/app/data
-    restart: always
     environment:
       - TOKEN=$TOKEN
       - CLIENT_ID=$CLIENT_ID
