@@ -13,3 +13,4 @@ cum-counter.json/
 *.yaml
 *.env.*
 cum-counter.json
+config/

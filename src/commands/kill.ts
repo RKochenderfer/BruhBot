@@ -3,13 +3,14 @@ import {
 	ChatInputCommandInteraction,
 	GuildMember,
 	SlashCommandBuilder,
+	ThreadMemberManager,
 } from 'discord.js'
 import { FileHandler } from '../message-interactions/file-handler'
 import { join } from 'path'
 
 const KILL_MESSAGES_PATH = join(
 	__dirname,
-	'../../../data/kill-messages.json',
+	'../../data/kill-messages.json',
 )
 
 module.exports = {
@@ -30,8 +31,6 @@ module.exports = {
 			const target = interaction.options.getMentionable(
 				'user',
 			) as GuildMember
-
-			console.log(target.user.id)
 
 			// if the target user is bruh bot refuse
 			if (target.user.id === process.env.BOT_USER_ID!) {
