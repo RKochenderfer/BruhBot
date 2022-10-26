@@ -11,3 +11,5 @@ cum-counter.json/
 .eslintignore
 .eslintrc.json
 *.yaml
+*.env.*
+cum-counter.json

@@ -5,7 +5,6 @@ import {
 	SlashCommandBuilder,
 } from 'discord.js'
 import { FileHandler } from '../message-interactions/file-handler'
-import { botUserId } from '../../config.json'
 import { join } from 'path'
 
 const KILL_MESSAGES_PATH = join(
@@ -35,7 +34,7 @@ module.exports = {
 			console.log(target.user.id)
 
 			// if the target user is bruh bot refuse
-			if (target.user.id === botUserId) {
+			if (target.user.id === process.env.BOT_USER_ID!) {
 				const file = new AttachmentBuilder(
 					'./assets/gifs/no-i-dont-think-i-will.gif',
 				)

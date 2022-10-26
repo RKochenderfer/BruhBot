@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  bruhbot:
+    container_name: bruhbot-dev
+    image: ghcr.io/rkochenderfer/bruhbot:latest
+    volumes: 
+      - data:/app/data
+    restart: always
+    environment:
+      - TOKEN=$TOKEN
+      - CLIENT_ID=$CLIENT_ID
+      - SAD_RATE=$SAD_RATE
+      - BOT_USER_ID=$BOT_USER_ID
+volumes:
+  data:

@@ -1,5 +1,4 @@
 import { AttachmentBuilder, Message } from 'discord.js'
-import { sadRate } from '../../config.json'
 
 export class HowAreYou {
 	static weGoodPath = './assets/gifs/we-good.gif'
@@ -10,7 +9,7 @@ export class HowAreYou {
 		const val = Math.floor(Math.random() * 100)
 		let file: AttachmentBuilder | null = null
 
-		if (val < sadRate) {
+		if (val < (process.env.SAD_RATE ?? 10)) {
 			if (val % 2 === 1) {
 				file = new AttachmentBuilder(this.goodbyeMyLover)
 			} else {

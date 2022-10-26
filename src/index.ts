@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+
 import {
 	BaseInteraction,
 	ChatInputCommandInteraction,
@@ -13,13 +14,19 @@ import {
 	Routes,
 } from 'discord.js'
 import { Logger } from './log'
-
-import { token, clientId } from '../config.json'
 import BotClient from './bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
 
 export const logger = new Logger()
+
+if (!process.env.TOKEN) {
+	throw new Error('Token not found in env.')
+} else if (!process.env.CLIENT_ID) {
+	throw new Error('Client ID not found in env.')
+} else if (!process.env.BOT_USER_ID) {
+	throw new Error('Bot user ID not found in env.')
+}
 
 
 /**
@@ -61,7 +68,7 @@ const client: BotClient = new Client({
 const updateCommands = async (message: Message) => {
 	logger.logInfo(`Updating commands for guild: ${message.guildId} at ${getTimestamp()}`)
 	const commands: any[] = []
-	const rest = new REST({ version: '10' }).setToken(token)
+	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
 
 	try {
 		const commandsPath = path.join(__dirname, 'commands')
@@ -82,7 +89,7 @@ const updateCommands = async (message: Message) => {
 		if (!message.guildId) return
 
 		const data: any = await rest.put(
-			Routes.applicationGuildCommands(clientId, message.guildId),
+			Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
 			{ body: commands },
 		)
 
@@ -159,7 +166,7 @@ try {
 		logger.logInfo(`Ready! logged in as ${c.user.tag} at ${getTimestamp()}`)
 	})
 
-	client.login(token)
+	client.login(process.env.TOKEN)
 } catch (error) {
 	logger.logError(error.message)
 }
