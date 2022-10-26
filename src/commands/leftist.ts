@@ -46,17 +46,15 @@ module.exports = {
 			const player = createAudioPlayer()
 
 			player.on('stateChange', (oldState, newState) => {
-				logger.log(
-					'INFO',
+				logger.logInfo(
 					`Connection transitioned from ${oldState.toString()} to ${newState.toString()}`,
 				)
 			})
 			player.on(AudioPlayerStatus.Playing, () => {
-				logger.log('INFO', `playing ${LEFTIST_ASS_PATH}`)
+				logger.logInfo(`playing ${LEFTIST_ASS_PATH}`)
 			})
 			player.on('error', error => {
-				logger.log(
-					'WARN',
+				logger.logWarn(
 					`Error: ${error.message} with resource ${LEFTIST_ASS_PATH}`,
 				)
 
@@ -74,7 +72,7 @@ module.exports = {
 			// await timers.setTimeout(5000)
 			// connection.destroy()
 		} catch (error) {
-			logger.log('ERROR', error)
+			logger.logError(error.message)
 		}
 	},
 }

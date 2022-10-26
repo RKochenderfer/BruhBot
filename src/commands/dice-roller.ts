@@ -65,8 +65,7 @@ const processRoll = (rollString: string): string => {
 		values.push(getRandomInt(dieType))
 	}
 
-	logger.log(
-		'INFO',
+	logger.logInfo(
 		`--------------\n*ROLL COMMAND*\nDie Count: ${dieCount}\nDie Type: ${dieType}\nModifier: ${modString}\nValues: ${values}\n--------------`,
 	)
 

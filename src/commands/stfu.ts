@@ -13,14 +13,14 @@ module.exports = {
 		try {
 			const connection = getVoiceConnection(interaction.guildId)
 
-			logger.log('INFO', `Attempting to disconnect bruhbot from guild: ${interaction.guildId}`)
+			logger.logInfo(`Attempting to disconnect bruhbot from guild: ${interaction.guildId}`)
 			connection?.destroy()
 			interaction.reply({
 				content: 'Attempting to disconnect',
 				ephemeral: true,
 			})
 		} catch (error) {
-			logger.log('ERROR', error)
+			logger.logError(error.message)
 		}
 	},
 }

@@ -40,8 +40,7 @@ const getCommands = (client: BotClient) => {
 		if ('data' in command && 'execute' in command) {
 			client.commands?.set(command.data.name, command)
 		} else {
-			logger.log(
-				'WARNING',
+			logger.logWarn(
 				`The command at ${filePath} is missing a required "data" or "execute" property.`,
 			)
 		}
@@ -60,7 +59,7 @@ const client: BotClient = new Client({
 })
 
 const updateCommands = async (message: Message) => {
-	logger.log('INFO', `Updating commands for guild: ${message.guildId} at ${getTimestamp()}`)
+	logger.logInfo(`Updating commands for guild: ${message.guildId} at ${getTimestamp()}`)
 	const commands: any[] = []
 	const rest = new REST({ version: '10' }).setToken(token)
 
@@ -76,8 +75,7 @@ const updateCommands = async (message: Message) => {
 			commands.push(command.data.toJSON())
 		}
 
-		logger.log(
-			'INFO',
+		logger.logInfo(
 			`Started refreshing ${commands.length} application (/) commands`,
 		)
 
@@ -88,12 +86,11 @@ const updateCommands = async (message: Message) => {
 			{ body: commands },
 		)
 
-		logger.log(
-			'INFO',
+		logger.logInfo(
 			`Successfully reloaded ${data.length} application (/) commands`,
 		)
 	} catch (error) {
-		logger.log('ERROR', error)
+		logger.logError(error)
 	}
 }
 
@@ -107,7 +104,7 @@ client.on(Events.MessageCreate, async message => {
 	try {
 		await MessageChecker.CheckMessage(message)
 	} catch (error) {
-		logger.log('ERROR', error)
+		logger.logError(error)
 	}
 })
 
@@ -127,8 +124,7 @@ client.on(
 		) as Command
 
 		if (!command) {
-			logger.log(
-				'ERROR',
+			logger.logWarn(
 				`No command matching ${interaction.commandName} was found`,
 			)
 			return
@@ -137,7 +133,7 @@ client.on(
 		try {
 			await command.execute(interaction)
 		} catch (error) {
-			logger.log('ERROR', error)
+			logger.logError(error)
 			await interaction.reply({
 				content: 'There was an error executing this command!',
 				ephemeral: true,
@@ -160,10 +156,10 @@ try {
 
 	// Log that client is online
 	client.once('ready', async (c: any) => {
-		logger.log('INFO', `Ready! logged in as ${c.user.tag} at ${getTimestamp()}`)
+		logger.logInfo(`Ready! logged in as ${c.user.tag} at ${getTimestamp()}`)
 	})
 
 	client.login(token)
 } catch (error) {
-	logger.log('ERROR', error.message)
+	logger.logError(error.message)
 }
