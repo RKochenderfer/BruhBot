@@ -6,3 +6,8 @@ README.md
 LICENSE
 *.tar
 build/
+cum-counter.json/
+*.sh
+.eslintignore
+.eslintrc.json
+*.yaml

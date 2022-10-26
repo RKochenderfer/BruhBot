@@ -6,7 +6,7 @@ import { join } from 'path'
 export class CumCounter {
 	private static cumCounterFilePath = join(
 		__dirname,
-		'../../cum-counter.json',
+		'../../../data/cum-counter.json',
 	)
 
 	private static async pathExists(path: string) {

@@ -6,8 +6,12 @@ import {
 } from 'discord.js'
 import { FileHandler } from '../message-interactions/file-handler'
 import { botUserId } from '../../config.json'
+import { join } from 'path'
 
-const KILL_MESSAGES_PATH = './killMessages.json'
+const KILL_MESSAGES_PATH = join(
+	__dirname,
+	'../../../data/kill-messages.json',
+)
 
 module.exports = {
 	data: new SlashCommandBuilder()
