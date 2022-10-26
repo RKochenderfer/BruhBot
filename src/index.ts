@@ -13,7 +13,7 @@ import {
 	REST,
 	Routes,
 } from 'discord.js'
-import { Logger } from './log'
+import { DiscordInfo, Log, Logger, LogLevel, UserInfo } from './log'
 import BotClient from './bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
@@ -109,6 +109,28 @@ const updateCommands = async (message: Message) => {
 	}
 }
 
+const logMessage = (message: Message, start: number, regexString?: string, error?: Error) => {
+	logger.logInteraction({
+		logLevel: LogLevel.INFO,
+		discordInfo: {
+			channelId: message.channelId,
+			guildId: message.guildId,
+			content: message.content,
+			regex: regexString == undefined ? null : regexString,
+			isError: error != null,
+			error: error == undefined ? null : error,
+			author: {
+				id: message.author.id,
+				bot: message.author.bot,
+				username: message.author.username,
+				discriminator: message.author.discriminator,
+			} as UserInfo,
+		} as DiscordInfo,
+		executionTime: Date.now() - start,
+		timestamp: getTimestamp(),
+	} as Log)
+}
+
 client.on(Events.MessageCreate, async message => {
 	if (message.author.bot) return
 	if (
@@ -120,23 +142,41 @@ client.on(Events.MessageCreate, async message => {
 	}
 
 	const start = Date.now()
-	let phrase: string | undefined
+	let regexString: string | undefined
 	try {
-		phrase = await MessageChecker.CheckMessage(message)
+		regexString = await MessageChecker.CheckMessage(message)
 	} catch (error) {
-		logger.logError(error)
+		logMessage(message, start, error)
 	}
 
-	if (phrase) {
-		logger.logInfo(
-			`Time to complete checker on phrase: ${phrase} - ${
-				Date.now() - start
-			}ms`,
-		)
+	if (regexString) {
+		logMessage(message, start, regexString)
 	} else {
-		logger.logInfo(`Time to complete checker - ${Date.now() - start}ms`)
+		logMessage(message, start)
 	}
 })
+
+const logInteraction = (interaction: BaseInteraction, commandType: string, commandName: string, start: number, error?: Error) => {
+	logger.logInteraction({
+		logLevel: LogLevel.INFO,
+		discordInfo: {
+			channelId: interaction.channelId,
+			guildId: interaction.guildId,
+			command: commandName,
+			commandType: commandType,
+			isError: error != undefined,
+			error: error == undefined ? null : error,
+			author: {
+				id: interaction.user.id,
+				bot: interaction.user.bot,
+				username: interaction.user.username,
+				discriminator: interaction.user.discriminator,
+			} as UserInfo,
+		} as DiscordInfo,
+		executionTime: Date.now() - start,
+		timestamp: getTimestamp(),
+	} as Log)
+}
 
 /**
  * Handles the use of commands
@@ -164,17 +204,13 @@ client.on(
 		try {
 			await command.execute(interaction)
 		} catch (error) {
-			logger.logError(error)
+			logInteraction(baseInteraction, interaction.commandType.toString(), interaction.commandName, start, error)
 			await interaction.reply({
 				content: 'There was an error executing this command!',
 				ephemeral: true,
 			})
 		}
-		logger.logInfo(
-			`Time to complete command ${interaction.commandName} - ${
-				Date.now() - start
-			}ms`,
-		)
+		logInteraction(baseInteraction, interaction.commandType.toString(), interaction.commandName, start)
 	},
 )
 

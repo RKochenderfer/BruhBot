@@ -14,3 +14,4 @@ cum-counter.json/
 *.env.*
 cum-counter.json
 config/
+.vscode/

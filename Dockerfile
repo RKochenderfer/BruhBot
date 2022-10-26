@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:18-alpine
 RUN apk add --no-cache ffmpeg
 #  RUN apk add python3 make gcc g++ && apk add --no-cache ffmpeg && npm install typescript -g
 RUN npm install typescript -g && npm install -g pnpm
