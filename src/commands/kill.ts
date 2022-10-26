@@ -3,7 +3,6 @@ import {
 	ChatInputCommandInteraction,
 	GuildMember,
 	SlashCommandBuilder,
-	ThreadMemberManager,
 } from 'discord.js'
 import { FileHandler } from '../message-interactions/file-handler'
 import { join } from 'path'
