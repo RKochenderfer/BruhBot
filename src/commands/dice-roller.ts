@@ -71,7 +71,7 @@ const processRoll = (rollString: string): string => {
 
 	return displayRoll({
 		diceCount: dieCount,
-		dieType: dieCount,
+		dieType: dieType,
 		modifier: modString,
 		values: values,
 	} as RollInformation)
