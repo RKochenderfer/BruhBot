@@ -3,4 +3,4 @@ cd "$(dirname $0)"
 cd ../
 
 tsc
-docker compose -f deployments/development.yaml restart
+docker compose --env-file ./config/.env.dev -f deployments/development.yaml restart bruhbot

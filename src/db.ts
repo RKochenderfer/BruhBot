@@ -2,7 +2,7 @@ import { Collection, Db, MongoClient } from 'mongodb'
 import { logger } from './index'
 import { Log } from './log'
 
-export const collections: { servers?: Collection } = {}
+export const collections: { servers?: Collection; logs?: Collection } = {}
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -14,7 +14,9 @@ const connect = async () => {
 
 		const db = client.db(process.env.MONGO_INITDB_DATABASE!)
 		const serversCollection = db.collection('servers')
+		const logsCollection = db.collection('logs')
 		collections.servers = serversCollection
+		collections.logs = logsCollection
 
 		return true
 	} catch (error) {
@@ -32,15 +34,9 @@ export const connectToDatabase = async () => {
 	throw new Error('Unable to connect to db')
 }
 
-export const insertLog = (log: Log, db: Db) => {
+export const insertLog = (log: object) => {
 	try {
-		const result = collections.servers?.insertOne(log)
-
-		if (result) {
-			console.log('created')
-		} else {
-			console.log('failed')
-		}
+		collections.logs?.insertOne(log)
 	} catch (error) {
 		console.error(error)
 	}

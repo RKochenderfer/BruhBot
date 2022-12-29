@@ -255,18 +255,20 @@ const getTimestamp = () => {
 
 try {
 	connectToDatabase().then(() => {
-		console.log('Connected to database')
+		botClient.commands = new Collection()
+
+		getCommands(botClient)
+
+		// Log that client is online
+		botClient.once('ready', async (c: any) => {
+			logger.logInfo(
+				`Ready! logged in as ${c.user.tag} at ${getTimestamp()}`,
+			)
+		})
+
+		botClient.login(process.env.TOKEN)
 	})
-	botClient.commands = new Collection()
-
-	getCommands(botClient)
-
-	// Log that client is online
-	botClient.once('ready', async (c: any) => {
-		logger.logInfo(`Ready! logged in as ${c.user.tag} at ${getTimestamp()}`)
-	})
-
-	botClient.login(process.env.TOKEN)
+	
 } catch (error) {
 	logger.logError(error.message)
 }

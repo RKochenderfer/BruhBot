@@ -1,8 +1,4 @@
-import {
-	BaseInteraction,
-	ChatInputCommandInteraction,
-	Message,
-} from 'discord.js'
+import { insertLog } from './db'
 
 // eslint-disable-next-line no-shadow
 export enum LogLevel {
@@ -44,22 +40,38 @@ export interface Log {
  */
 export class Logger {
 	logInfo(message: string) {
-		console.log(`${LogLevel.INFO} - ${message}`)
+		insertLog({
+			level: LogLevel.INFO,
+			message: message
+		})
+		// console.log(`${LogLevel.INFO} - ${message}`)
 	}
 
 	logWarn(message: string) {
-		console.log(`${LogLevel.WARN} - ${message}`)
+		insertLog({
+			level: LogLevel.WARN,
+			message: message,
+		})
 	}
 
 	logError(log: Log) {
-		console.log(log)
+		insertLog({
+			level: LogLevel.ERROR,
+			message: log,
+		})
 	}
 
 	logDebug(message: string) {
-		console.log(`${LogLevel.DEBUG} - ${message}`)
+		insertLog({
+			level: LogLevel.DEBUG,
+			message: message,
+		})
 	}
 
 	logInteraction(log: Log) {
-		console.log(log)
+		insertLog({
+			level: LogLevel.INFO,
+			message: log,
+		})
 	}
 }
