@@ -16,6 +16,7 @@ module.exports = {
 	 * @param interaction
 	 */
 	async execute(interaction: CommandInteraction) {
+		interaction.deferReply()
 		const channels = interaction.guild?.channels.cache!
 		let pins: Pin[] = []
 
@@ -46,7 +47,7 @@ module.exports = {
 					guildId: interaction.guildId!,
 				},
 			}
-			db.collections.servers?.updateOne(
+			await db.collections.servers?.updateOne(
 				key,
 				newValues,
 				{ upsert: true },
@@ -56,7 +57,7 @@ module.exports = {
 			throw error
 		}
 
-		interaction.reply({
+		await interaction.followUp({
 			content: 'Complete',
 			ephemeral: true,
 		})

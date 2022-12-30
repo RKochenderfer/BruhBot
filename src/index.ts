@@ -72,6 +72,7 @@ const botClient: BotClient = new Client({
  * @param message The sent message
  */
 const updateCommands = async (message: Message) => {
+	console.log('Updating commands')
 	logger.logInfo(
 		`Updating commands for guild: ${message.guildId} at ${getTimestamp()}`,
 	)
