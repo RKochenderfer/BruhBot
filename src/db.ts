@@ -1,11 +1,13 @@
 import { Collection, Db, MongoClient } from 'mongodb'
-import { logger } from './index'
-import { InteractionLog } from './log'
 import Log from './models/log'
 import Server from './models/server'
 
-export const collections: { servers?: Collection<Server>; logs?: Collection<Log> } =
-	{}
+export type Database = {
+	servers?: Collection<Server>
+	logs?: Collection<Log>
+}
+
+export const collections: Database = {}
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 

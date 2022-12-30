@@ -227,10 +227,13 @@ botClient.on(
 				start,
 				error,
 			)
-			await interaction.reply({
-				content: 'There was an error executing this command!',
-				ephemeral: true,
-			})
+			if (!interaction.replied) {
+				await interaction.reply({
+					content: 'There was an error executing this command!',
+					ephemeral: true,
+				})
+			}
+			
 		}
 		logInteraction(
 			baseInteraction,
