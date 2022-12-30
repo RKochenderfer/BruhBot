@@ -1,22 +1,20 @@
-name: Docker Image CI
+name: Build Docker Image
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+    - 'master'
+
+# Required for secrets.GITHUB_TOKEN
+permissions:
+  packages: write
+  contents: read
 
 jobs:
-
-  build:
-
+  docker:
     runs-on: ubuntu-latest
-
     steps:
       - name: GHCR-Action
-        # You may pin to the exact commit or the version.
-        # uses: KuhlTime/ghcr-action@23e968fa8fb563a8e49d607d202cecf337b2f537
         uses: KuhlTime/ghcr-action@v1
         with:
-          # The GitHub token to interact with the registry. Normally 'secrets.GITHUB_TOKEN'
-          token: ${{ secrets.GITHUB.TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
