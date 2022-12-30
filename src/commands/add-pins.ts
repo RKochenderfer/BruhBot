@@ -5,7 +5,6 @@ import {
 } from 'discord.js'
 import * as db from '../db'
 import Pin from '../models/pin'
-import Server from '../models/server'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -47,7 +46,7 @@ module.exports = {
 					guildId: interaction.guildId!,
 				},
 			}
-			let result = db.collections.servers?.updateOne(
+			db.collections.servers?.updateOne(
 				key,
 				newValues,
 				{ upsert: true },

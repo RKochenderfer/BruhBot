@@ -227,8 +227,13 @@ botClient.on(
 				start,
 				error,
 			)
-			if (!interaction.replied) {
+			if (!interaction.deferred &&!interaction.replied) {
 				await interaction.reply({
+					content: 'There was an error executing this command!',
+					ephemeral: true,
+				})
+			} else if (interaction.deferred && !interaction.replied) {
+				await interaction.followUp({
 					content: 'There was an error executing this command!',
 					ephemeral: true,
 				})
