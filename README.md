@@ -1,5 +1,5 @@
 # BruhBot
-
+![Build and Deploy Status](https://github.com/RKochenderfer/BruhBot/blob/master/.github/workflows/docker-image.yml)
 Custom discord bot
 
 ## Build commands
