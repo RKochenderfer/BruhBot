@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import {
+	BaseGuildTextChannel,
 	BaseInteraction,
 	ChatInputCommandInteraction,
 	Client,
@@ -18,6 +19,7 @@ import BotClient from './bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
 import { connectToDatabase } from './db'
+import { updatePins } from './update-pins'
 
 export const logger = new Logger()
 
@@ -195,6 +197,15 @@ const logInteraction = (
 	} as InteractionLog)
 }
 
+botClient.on(Events.ChannelPinsUpdate, async channel => {
+	try {
+		const textChannel = channel as BaseGuildTextChannel
+		await updatePins(textChannel.guild.channels.cache, textChannel.guildId, textChannel.guild.name)
+	} catch (error) {
+		console.error(error)
+	}
+})
+
 /**
  * Handles the use of commands
  */
@@ -228,7 +239,7 @@ botClient.on(
 				start,
 				error,
 			)
-			if (!interaction.deferred &&!interaction.replied) {
+			if (!interaction.deferred && !interaction.replied) {
 				await interaction.reply({
 					content: 'There was an error executing this command!',
 					ephemeral: true,
@@ -239,7 +250,6 @@ botClient.on(
 					ephemeral: true,
 				})
 			}
-			
 		}
 		logInteraction(
 			baseInteraction,
