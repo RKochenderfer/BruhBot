@@ -36,12 +36,27 @@ export interface InteractionLog {
 }
 
 /**
+ * Returns the current UTC timestamp
+ * @returns
+ */
+const getCurrentTimestamp = () => {
+	const date = new Date()
+
+	return `${date.getUTCFullYear()}-${
+		date.getUTCMonth() + 1
+	}-${date.getUTCDate()}T${date.getUTCHours()}:${date.getUTCMinutes()}+${
+		date.getUTCSeconds
+	}Z`
+}
+
+/**
  * Handles the logging for the application
  */
 export class Logger {
 	logInfo(message: string) {
 		insertLog({
 			level: LogLevel.INFO,
+			timestamp: getCurrentTimestamp(),
 			message: message,
 		})
 	}
@@ -49,6 +64,7 @@ export class Logger {
 	logWarn(message: string) {
 		insertLog({
 			level: LogLevel.WARN,
+			timestamp: getCurrentTimestamp(),
 			message: message,
 		})
 	}
@@ -56,6 +72,7 @@ export class Logger {
 	logError(log: InteractionLog) {
 		insertLog({
 			level: LogLevel.ERROR,
+			timestamp: getCurrentTimestamp(),
 			interactionLog: log,
 		})
 	}
@@ -63,6 +80,7 @@ export class Logger {
 	logDebug(message: string) {
 		insertLog({
 			level: LogLevel.DEBUG,
+			timestamp: getCurrentTimestamp(),
 			message: message,
 		})
 	}
@@ -70,6 +88,7 @@ export class Logger {
 	logInteraction(log: InteractionLog) {
 		insertLog({
 			level: LogLevel.INFO,
+			timestamp: getCurrentTimestamp(),
 			interactionLog: log,
 		})
 	}
