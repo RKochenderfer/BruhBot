@@ -1,7 +1,7 @@
 export default class Server {
 	constructor(
 		public name: string,
-		public id: string,
+		public guildId: string,
 		public pins: string[]
 	) {}
 }

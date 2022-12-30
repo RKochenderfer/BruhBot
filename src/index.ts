@@ -13,7 +13,7 @@ import {
 	REST,
 	Routes,
 } from 'discord.js'
-import { DiscordInfo, Log, Logger, LogLevel, UserInfo } from './log'
+import { DiscordInfo, InteractionLog, Logger, LogLevel, UserInfo } from './log'
 import BotClient from './bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
@@ -137,7 +137,7 @@ const logMessage = (
 		} as DiscordInfo,
 		executionTime: Date.now() - start,
 		timestamp: getTimestamp(),
-	} as Log)
+	} as InteractionLog)
 }
 
 botClient.on(Events.MessageCreate, async message => {
@@ -191,7 +191,7 @@ const logInteraction = (
 		} as DiscordInfo,
 		executionTime: Date.now() - start,
 		timestamp: getTimestamp(),
-	} as Log)
+	} as InteractionLog)
 }
 
 /**
@@ -268,7 +268,6 @@ try {
 
 		botClient.login(process.env.TOKEN)
 	})
-	
 } catch (error) {
 	logger.logError(error.message)
 }

@@ -25,7 +25,7 @@ export interface DiscordInfo {
 	author?: UserInfo
 }
 
-export interface Log {
+export interface InteractionLog {
 	logLevel: LogLevel
 	discordInfo: DiscordInfo
 	executionTime: number
@@ -42,9 +42,8 @@ export class Logger {
 	logInfo(message: string) {
 		insertLog({
 			level: LogLevel.INFO,
-			message: message
+			message: message,
 		})
-		// console.log(`${LogLevel.INFO} - ${message}`)
 	}
 
 	logWarn(message: string) {
@@ -54,10 +53,10 @@ export class Logger {
 		})
 	}
 
-	logError(log: Log) {
+	logError(log: InteractionLog) {
 		insertLog({
 			level: LogLevel.ERROR,
-			message: log,
+			interactionLog: log,
 		})
 	}
 
@@ -68,10 +67,10 @@ export class Logger {
 		})
 	}
 
-	logInteraction(log: Log) {
+	logInteraction(log: InteractionLog) {
 		insertLog({
 			level: LogLevel.INFO,
-			message: log,
+			interactionLog: log,
 		})
 	}
 }
