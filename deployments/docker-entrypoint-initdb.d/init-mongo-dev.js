@@ -1,5 +1,5 @@
-print('#################### START ####################')
-db = db.getSiblingDB('bruhbot')
+print('#################### START ####################');
+db = db.getSiblingDB('bruhbot');
 db.createUser({
 	user: 'bruhbot',
 	pwd: 'password',
@@ -12,5 +12,7 @@ db.createUser({
 });
 
 db.createCollection('servers', { capped: false });
+db.servers.createIndex({ name: 1 });
 db.createCollection('logs');
-print('#################### END ####################')
+db.logs.createIndex({ _id: -1 });
+print('#################### END ####################');
