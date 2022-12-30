@@ -14,7 +14,7 @@ module.exports = {
 
 		try {
 			const result = await db.collections.servers?.findOne(query)
-
+			
 			if (!result) {
 				await interaction.followUp(
 					'There was an issue finding the server',
@@ -29,9 +29,11 @@ module.exports = {
 
 			const pinnedMessage =
 				result.pins![Math.floor(Math.random() * result.pins!.length)]
-			await interaction.followUp(pinnedMessage.message)
-		} catch (error) {
+			const author = await interaction.guild?.members.fetch(pinnedMessage.userId!)
 
+			await interaction.followUp(`> ${pinnedMessage.message}\n\t-**${author?.nickname ? author.nickname : author?.user.username}**`)
+		} catch (error) {
+			interaction.followUp('there was an error')
 		}
 		
 	}
