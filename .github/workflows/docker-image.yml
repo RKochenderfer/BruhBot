@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/rkochenderfer/bruhbot:latest && docker push ghcr.io/rkochenderfer/bruhbot:latest
+      - name: GHCR-Action
+        # You may pin to the exact commit or the version.
+        # uses: KuhlTime/ghcr-action@23e968fa8fb563a8e49d607d202cecf337b2f537
+        uses: KuhlTime/ghcr-action@v1
+        with:
+          # The GitHub token to interact with the registry. Normally 'secrets.GITHUB_TOKEN'
+          token: ${{ secrets.GITHUB.TOKEN }}
