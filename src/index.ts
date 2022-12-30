@@ -13,10 +13,11 @@ import {
 	REST,
 	Routes,
 } from 'discord.js'
-import { DiscordInfo, Log, Logger, LogLevel, UserInfo } from './log'
+import { DiscordInfo, InteractionLog, Logger, LogLevel, UserInfo } from './log'
 import BotClient from './bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
+import { connectToDatabase } from './db'
 
 export const logger = new Logger()
 
@@ -26,6 +27,8 @@ if (!process.env.TOKEN) {
 	throw new Error('Client ID not found in env.')
 } else if (!process.env.BOT_USER_ID) {
 	throw new Error('Bot user ID not found in env.')
+} else if (!process.env.MONGODB_CONNSTRING) {
+	throw new Error('No mongodb connection string found')
 }
 
 /**
@@ -53,7 +56,7 @@ const getCommands = (client: BotClient) => {
 	}
 }
 
-const client: BotClient = new Client({
+const botClient: BotClient = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
@@ -109,7 +112,12 @@ const updateCommands = async (message: Message) => {
 	}
 }
 
-const logMessage = (message: Message, start: number, regexString?: string, error?: Error) => {
+const logMessage = (
+	message: Message,
+	start: number,
+	regexString?: string,
+	error?: Error,
+) => {
 	logger.logInteraction({
 		logLevel: LogLevel.INFO,
 		discordInfo: {
@@ -129,10 +137,10 @@ const logMessage = (message: Message, start: number, regexString?: string, error
 		} as DiscordInfo,
 		executionTime: Date.now() - start,
 		timestamp: getTimestamp(),
-	} as Log)
+	} as InteractionLog)
 }
 
-client.on(Events.MessageCreate, async message => {
+botClient.on(Events.MessageCreate, async message => {
 	if (message.author.bot) return
 	if (
 		message.content === '!deploy' &&
@@ -157,7 +165,13 @@ client.on(Events.MessageCreate, async message => {
 	}
 })
 
-const logInteraction = (interaction: BaseInteraction, commandType: string, commandName: string, start: number, error?: Error) => {
+const logInteraction = (
+	interaction: BaseInteraction,
+	commandType: string,
+	commandName: string,
+	start: number,
+	error?: Error,
+) => {
 	logger.logInteraction({
 		logLevel: LogLevel.INFO,
 		discordInfo: {
@@ -177,13 +191,13 @@ const logInteraction = (interaction: BaseInteraction, commandType: string, comma
 		} as DiscordInfo,
 		executionTime: Date.now() - start,
 		timestamp: getTimestamp(),
-	} as Log)
+	} as InteractionLog)
 }
 
 /**
  * Handles the use of commands
  */
-client.on(
+botClient.on(
 	Events.InteractionCreate,
 	async (baseInteraction: BaseInteraction) => {
 		if (!baseInteraction.isChatInputCommand()) return
@@ -206,13 +220,27 @@ client.on(
 		try {
 			await command.execute(interaction)
 		} catch (error) {
-			logInteraction(baseInteraction, interaction.commandType.toString(), interaction.commandName, start, error)
-			await interaction.reply({
-				content: 'There was an error executing this command!',
-				ephemeral: true,
-			})
+			logInteraction(
+				baseInteraction,
+				interaction.commandType.toString(),
+				interaction.commandName,
+				start,
+				error,
+			)
+			if (!interaction.replied) {
+				await interaction.reply({
+					content: 'There was an error executing this command!',
+					ephemeral: true,
+				})
+			}
+			
 		}
-		logInteraction(baseInteraction, interaction.commandType.toString(), interaction.commandName, start)
+		logInteraction(
+			baseInteraction,
+			interaction.commandType.toString(),
+			interaction.commandName,
+			start,
+		)
 	},
 )
 
@@ -229,16 +257,20 @@ const getTimestamp = () => {
 }
 
 try {
-	client.commands = new Collection()
+	connectToDatabase().then(() => {
+		botClient.commands = new Collection()
 
-	getCommands(client)
+		getCommands(botClient)
 
-	// Log that client is online
-	client.once('ready', async (c: any) => {
-		logger.logInfo(`Ready! logged in as ${c.user.tag} at ${getTimestamp()}`)
+		// Log that client is online
+		botClient.once('ready', async (c: any) => {
+			logger.logInfo(
+				`Ready! logged in as ${c.user.tag} at ${getTimestamp()}`,
+			)
+		})
+
+		botClient.login(process.env.TOKEN)
 	})
-
-	client.login(process.env.TOKEN)
 } catch (error) {
 	logger.logError(error.message)
 }

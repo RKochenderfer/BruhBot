@@ -1,6 +1,12 @@
 version: '3.9'
+networks:
+  net:
 services:
   bruhbot:
+    depends_on:
+      - mongodb
+    networks:
+      net:
     container_name: bruhbot-dev
     build: ../
     volumes: 
@@ -11,5 +17,24 @@ services:
       - CLIENT_ID=$CLIENT_ID
       - SAD_RATE=$SAD_RATE
       - BOT_USER_ID=$BOT_USER_ID
+      - MONGODB_CONNSTRING=$MONGODB_CONNSTRING
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
+  mongodb:
+    container_name: bruhbot-mongodb-dev
+    networks:
+      net:
+    image: mongo:5.0
+    volumes:
+      - ./docker-entrypoint-initdb.d/init-mongo-dev.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=$MONGO_DATABASE_NAME
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+      - MONGO_USERNAME=$MONGO_USERNAME
+      - MONGO_PASSWORD=$MONGO_PASSWORD
+    ports:
+      - '27029:27017'
 volumes:
   data:

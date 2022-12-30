@@ -1,8 +1,4 @@
-import {
-	BaseInteraction,
-	ChatInputCommandInteraction,
-	Message,
-} from 'discord.js'
+import { insertLog } from './db'
 
 // eslint-disable-next-line no-shadow
 export enum LogLevel {
@@ -29,7 +25,7 @@ export interface DiscordInfo {
 	author?: UserInfo
 }
 
-export interface Log {
+export interface InteractionLog {
 	logLevel: LogLevel
 	discordInfo: DiscordInfo
 	executionTime: number
@@ -40,26 +36,58 @@ export interface Log {
 }
 
 /**
+ * Returns the current UTC timestamp
+ * @returns
+ */
+const getCurrentTimestamp = () => {
+	const date = new Date()
+
+	return `${date.getUTCFullYear()}-${
+		date.getUTCMonth() + 1
+	}-${date.getUTCDate()}T${date.getUTCHours()}:${date.getUTCMinutes()}+${date.getUTCSeconds()}Z`
+}
+
+/**
  * Handles the logging for the application
  */
 export class Logger {
 	logInfo(message: string) {
-		console.log(`${LogLevel.INFO} - ${message}`)
+		insertLog({
+			level: LogLevel.INFO,
+			timestamp: getCurrentTimestamp(),
+			message: message,
+		})
 	}
 
 	logWarn(message: string) {
-		console.log(`${LogLevel.WARN} - ${message}`)
+		insertLog({
+			level: LogLevel.WARN,
+			timestamp: getCurrentTimestamp(),
+			message: message,
+		})
 	}
 
-	logError(log: Log) {
-		console.log(log)
+	logError(log: InteractionLog) {
+		insertLog({
+			level: LogLevel.ERROR,
+			timestamp: getCurrentTimestamp(),
+			interactionLog: log,
+		})
 	}
 
 	logDebug(message: string) {
-		console.log(`${LogLevel.DEBUG} - ${message}`)
+		insertLog({
+			level: LogLevel.DEBUG,
+			timestamp: getCurrentTimestamp(),
+			message: message,
+		})
 	}
 
-	logInteraction(log: Log) {
-		console.log(log)
+	logInteraction(log: InteractionLog) {
+		insertLog({
+			level: LogLevel.INFO,
+			timestamp: getCurrentTimestamp(),
+			interactionLog: log,
+		})
 	}
 }

@@ -1,6 +1,8 @@
 version: '3.9'
 services:
   bruhbot:
+    depends_on:
+      - mongodb
     container_name: bruhbot
     image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes: 
@@ -11,5 +13,14 @@ services:
       - CLIENT_ID=$CLIENT_ID
       - SAD_RATE=$SAD_RATE
       - BOT_USER_ID=$BOT_USER_ID
+      - MONGODB_CONNSTRING=$MONGODB_CONNSTRING
+  mongodb:
+    container_name: bruhbot-mongodb
+    restart: always
+    image: mongo:5.0
+    environment:
+      - MONGO_INITDB_DATABASE=bruhbot
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
 volumes:
   data:
