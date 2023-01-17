@@ -62,6 +62,7 @@ const botClient: BotClient = new Client({
 	intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildMembers,
 		GatewayIntentBits.GuildVoiceStates,
 		GatewayIntentBits.GuildPresences,
 		GatewayIntentBits.MessageContent,
