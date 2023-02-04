@@ -15,7 +15,7 @@ export class MessageChecker {
 			func: async (msg: Message) => await Gonk.sendMessage(msg),
 		},
 		{
-			regex: /thank\s*you\s*bruh\s?bot/im,
+			regex: /(thank\s*you|thanks)\s*bruh\s?bot/im,
 			func: async (msg: Message) => await ThankYou.sendMessage(msg),
 		},
 		{
