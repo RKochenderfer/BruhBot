@@ -26,7 +26,7 @@ services:
       net:
     image: mongo:5.0
     volumes:
-      - ./docker-entrypoint-initdb.d/init-mongo-dev.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./docker-entrypoint-initdb.d/init-mongo.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - data:/data/db
     environment:
       - MONGO_INITDB_DATABASE=$MONGO_DATABASE_NAME

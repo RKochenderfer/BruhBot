@@ -9,12 +9,21 @@ import {
 	Collection,
 	Events,
 	GatewayIntentBits,
+	GuildTextBasedChannel,
 	Message,
 	Partials,
 	REST,
 	Routes,
+	TextChannel,
 } from 'discord.js'
-import { DiscordInfo, InteractionLog, Logger, LogLevel, UserInfo } from './log'
+import {
+	DiscordInfo,
+	InteractionLog,
+	Logger,
+	LogLevel,
+	Type,
+	UserInfo,
+} from './log'
 import BotClient from './bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
@@ -122,10 +131,14 @@ const logMessage = (
 	regexString?: string,
 	error?: Error,
 ) => {
+	const channelName = (
+		message.channel as GuildTextBasedChannel as TextChannel
+	).name
 	logger.logInteraction({
 		logLevel: LogLevel.INFO,
 		discordInfo: {
 			channelId: message.channelId,
+			channelName: channelName,
 			guildId: message.guildId,
 			guildName: message.guild?.name,
 			content: message.content,
@@ -140,8 +153,7 @@ const logMessage = (
 			} as UserInfo,
 		} as DiscordInfo,
 		executionTime: Date.now() - start,
-		timestamp: getTimestamp(),
-	} as InteractionLog)
+	} as InteractionLog, Type.MESSAGE)
 }
 
 botClient.on(Events.MessageCreate, async message => {
@@ -176,10 +188,14 @@ const logInteraction = (
 	start: number,
 	error?: Error,
 ) => {
+	const channelName = (
+		interaction.channel as GuildTextBasedChannel as TextChannel
+	).name
 	logger.logInteraction({
 		logLevel: LogLevel.INFO,
 		discordInfo: {
 			channelId: interaction.channelId,
+			channelName: channelName,
 			guildId: interaction.guildId,
 			guildName: interaction.guild?.name,
 			command: commandName,
@@ -194,14 +210,17 @@ const logInteraction = (
 			} as UserInfo,
 		} as DiscordInfo,
 		executionTime: Date.now() - start,
-		timestamp: getTimestamp(),
-	} as InteractionLog)
+	} as InteractionLog, Type.INTERACTION)
 }
 
 botClient.on(Events.ChannelPinsUpdate, async channel => {
 	try {
 		const textChannel = channel as BaseGuildTextChannel
-		await updatePins(textChannel.guild.channels.cache, textChannel.guildId, textChannel.guild.name)
+		await updatePins(
+			textChannel.guild.channels.cache,
+			textChannel.guildId,
+			textChannel.guild.name,
+		)
 	} catch (error) {
 		console.error(error)
 	}

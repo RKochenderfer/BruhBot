@@ -8,6 +8,11 @@ export enum LogLevel {
 	DEBUG = 'DEBUG',
 }
 
+export enum Type {
+	INTERACTION = 'INTERACTION',
+	MESSAGE = 'MESSAGE',
+}
+
 export interface UserInfo {
 	id: string
 	bot: boolean
@@ -17,6 +22,7 @@ export interface UserInfo {
 
 export interface DiscordInfo {
 	channelId: string
+	channelName: string
 	guildId: string
 	content?: string
 	command?: string
@@ -29,6 +35,7 @@ export interface InteractionLog {
 	logLevel: LogLevel
 	discordInfo: DiscordInfo
 	executionTime: number
+	type: Type
 	message?: string
 	timestamp: string
 	isError: boolean
@@ -83,10 +90,11 @@ export class Logger {
 		})
 	}
 
-	logInteraction(log: InteractionLog) {
+	logInteraction(log: InteractionLog, type: Type) {
 		insertLog({
 			level: LogLevel.INFO,
 			timestamp: getCurrentTimestamp(),
+			type: type,
 			interactionLog: log,
 		})
 	}
