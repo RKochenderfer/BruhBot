@@ -17,4 +17,5 @@ db.createCollection('logs');
 db.logs.createIndex({ _id: -1 });
 db.logs.createIndex({ type: 1 });
 db.logs.createIndex({ guildId: 1 });
+db.createCollection('chatTrainingData');
 print('#################### END ####################');
