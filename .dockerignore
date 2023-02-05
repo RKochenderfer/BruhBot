@@ -15,3 +15,5 @@ cum-counter.json/
 cum-counter.json
 config/
 .vscode/
+bash-scripts/
+chat-trainer/
