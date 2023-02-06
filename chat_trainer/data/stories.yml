@@ -19,7 +19,7 @@ stories:
   - intent: affirm
   - action: utter_happy
   - intent: insult
-  - action: utter_bitch
+  - action: utter_insult
 
 - story: sad path 2
   steps:

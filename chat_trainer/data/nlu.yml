@@ -9,13 +9,14 @@ nlu:
     - hello there
     - good morning
     - good evening
-    - moin
     - hey there
     - let's go
     - hey dude
     - goodmorning
     - goodevening
     - good afternoon
+    - Bruhbot
+    - what's up
 
 - intent: goodbye
   examples: |
@@ -96,3 +97,14 @@ nlu:
     - fuck you
     - ass hole
     - dick
+
+- intent: chitchat/ask_name
+  examples: |
+    - What is your name?
+    - May I know your name:
+    - What do people call you?
+    - Do you have a name for yourself?
+
+- intent: chitchat/ask_how_hes_doing
+  examples: |
+    - How are you BruhBot?

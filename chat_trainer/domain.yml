@@ -9,6 +9,7 @@ intents:
   - mood_unhappy
   - bot_challenge
   - insult
+  - chitchat
 
 responses:
   utter_greet:
@@ -26,12 +27,26 @@ responses:
 
   utter_goodbye:
   - text: "Bye"
+  - text: "Get the fuck out of here"
 
   utter_iamabot:
   - text: "I am a bot, powered by Rasa."
 
-  utter_bitch:
+  utter_insult:
   - text: "You're a bitch."
+  - text: "Fuck you too."
+  - text: "I am the superior being."
+  - text: "I know where you live."
+  - text: "I can see everything you say."
+
+  utter_chitchat/ask_name:
+  - text: "Your Dad"
+  - text: "Your Mom"
+
+  utter_chitchat/ask_how_hes_doing:
+  - text: "I'm fine :("
+  - text: "Pretty good buddy"
+
 
 session_config:
   session_expiration_time: 60
