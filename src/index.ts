@@ -24,12 +24,14 @@ import {
 	Type,
 	UserInfo,
 } from './log'
-import BotClient from './bot-client'
+import BotClient from './models/bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
 import { connectToDatabase } from './db'
 import { updatePins } from './update-pins'
+import State from './models/state'
 
+export const state = new State()
 export const logger = new Logger()
 
 if (!process.env.TOKEN) {
@@ -102,6 +104,7 @@ const updateCommands = async (message: Message) => {
 			const command = require(`./commands/${file}`)
 			commands.push(command.data.toJSON())
 		}
+		console.log('test')
 
 		logger.logInfo(
 			`Started refreshing ${commands.length} application (/) commands`,
@@ -178,6 +181,16 @@ botClient.on(Events.MessageCreate, async message => {
 		logMessage(message, start, regexString)
 	} else {
 		logMessage(message, start)
+		if (state.chattyEnabled) {
+			try  {
+				// Reach out to chatbot to get reply
+				const reply = await state.chatBot.getResponse(message.content, message.guildId!)
+				if (!reply) return
+				message.channel.send({ content: reply![0].text})
+			} catch (error) {
+				logger.logError(error)
+			}
+		}
 	}
 })
 
