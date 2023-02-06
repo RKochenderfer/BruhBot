@@ -1,3 +1,2 @@
-rasa[full]
+rasa
 rasa[spacy]
-spacy
