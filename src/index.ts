@@ -24,13 +24,17 @@ import {
 	Type,
 	UserInfo,
 } from './log'
-import BotClient from './bot-client'
+import BotClient from './models/bot-client'
 import Command from './command'
 import { MessageChecker } from './message-interactions/message-checker'
 import { connectToDatabase } from './db'
 import { updatePins } from './update-pins'
+import State, { ServerState } from './models/state'
+import Chatbot from './chatbot'
 
+export const state = new State()
 export const logger = new Logger()
+const chatBot = new Chatbot()
 
 if (!process.env.TOKEN) {
 	throw new Error('Token not found in env.')
@@ -102,6 +106,7 @@ const updateCommands = async (message: Message) => {
 			const command = require(`./commands/${file}`)
 			commands.push(command.data.toJSON())
 		}
+		console.log('test')
 
 		logger.logInfo(
 			`Started refreshing ${commands.length} application (/) commands`,
@@ -134,26 +139,29 @@ const logMessage = (
 	const channelName = (
 		message.channel as GuildTextBasedChannel as TextChannel
 	).name
-	logger.logInteraction({
-		logLevel: LogLevel.INFO,
-		discordInfo: {
-			channelId: message.channelId,
-			channelName: channelName,
-			guildId: message.guildId,
-			guildName: message.guild?.name,
-			content: message.content,
-			regex: regexString == undefined ? null : regexString,
-			isError: error != null,
-			error: error == undefined ? null : error,
-			author: {
-				id: message.author.id,
-				bot: message.author.bot,
-				username: message.author.username,
-				discriminator: message.author.discriminator,
-			} as UserInfo,
-		} as DiscordInfo,
-		executionTime: Date.now() - start,
-	} as InteractionLog, Type.MESSAGE)
+	logger.logInteraction(
+		{
+			logLevel: LogLevel.INFO,
+			discordInfo: {
+				channelId: message.channelId,
+				channelName: channelName,
+				guildId: message.guildId,
+				guildName: message.guild?.name,
+				content: message.content,
+				regex: regexString == undefined ? null : regexString,
+				isError: error != null,
+				error: error == undefined ? null : error,
+				author: {
+					id: message.author.id,
+					bot: message.author.bot,
+					username: message.author.username,
+					discriminator: message.author.discriminator,
+				} as UserInfo,
+			} as DiscordInfo,
+			executionTime: Date.now() - start,
+		} as InteractionLog,
+		Type.MESSAGE,
+	)
 }
 
 botClient.on(Events.MessageCreate, async message => {
@@ -178,6 +186,19 @@ botClient.on(Events.MessageCreate, async message => {
 		logMessage(message, start, regexString)
 	} else {
 		logMessage(message, start)
+		if (state.servers.has(message.guildId!) && state.servers.get(message.guildId!)!.chattyEnabled) {
+			try {
+				// Reach out to chatbot to get reply
+				const reply = await chatBot.getResponse(
+					message.content,
+					message.guildId!,
+				)
+				if (!reply) return
+				message.channel.send({ content: reply![0].text })
+			} catch (error) {
+				logger.logError(error)
+			}
+		}
 	}
 })
 
@@ -191,26 +212,29 @@ const logInteraction = (
 	const channelName = (
 		interaction.channel as GuildTextBasedChannel as TextChannel
 	).name
-	logger.logInteraction({
-		logLevel: LogLevel.INFO,
-		discordInfo: {
-			channelId: interaction.channelId,
-			channelName: channelName,
-			guildId: interaction.guildId,
-			guildName: interaction.guild?.name,
-			command: commandName,
-			commandType: commandType,
-			isError: error != undefined,
-			error: error == undefined ? null : error,
-			author: {
-				id: interaction.user.id,
-				bot: interaction.user.bot,
-				username: interaction.user.username,
-				discriminator: interaction.user.discriminator,
-			} as UserInfo,
-		} as DiscordInfo,
-		executionTime: Date.now() - start,
-	} as InteractionLog, Type.INTERACTION)
+	logger.logInteraction(
+		{
+			logLevel: LogLevel.INFO,
+			discordInfo: {
+				channelId: interaction.channelId,
+				channelName: channelName,
+				guildId: interaction.guildId,
+				guildName: interaction.guild?.name,
+				command: commandName,
+				commandType: commandType,
+				isError: error != undefined,
+				error: error == undefined ? null : error,
+				author: {
+					id: interaction.user.id,
+					bot: interaction.user.bot,
+					username: interaction.user.username,
+					discriminator: interaction.user.discriminator,
+				} as UserInfo,
+			} as DiscordInfo,
+			executionTime: Date.now() - start,
+		} as InteractionLog,
+		Type.INTERACTION,
+	)
 }
 
 botClient.on(Events.ChannelPinsUpdate, async channel => {
@@ -233,6 +257,9 @@ botClient.on(
 	Events.InteractionCreate,
 	async (baseInteraction: BaseInteraction) => {
 		if (!baseInteraction.isChatInputCommand()) return
+		if (!state.servers.has(baseInteraction.guildId!)) {
+			state.servers.set(baseInteraction.guildId!, new ServerState())
+		}
 
 		const interaction = baseInteraction as ChatInputCommandInteraction
 		const interactionClient = interaction.client as BotClient

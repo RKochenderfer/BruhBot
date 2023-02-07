@@ -11,6 +11,7 @@ export enum LogLevel {
 export enum Type {
 	INTERACTION = 'INTERACTION',
 	MESSAGE = 'MESSAGE',
+	BOT_MESSAGE = 'BOT_MESSAGE',
 }
 
 export interface UserInfo {
@@ -37,6 +38,7 @@ export interface InteractionLog {
 	executionTime: number
 	type: Type
 	message?: string
+	botMessage?: string
 	timestamp: string
 	isError: boolean
 	error?: Error

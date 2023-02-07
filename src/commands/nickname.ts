@@ -1,8 +1,6 @@
 import {
-	AttachmentBuilder,
 	ChatInputCommandInteraction,
 	GuildMember,
-	messageLink,
 	SlashCommandBuilder,
 } from 'discord.js'
 
