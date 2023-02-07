@@ -14,11 +14,11 @@ module.exports = {
 
 	async execute(interaction: ChatInputCommandInteraction) {
 		const enableStatus = interaction.options.getBoolean('enable')!
-		if (state.chattyEnabled && !enableStatus) {
-			state.chattyEnabled = false
+		if (state.servers.get(interaction.guildId!)!.chattyEnabled && !enableStatus) {
+			state.servers.get(interaction.guildId!)!.chattyEnabled = false
 			await interaction.reply('BruhBot chatty deactivated...')
-		} else if (!state.chattyEnabled && enableStatus) {
-			state.chattyEnabled = true
+		} else if (!state.servers.get(interaction.guildId!)!.chattyEnabled && enableStatus) {
+			state.servers.get(interaction.guildId!)!.chattyEnabled = true
 			await interaction.reply('BruhBot chatty activated...')
 		}
 	},
