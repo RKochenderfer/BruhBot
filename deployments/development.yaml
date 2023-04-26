@@ -33,6 +33,13 @@ services:
       - data:/data/chatbot
     ports:
       - '5005:5005'
+  objection-engine:
+    networks:
+      net:
+    image: ghcr.io/rkochenderfer/bruhbot-objection-engine:latest
+    container_name: bruhbot-objection-engine
+    ports:
+      - '5000:5000'
   mongodb:
     container_name: bruhbot-mongodb-dev
     networks:

@@ -17,3 +17,4 @@ config/
 .vscode/
 bash-scripts/
 chat-trainer/
+objection-engine/
