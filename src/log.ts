@@ -62,6 +62,14 @@ const getCurrentTimestamp = () => {
  */
 export class Logger {
 	logInfo(message: string) {
+		if (ENV === 'Dev') {
+			console.log({
+				level: LogLevel.INFO,
+				timestamp: getCurrentTimestamp(),
+				message: message,
+			})
+			return
+		}
 		insertLog({
 			level: LogLevel.INFO,
 			timestamp: getCurrentTimestamp(),
@@ -95,6 +103,15 @@ export class Logger {
 	}
 
 	logInteraction(log: InteractionLog, type: Type) {
+		if (ENV === 'Dev') {
+			console.log({
+				level: LogLevel.INFO,
+				timestamp: getCurrentTimestamp(),
+				type: type,
+				interactionLog: log,
+			})
+			return
+		}
 		insertLog({
 			level: LogLevel.INFO,
 			timestamp: getCurrentTimestamp(),
