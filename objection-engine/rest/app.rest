@@ -8,8 +8,8 @@ Content-Type: application/json
 
 {
 	"messages": [
-		"one",
-		"two",
-		"three"
+		{"author": "a", "content": "one"},
+		{"author": "b", "content": "two"},
+		{"author": "a", "content": "three"},
 	]
 }
