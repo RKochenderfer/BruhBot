@@ -6,10 +6,11 @@ services:
     depends_on:
       - chatbot
       - mongodb
+      - objection-engine
     networks:
       net:
     container_name: bruhbot-dev
-    build: ../
+    image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes: 
       - ../build:/app/build
       - data:/app/data

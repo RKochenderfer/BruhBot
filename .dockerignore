@@ -16,5 +16,7 @@ cum-counter.json
 config/
 .vscode/
 bash-scripts/
-chat-trainer/
+chat_trainer/
 objection-engine/
+test/
+deployments/
