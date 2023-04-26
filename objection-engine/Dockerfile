@@ -1,6 +1,7 @@
 # Build stage
 FROM python:3.11.3 AS build
 
+
 WORKDIR /app
 
 COPY requirements.txt requirements.txt
@@ -12,6 +13,7 @@ COPY . .
 
 # Production stage
 FROM python:3.11.3-slim-buster
+LABEL org.opencontainers.image.source https://github.com/RKochenderfer/BruhBot
 
 WORKDIR /app
 

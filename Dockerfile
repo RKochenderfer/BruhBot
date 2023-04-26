@@ -8,6 +8,7 @@ RUN pnpm install --production && tsc && rm -rf src/
 
 # Second stage: create the final image
 FROM node:18-alpine
+LABEL org.opencontainers.image.source https://github.com/RKochenderfer/BruhBot
 RUN apk add --no-cache ffmpeg
 WORKDIR /app
 COPY --from=build /app/build /app/build
