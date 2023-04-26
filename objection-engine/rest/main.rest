@@ -1,0 +1,15 @@
+### GET /ping
+GET http://localhost:5000/ping
+Content-Type: text/plain
+
+### POST /
+POST http://localhost:5000/
+Content-Type: application/json
+
+{
+	"messages": [
+		"one",
+		"two",
+		"three"
+	]
+}
