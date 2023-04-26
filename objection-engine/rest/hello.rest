@@ -1,0 +1,3 @@
+### GET Hello
+GET http://localhost:5000/
+Content-Type: text/plain
