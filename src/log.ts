@@ -104,6 +104,7 @@ export class Logger {
 
 	logInteraction(log: InteractionLog, type: Type) {
 		if (ENV === 'Dev') {
+			return
 			console.log({
 				level: LogLevel.INFO,
 				timestamp: getCurrentTimestamp(),

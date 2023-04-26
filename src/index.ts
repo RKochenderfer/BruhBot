@@ -31,6 +31,7 @@ import { connectToDatabase } from './db'
 import { updatePins } from './update-pins'
 import State, { ServerState } from './models/state'
 import Chatbot from './chatbot'
+import { render } from './render'
 
 export const state = new State()
 export const logger = new Logger()
@@ -172,6 +173,9 @@ botClient.on(Events.MessageCreate, async message => {
 		message.author.id === '208376655129870346'
 	) {
 		await updateCommands(message)
+		return
+	} else if (message.content.match(/!ace \d+/)) {
+		render(message)
 		return
 	}
 
