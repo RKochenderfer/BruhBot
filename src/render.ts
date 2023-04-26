@@ -2,7 +2,7 @@ import { calculateObjectSize } from 'bson'
 import { Message, MessageType } from 'discord.js'
 
 class MessageInfo {
-	constructor(public readonly author: string, public readonly content: string) { }
+	constructor(public readonly user_name: string, public readonly text_content: string) { }
 }
 
 export let render = async (message: Message) => {

@@ -17,6 +17,7 @@ build/
 .pytest_cache/
 .idea/
 docs/_build/
+assets/
 .vscode
 
 # Coverage reports
@@ -24,3 +25,5 @@ htmlcov/
 .coverage
 .coverage.*
 *,cover
+
+*.mp4
