@@ -1,4 +1,9 @@
+import { calculateObjectSize } from 'bson'
 import { Message, MessageType } from 'discord.js'
+
+class MessageInfo {
+	constructor(public readonly author: string, public readonly content: string) { }
+}
 
 export let render = async (message: Message) => {
 	const num = validate(message)
@@ -13,9 +18,9 @@ export let render = async (message: Message) => {
 		limit: num - 1,
 	})
 
-	const messages: Array<string> = [repliedTo.content]
+	const messages: Array<MessageInfo> = [new MessageInfo(repliedTo.author.username, repliedTo.content)]
 	messagesBefore.forEach((value, key) => {
-		messages.push(value.content)
+		messages.push(new MessageInfo(value.author.username, value.content))
 	})
 
 	// message.reply(messages.reverse().join(', '))
