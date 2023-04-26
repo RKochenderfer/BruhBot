@@ -22,6 +22,7 @@ services:
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
       - CHATBOT_URL=$CHATBOT_URL
+      - ENVIRONMENT=Dev
   chatbot:
     networks:
       net:

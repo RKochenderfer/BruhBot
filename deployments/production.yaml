@@ -20,6 +20,7 @@ services:
       - MONGODB_CONNSTRING=$MONGODB_CONNSTRING
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
+      - ENVIRONMENT=Prod
   mongodb:
     container_name: bruhbot-mongodb
     restart: always

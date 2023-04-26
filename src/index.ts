@@ -35,6 +35,7 @@ import Chatbot from './chatbot'
 export const state = new State()
 export const logger = new Logger()
 const chatBot = new Chatbot()
+export const ENV = process.env.ENVIRONMENT ?? 'Dev'
 
 if (!process.env.TOKEN) {
 	throw new Error('Token not found in env.')
@@ -186,7 +187,10 @@ botClient.on(Events.MessageCreate, async message => {
 		logMessage(message, start, regexString)
 	} else {
 		logMessage(message, start)
-		if (state.servers.has(message.guildId!) && state.servers.get(message.guildId!)!.chattyEnabled) {
+		if (
+			state.servers.has(message.guildId!) &&
+			state.servers.get(message.guildId!)!.chattyEnabled
+		) {
 			try {
 				// Reach out to chatbot to get reply
 				const reply = await chatBot.getResponse(

@@ -1,3 +1,4 @@
+import { ENV } from '.'
 import { insertLog } from './db'
 
 // eslint-disable-next-line no-shadow
@@ -85,6 +86,7 @@ export class Logger {
 	}
 
 	logDebug(message: string) {
+		if (ENV !== 'Dev') return
 		insertLog({
 			level: LogLevel.DEBUG,
 			timestamp: getCurrentTimestamp(),
