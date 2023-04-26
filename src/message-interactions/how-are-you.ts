@@ -9,7 +9,7 @@ export class HowAreYou {
 		const val = Math.floor(Math.random() * 100)
 		let file: AttachmentBuilder | null = null
 
-		if (val < (process.env.SAD_RATE ?? 10)) {
+		if (val < Number.parseInt(process.env.SAD_RATE ? process.env.SAD_RATE : '10')) {
 			if (val % 2 === 1) {
 				file = new AttachmentBuilder(this.goodbyeMyLover)
 			} else {
