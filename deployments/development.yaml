@@ -14,6 +14,7 @@ services:
     volumes: 
       - ../build:/app/build
       - data:/app/data
+      - ../objection-engine/output:/app/output/
     environment:
       - TOKEN=$TOKEN
       - CLIENT_ID=$CLIENT_ID
@@ -41,6 +42,9 @@ services:
     container_name: bruhbot-objection-engine
     ports:
       - '5000:5000'
+    volumes:
+      - ../objection-engine/assets:/app/assets/
+      - ../objection-engine/output:/app/output/
   mongodb:
     container_name: bruhbot-mongodb-dev
     networks:

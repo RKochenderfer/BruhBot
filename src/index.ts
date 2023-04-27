@@ -175,6 +175,7 @@ botClient.on(Events.MessageCreate, async message => {
 		await updateCommands(message)
 		return
 	} else if (message.content.match(/!ace \d+/)) {
+		message.reply('Starting render')
 		render(message)
 		return
 	}
