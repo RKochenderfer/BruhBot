@@ -1,9 +1,12 @@
-import { calculateObjectSize } from 'bson'
-import { AttachmentBuilder, EmbedBuilder, Message, MessageType } from 'discord.js'
+import { AttachmentBuilder, Message, MessageType } from 'discord.js'
 import fs from 'fs'
+import { logger } from '.'
 
 class MessageInfo {
-	constructor(public readonly user_name: string, public readonly text_content: string) { }
+	constructor(
+		public readonly user_name: string,
+		public readonly text_content: string,
+	) {}
 }
 // TODO: Setup queue
 export let render = async (message: Message) => {
@@ -13,7 +16,9 @@ export let render = async (message: Message) => {
 
 	try {
 		const body = await buildRequestBody(message, num, fileName)
-		// console.log('Requesting')
+		logger.logInfo(
+			`Rendering ${num} messages for ${message.author.username}`,
+		)
 		const res = await fetch('http://objection-engine:5000/', {
 			method: 'POST',
 			body: body,
@@ -25,9 +30,9 @@ export let render = async (message: Message) => {
 			throw new Error(`Request failed: ${res}`)
 		}
 	} catch (error) {
+		logger.logException(error)
 		console.error(error)
 	}
-	
 }
 
 let validate = (message: Message): number | null => {
@@ -37,7 +42,7 @@ let validate = (message: Message): number | null => {
 	}
 
 	const num = message.content.trim().replace(/\D/g, '') // Removes everything except the the number
-	
+
 	const parsed = Number.parseInt(num)
 	if (parsed > 20) {
 		message.reply('The number must be less than 20')
@@ -58,7 +63,11 @@ let getFileName = () => {
 	return `${year}-${month}-${day}T${hour}-${minute}-${second}.mp4`
 }
 
-let buildRequestBody = async (message: Message, num: number, fileName: string) => {
+let buildRequestBody = async (
+	message: Message,
+	num: number,
+	fileName: string,
+) => {
 	// Get the message that the caller replied to
 	const repliedTo = await message.channel.messages.fetch(
 		message.reference?.messageId!,
@@ -72,7 +81,7 @@ let buildRequestBody = async (message: Message, num: number, fileName: string) =
 	const messages: Array<MessageInfo> = [
 		new MessageInfo(repliedTo.author.username, repliedTo.content),
 	]
-	messagesBefore.forEach((value, key) => {
+	messagesBefore.forEach((value, _key) => {
 		messages.push(new MessageInfo(value.author.username, value.content))
 	})
 
@@ -81,7 +90,7 @@ let buildRequestBody = async (message: Message, num: number, fileName: string) =
 
 let sendRenderedFile = async (fileName: string, message: Message<boolean>) => {
 	const stream = fs.createReadStream(`output/${fileName}`) // Read the file from the shared output directory with the objection-engine
-	stream.on('error', (err) => {
+	stream.on('error', err => {
 		console.error(err)
 	})
 	const file = new AttachmentBuilder(stream)
@@ -89,4 +98,7 @@ let sendRenderedFile = async (fileName: string, message: Message<boolean>) => {
 		content: 'your video has been rendered',
 		files: [file],
 	})
+	logger.logInfo(
+		`Rendered video from user: ${message.author.username} complete.`,
+	)
 }

@@ -93,6 +93,14 @@ export class Logger {
 		})
 	}
 
+	logException(err: Error) {
+		insertLog({
+			level: LogLevel.ERROR,
+			timestamp: getCurrentTimestamp(),
+			message: JSON.stringify(err)
+		})
+	}
+
 	logDebug(message: string) {
 		if (ENV !== 'Dev') return
 		insertLog({
