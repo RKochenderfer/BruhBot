@@ -15,7 +15,7 @@ class RenderRequest {
 		public readonly requestId: string,
 		public readonly message: Message,
 		public readonly num: number,
-		public fileName: string
+		public fileName = `${requestId}.mp4`,
 	) {}
 
 	async render() {
