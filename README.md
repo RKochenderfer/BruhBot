@@ -3,16 +3,10 @@
 
 Custom discord bot
 
-## Build commands
 
-`docker build . -t ghcr.io/rkochenderfer/bruhbot --push`
+## Usage
 
-## Adding a new command
-
-1. Add the command to the Command enum at Command.ts
-2. Add the command to the methodMao in MessageMap.ts
-
-### Usage
+### / Commands
 
 <table>
     <tbody>
@@ -21,27 +15,6 @@ Custom discord bot
             <th>Description</th>
             <th>Subcommands</th>
             <th>Examples</th>
-        </tr>
-        <tr>
-            <td>court</td>
-            <td>Handles court proceedings</td>
-            <td>
-                <ul>
-                    <li>start - Initializes the court</li>
-                    <li>prosecutor - sets the current user as the prosecutor for this case</li>
-                    <li>defendant - sets the current user to be the defendent for this case</li>
-                    <li>vote - Call for jury vote</li>
-                    <li>yea - vote in pro of motion</li>
-                    <li>nay - vote against motion</li>
-                    <li>give - Gives court points</li>
-                    <li>deduct - Removes court points</li>
-                    <li>total - gives a user their current court points</li>
-                    <li>judge - replies with the name of the judge in the current court session</li>
-                    <li>buy - buy an upgrade with your current court points</li>
-                    <li>store - lists items in the store</li>
-                </ul>
-            </td>
-            <td></td>
         </tr>
         <tr>
             <td>bruh</td>
@@ -74,36 +47,57 @@ Custom discord bot
             <td>/kill @user</td>
         </tr>
         <tr>
-            <td>socks</td>
-            <td>the socks commands</td>
-            <td>
-                <ul>
-                    <li>on - put your socks on</li>
-                    <li>off - take your socks off</li>
-                    <li>status - get the status of people's socks</li>
-                </ul>
-            </td>
-            <td>/socks on</td>
-        </tr>
-        <tr>
             <td>ye</td>
             <td>get a Ye quote</td>
             <td></td>
             <td>/ye</td>
         </tr>
         <tr>
-            <td>yee</td>
-            <td>bruhbot says yee</td>
+            <td>clipshow</td>
+            <td>bruhbot pulls a random pinned comment from the server</td>
             <td></td>
-            <td>/yee</td>
+            <td>/clipshow</td>
+        </tr>
+        <tr>
+            <td>chatty</td>
+            <td>bruhbot activates chat bot features</td>
+            <td></td>
+            <td>/chatty</td>
+        </tr>
+        <tr>
+            <td>leftist</td>
+            <td>bruhbot plays the leftist ass mp3 in the users audio channel</td>
+            <td></td>
+            <td>/leftist</td>
+        </tr>
+    </tbody>
+</table>
+
+### ! Commands
+<table>
+    <tbody>
+        <tr>
+            <th>Command</th>
+            <th>Description</th>
+            <th>Examples</th>
+        </tr>
+        <tr>
+            <td>!deploy</td>
+            <td>Deploys the commands to the server that the command is ran on</td>
+            <td>!deploy</td>
+        </tr>
+        <tr>
+            <td>!ace</td>
+            <td>Renders a series of messages as an ace attorney video</td>
+            <td>(in a reply message) !ace 4</td>
         </tr>
     </tbody>
 </table>
 
 ### Flagged Messages
-<table>
-
-</table>
+<ul>
+    <li>cum</li>
+</ul>
 
 ## Troubleshooting
 
