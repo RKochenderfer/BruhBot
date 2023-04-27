@@ -31,7 +31,7 @@ import { connectToDatabase } from './db'
 import { updatePins } from './update-pins'
 import State, { ServerState } from './models/state'
 import Chatbot from './chatbot'
-import { render } from './render'
+import { RenderQueue, render } from './ace'
 
 export const state = new State()
 export const logger = new Logger()
@@ -329,9 +329,13 @@ const getTimestamp = () => {
 }
 
 try {
+	// start database
 	connectToDatabase().then(() => {
 		botClient.commands = new Collection()
-
+		// Start objection-engine rendering queue
+		RenderQueue.timer = setInterval(async () => {
+			await RenderQueue.render()
+		}, 5000)
 		getCommands(botClient)
 
 		// Log that client is online
@@ -341,6 +345,7 @@ try {
 			)
 		})
 
+		// start discord bot
 		botClient.login(process.env.TOKEN)
 	})
 } catch (error) {
