@@ -4,13 +4,16 @@ networks:
 services:
   bruhbot:
     depends_on:
+      - chatbot
       - mongodb
+      - objection-engine
     container_name: bruhbot
     networks:
       net:
     image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes: 
       - data:/app/data
+      - data/objection-engine/output:/app/output
     restart: always
     environment:
       - TOKEN=$TOKEN
@@ -20,7 +23,27 @@ services:
       - MONGODB_CONNSTRING=$MONGODB_CONNSTRING
       - MONGO_USERNAME=$MONGO_USERNAME
       - MONGO_PASSWORD=$MONGO_PASSWORD
+      - CHATBOT_URL=$CHATBOT_URL
       - ENVIRONMENT=Prod
+  chatbot:
+    networks:
+      net:
+    image: ghcr.io/rkochenderfer/bruhbot-chatbot:latest
+    container_name: bruhbot-chatbot
+    volumes:
+      - data:/data/chatbot
+    ports:
+      - '5005:5005'
+  objection-engine:
+    networks:
+      net:
+    image: ghcr.io/rkochenderfer/bruhbot-objection-engine:latest
+    container_name: bruhbot-objection-engine
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./mnt/user/appdata/bruhbot/objection-engine/assets:/app/assets/
+      - data/objection-engine/output:/app/output/
   mongodb:
     container_name: bruhbot-mongodb
     restart: always
