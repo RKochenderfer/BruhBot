@@ -15,13 +15,14 @@ class RenderRequest {
 		public readonly requestId: string,
 		public readonly message: Message,
 		public readonly num: number,
+		public fileName: string
 	) {}
 
 	async render() {
-		const fileName = `${this.requestId}.mp4`
+		this.fileName = `${this.requestId}.mp4`
 
 		try {
-			const body = await this.buildRequestBody(fileName)
+			const body = await this.buildRequestBody()
 			logger.logInfo(
 				`Rendering ${this.num} messages for ${this.message.author.username}`,
 			)
@@ -31,7 +32,7 @@ class RenderRequest {
 			})
 
 			if (res.ok) {
-				await this.sendRenderedFile(fileName)
+				await this.sendRenderedFile()
 			} else {
 				throw new Error(`Request failed: ${res}`)
 			}
@@ -41,7 +42,7 @@ class RenderRequest {
 		}
 	}
 
-	private buildRequestBody = async (fileName: string) => {
+	private buildRequestBody = async () => {
 		// Get the message that the caller replied to
 		const repliedTo = await this.message.channel.messages.fetch(
 			this.message.reference?.messageId!,
@@ -60,13 +61,13 @@ class RenderRequest {
 		})
 
 		return JSON.stringify({
-			file_name: fileName,
+			file_name: this.fileName,
 			messages: messages.reverse(),
 		})
 	}
 
-	private sendRenderedFile = async (fileName: string) => {
-		const stream = fs.createReadStream(`output/${fileName}`) // Read the file from the shared output directory with the objection-engine
+	private sendRenderedFile = async () => {
+		const stream = fs.createReadStream(`output/${this.fileName}`) // Read the file from the shared output directory with the objection-engine
 		stream.on('error', err => {
 			console.error(err)
 		})
@@ -112,8 +113,7 @@ export class RenderQueue {
 	}
 
 	private static cleanup(request: RenderRequest) {
-		// delete saved .mp4
-		// remove from queue
+		fs.unlinkSync(`output/${request.fileName}`)
 		this.isRendering = false
 	}
 
