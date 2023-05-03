@@ -13,6 +13,8 @@
     "libsodium-wrappers": "^0.7.11",
     "mongodb": "^4.16.0",
     "node-fetch": "^2.6.9",
+    "pino": "^8.12.1",
+    "pino-mongodb": "^4.3.0",
     "ytdl-core": "^3.4.2"
   },
   "scripts": {

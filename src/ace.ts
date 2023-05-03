@@ -1,15 +1,13 @@
 import { AttachmentBuilder, Guild, Message, MessageType } from 'discord.js'
 import fs from 'fs'
 import crypto from 'crypto'
-import { ENV, Logger } from '.'
+import { ENV } from '.'
+import { logger } from './utils/logger'
 
 const RENDER_LIMIT = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
 
 class MessageInfo {
-	constructor(
-		public readonly user_name: string,
-		public readonly text_content: string,
-	) {}
+	constructor(public readonly user_name: string, public readonly text_content: string) {}
 }
 
 class RenderRequest {
@@ -25,7 +23,8 @@ class RenderRequest {
 
 		try {
 			const body = await this.buildRequestBody()
-			await Logger.logInfo(
+			logger.info(
+				this.requestId,
 				`Rendering ${this.num} messages for ${this.message.author.username}`,
 			)
 			const res = await fetch('http://objection-engine:5000/', {
@@ -39,8 +38,7 @@ class RenderRequest {
 				throw new Error(`Request failed: ${res}`)
 			}
 		} catch (error) {
-			await Logger.logException(error)
-			console.error(error)
+			logger.error(error)
 		}
 	}
 
@@ -78,8 +76,9 @@ class RenderRequest {
 			content: 'your video has been rendered',
 			files: [file],
 		})
-		await Logger.logInfo(
-			`Rendered video from user: ${this.message.author.username} complete.`,
+		logger.info(
+			this.requestId,
+			`Finished rendering video from user: ${this.message.author.username}.`,
 		)
 	}
 }
@@ -115,9 +114,7 @@ export class RenderQueue {
 	}
 
 	static deleteRequest(request: RenderRequest) {
-		RenderQueue.queue = RenderQueue.queue.filter(
-			item => item.requestId !== request.requestId,
-		)
+		RenderQueue.queue = RenderQueue.queue.filter(item => item.requestId !== request.requestId)
 	}
 }
 

@@ -1,9 +1,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import BotClient from './models/bot-client'
-import { Logger } from '.'
 import { Guild, Message, REST, Routes } from 'discord.js'
-import * as utils from './utils'
+import * as utils from './utils/utils'
+import { logger } from './utils/logger'
 
 /**
  * Reads the files in commands and builds the commands
@@ -11,9 +11,7 @@ import * as utils from './utils'
  */
 export const getCommands = (client: BotClient) => {
 	const commandsPath = path.join(__dirname, 'commands')
-	const commandFiles = fs
-		.readdirSync(commandsPath)
-		.filter(file => file.endsWith('.js'))
+	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file)
@@ -23,9 +21,7 @@ export const getCommands = (client: BotClient) => {
 		if ('data' in command && 'execute' in command) {
 			client.commands?.set(command.data.name, command)
 		} else {
-			Logger.logWarn(
-				`The command at ${filePath} is missing a required "data" or "execute" property.`,
-			)
+			logger.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`)
 		}
 	}
 }
@@ -35,18 +31,13 @@ export const getCommands = (client: BotClient) => {
  * @param message The sent message
  */
 export const updateCommands = async (message: Message) => {
-	console.log('Updating commands')
-	await Logger.logInfo(
-		`Updating commands for guild: ${message.guildId} at ${utils.getTimestamp()}`,
-	)
+	logger.info(`Updating commands for guild: ${message.guildId}`)
 	const commands: any[] = []
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
 
 	try {
 		const commandsPath = path.join(__dirname, 'commands')
-		const commandFiles = fs
-			.readdirSync(commandsPath)
-			.filter(file => file.endsWith('.js'))
+		const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
 		for (const file of commandFiles) {
 			// eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -54,17 +45,12 @@ export const updateCommands = async (message: Message) => {
 			commands.push(command.data.toJSON())
 		}
 
-		await Logger.logInfo(
-			`Started refreshing ${commands.length} application (/) commands`,
-		)
+		logger.info(`Started refreshing ${commands.length} application (/) commands`)
 
 		if (!message.guildId) return
 
 		const data: any = await rest.put(
-			Routes.applicationGuildCommands(
-				process.env.CLIENT_ID!,
-				message.guildId,
-			),
+			Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
 			{ body: commands },
 		)
 
@@ -93,10 +79,8 @@ export const updateCommands = async (message: Message) => {
 			),
 		)
 
-		await Logger.logInfo(
-			`Successfully reloaded ${data.length} application (/) commands`,
-		)
+		logger.info(`Successfully reloaded ${data.length} application (/) commands`)
 	} catch (error) {
-		await Logger.logError(error)
+		logger.error(error)
 	}
 }

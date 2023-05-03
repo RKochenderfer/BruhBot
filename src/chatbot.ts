@@ -1,12 +1,11 @@
-import { Logger } from './index'
 import ChatbotRequest from './models/chatbot/chatbot-request'
 import { ChatbotResponse } from './models/chatbot/chatbot-response'
+import { logger } from './utils/logger'
 
 export default class Chatbot {
 	url = 'http://chatbot:5005/webhooks/rest/webhook'
 
 	public getResponse = async (message: string, guildid: string) => {
-		const body = JSON.stringify(new ChatbotRequest(guildid, message))
 		try {
 			const response = await fetch(this.url, {
 				method: 'POST',
@@ -26,7 +25,7 @@ export default class Chatbot {
 			return (await response.json()) as ChatbotResponse
 		} catch (error) {
 			// if there is an error log it and do nothing
-			await Logger.logError(error)
+			logger.error(error)
 		}
 	}
 }

@@ -5,7 +5,8 @@ import {
 } from 'discord.js'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import * as db from '../db'
-import { Logger, MessageChecker } from '..'
+import { MessageChecker } from '..'
+import { logger } from '../utils/logger'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -86,22 +87,14 @@ module.exports = {
 					{ $push: { flaggedPatterns: toAdd } },
 				)
 
-				await Logger.logInfo(
-					`Adding pattern: ${JSON.stringify(toAdd)} to guild: ${
-						interaction.guildId
-					}`,
-				)
+				logger.debug(toAdd, `Adding pattern to guild: ${interaction.guildId}`)
 			} else {
 				db.collections.servers?.insertOne({
 					name: interaction.guild?.name!,
 					guildId: interaction.guildId!,
 					flaggedPatterns: [toAdd],
 				})
-				await Logger.logInfo(
-					`Creating server document and adding pattern: ${JSON.stringify(
-						toAdd,
-					)} to guild: ${interaction.guildId}`,
-				)
+				logger.info(toAdd, `Creating server document and adding pattern for guildId: ${interaction.guildId}`)
 			}
 			
 			MessageChecker.addPatternToCache(interaction.guildId!, toAdd)

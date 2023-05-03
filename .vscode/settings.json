@@ -2,5 +2,5 @@
 	"editor.tabSize": 4,
 	"editor.insertSpaces": false,
 	"typescript.preferences.quoteStyle": "single",
-	"cSpell.words": ["Bruh", "CONNSTRING"]
+	"cSpell.words": ["Bruh", "CONNSTRING", "pino"]
 }

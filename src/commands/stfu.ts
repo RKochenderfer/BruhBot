@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { getVoiceConnection } from '@discordjs/voice'
-
-import { Logger } from '../index'
+import { logger } from '../utils/logger'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -12,17 +11,14 @@ module.exports = {
 		if (!interaction.guildId) return
 		try {
 			const connection = getVoiceConnection(interaction.guildId)
-
-			await Logger.logInfo(
-				`Attempting to disconnect bruhbot from guild: ${interaction.guildId}`,
-			)
+			
 			connection?.destroy()
 			interaction.reply({
 				content: 'Attempting to disconnect',
 				ephemeral: true,
 			})
 		} catch (error) {
-			Logger.logError(error.message)
+			logger.error(error)
 		}
 	},
 }
