@@ -1,12 +1,20 @@
 # BruhBot
 [![Docker Image CI](https://github.com/RKochenderfer/BruhBot/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/RKochenderfer/BruhBot/actions/workflows/docker-image.yml)
 
-Custom discord bot
+A custom Discord Bot
 
 ## Development Requirements
 * TypeScript > 5.0
+* Docker
+* Docker Compose
 
 ## Usage
+To start application run `./bash-scripts/up.sh`
+
+## Applications in Repo
+* Bruhbot - The discord bot
+* Chatty - The chatbot service
+* Objection Engine - The ace attorney rendering engine
 
 ### / Commands
 
@@ -67,12 +75,6 @@ Custom discord bot
             <td>/chatty</td>
         </tr>
         <tr>
-            <td>leftist</td>
-            <td>bruhbot plays a clip from this <a href="https://youtu.be/o5EKuIus-oE">Parody video</a> in the users audio channel</td>
-            <td></td>
-            <td>/leftist</td>
-        </tr>
-        <tr>
             <td>addphrase</td>
             <td>Adds a flagged message phrase that bruhbot will issue a response to</td>
             <td></td>
@@ -119,5 +121,6 @@ Count|$c|`Word seen $c times` -> `Word seen 102 times`
 
 ## Troubleshooting
 
--   If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
--   ffmpeg is also required for the code to function
+- You can find the assets I use here: https://drive.google.com/file/d/1pSPUah0csO5XLEtw7OMxX-IzS37_Z6fd/view?usp=share_link
+- If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
+- ffmpeg is also required for the code to function

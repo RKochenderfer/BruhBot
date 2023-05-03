@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
+import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder } from 'discord.js'
 import * as db from '../db'
 
 module.exports = {
@@ -13,6 +13,10 @@ module.exports = {
 		),
 
 	async execute(interaction: ChatInputCommandInteraction) {
+		if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
+			interaction.reply({content: 'Only an Admin can use this command', ephemeral: true})
+			return
+		}
 		await interaction.deferReply()
 
 		const key = interaction.options.getString('key')!
