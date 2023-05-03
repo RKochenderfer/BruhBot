@@ -124,3 +124,6 @@ Count|$c|`Word seen $c times` -> `Word seen 102 times`
 - You can find the assets I use here: https://drive.google.com/file/d/1pSPUah0csO5XLEtw7OMxX-IzS37_Z6fd/view?usp=share_link
 - If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
 - ffmpeg is also required for the code to function
+
+## FAQ
+- "Why can't I render more than 100 comments?": The Objection Engine has a cap of 100 messages

@@ -4,7 +4,9 @@ import crypto from 'crypto'
 import { ENV } from '.'
 import { logger } from './utils/logger'
 
-const RENDER_LIMIT = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
+let rl = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
+
+const RENDER_LIMIT = rl > 100 ? 100 : rl // The max render limit is 100
 
 class MessageInfo {
 	constructor(public readonly user_name: string, public readonly text_content: string) {}
@@ -67,6 +69,13 @@ class RenderRequest {
 	}
 
 	private sendRenderedFile = async () => {
+		const stats = fs.statSync(`output/${this.fileName}`)
+
+		if (stats.size / (1024 * 1024) >= 25) {
+			await this.message.reply('The size of the file was too large to send over Discord.')
+			return
+		}
+
 		const stream = fs.createReadStream(`output/${this.fileName}`) // Read the file from the shared output directory with the objection-engine
 		stream.on('error', err => {
 			console.error(err)
@@ -92,7 +101,6 @@ export class RenderQueue {
 		if (RenderQueue.queue.length === 0 || this.isRendering) return
 
 		this.isRendering = true
-		if (ENV === 'Dev') console.log('Rendering')
 		const request = RenderQueue.queue.pop()!
 		RenderQueue.performRender(request)
 	}
@@ -119,12 +127,16 @@ export class RenderQueue {
 }
 
 export let render = async (message: Message) => {
+	if (RENDER_LIMIT <= 0) {
+		message.reply('This functionality is disabled in the config.')
+		return
+	}
+
 	const num = validate(message)
 	if (num === null) return
 
 	const requestId = crypto.randomUUID()
 	RenderQueue.addRequest(new RenderRequest(requestId, message, num))
-	console.log(`Number ${RenderQueue.length} in queue.`)
 }
 
 let validate = (message: Message): number | null => {
@@ -137,7 +149,7 @@ let validate = (message: Message): number | null => {
 
 	const parsed = Number.parseInt(num)
 	if (parsed > RENDER_LIMIT) {
-		message.reply('The number must be less than 20')
+		message.reply(`The max number of messages that can be rendered in a request is ${RENDER_LIMIT} messages`)
 		return null
 	}
 

@@ -1,10 +1,9 @@
 import { Collection, Db, MongoClient } from 'mongodb'
-import Log from './models/log'
 import Server from './models/server'
 
 export type Database = {
 	servers?: Collection<Server>
-	logs?: Collection<Log>
+	logs?: Collection<any>
 }
 
 /**
@@ -22,7 +21,7 @@ const connect = async () => {
 
 		const db = client.db(process.env.MONGO_INITDB_DATABASE!)
 		const serversCollection = db.collection('servers') as Collection<Server>
-		const logsCollection = db.collection('logs') as Collection<Log>
+		const logsCollection = db.collection('logs') as Collection<any>
 		collections.servers = serversCollection
 		collections.logs = logsCollection
 
@@ -42,15 +41,7 @@ export const connectToDatabase = async () => {
 	throw new Error('Unable to connect to db')
 }
 
-export const insertLog = async (log: Log) => {
-	try {
-		await collections.logs?.insertOne(log)
-	} catch (error) {
-		console.error(error)
-	}
-}
-
-export const addPins = (guildId: string, message: string) => {
+export const addPins = (guildId: string) => {
 	const query = { guildId: guildId }
 	collections.servers?.updateOne(query, {})
 }
