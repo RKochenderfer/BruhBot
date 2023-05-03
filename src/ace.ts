@@ -101,7 +101,6 @@ export class RenderQueue {
 		if (RenderQueue.queue.length === 0 || this.isRendering) return
 
 		this.isRendering = true
-		if (ENV === 'Dev') console.log('Rendering')
 		const request = RenderQueue.queue.pop()!
 		RenderQueue.performRender(request)
 	}
@@ -132,13 +131,12 @@ export let render = async (message: Message) => {
 		message.reply('This functionality is disabled in the config.')
 		return
 	}
-	
+
 	const num = validate(message)
 	if (num === null) return
 
 	const requestId = crypto.randomUUID()
 	RenderQueue.addRequest(new RenderRequest(requestId, message, num))
-	console.log(`Number ${RenderQueue.length} in queue.`)
 }
 
 let validate = (message: Message): number | null => {
