@@ -11,17 +11,17 @@ const refusalRate = 10
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('nickname')
-		.setDescription("Sets a user's nickname")
+		.setDescription('Sets a user\'s nickname')
 		.addMentionableOption(option =>
 			option
 				.setName('user')
-				.setDescription("The mentioned user's new nickname.")
+				.setDescription('The mentioned user\'s new nickname.')
 				.setRequired(true),
 		)
 		.addStringOption(option =>
 			option
 				.setName('nickname')
-				.setDescription("The user's new nickname")
+				.setDescription('The user\'s new nickname')
 				.setRequired(true),
 		),
 
@@ -35,7 +35,7 @@ module.exports = {
 		console.log(permissions?.toArray())
 
 		if (!permissions?.has('ManageNicknames') || !permissions.has('ChangeNickname')) {
-			interaction.reply(`I don't have permission to change nicknames because we live in a dictatorship.`)
+			interaction.reply('I don\'t have permission to change nicknames because we live in a dictatorship.')
 			return
 		}
 

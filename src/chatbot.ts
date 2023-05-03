@@ -15,12 +15,13 @@ export default class Chatbot {
 				body: JSON.stringify(new ChatbotRequest(guildid, message)),
 			})
 
-			if (!response.ok)
+			if (!response.ok) {
 				throw Error(
 					`Request to Chatbot failed. Request: ${JSON.stringify(
 						response,
 					)}`,
 				)
+			}
 
 			return (await response.json()) as ChatbotResponse
 		} catch (error) {

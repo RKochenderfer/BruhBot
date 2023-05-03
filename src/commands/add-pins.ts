@@ -1,8 +1,5 @@
 import {
-	BaseGuildTextChannel,
-	Collection,
 	CommandInteraction,
-	GuildBasedChannel,
 	SlashCommandBuilder,
 } from 'discord.js'
 import { updatePins } from '../update-pins'

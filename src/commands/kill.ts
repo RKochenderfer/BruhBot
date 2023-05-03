@@ -24,7 +24,7 @@ module.exports = {
 		),
 
 	async execute(interaction: ChatInputCommandInteraction) {
-		interaction.reply({content: 'This is currenlty out of service', ephemeral: true})
+		interaction.reply({ content: 'This is currenlty out of service', ephemeral: true })
 		// const fh = new FileHandler(KILL_MESSAGES_PATH)
 		// try {
 		// 	const json: any = await fh.readFile()

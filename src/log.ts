@@ -97,7 +97,7 @@ export class Logger {
 		await insertLog({
 			level: LogLevel.ERROR,
 			timestamp: getCurrentTimestamp(),
-			message: JSON.stringify(err)
+			message: JSON.stringify(err),
 		})
 	}
 

@@ -43,7 +43,7 @@ module.exports = {
 
 	async execute(interaction: ChatInputCommandInteraction) {
 		if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
-			interaction.reply({content: 'Only an Admin can use this command', ephemeral: true})
+			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
 		await interaction.deferReply()
@@ -64,13 +64,13 @@ module.exports = {
 			)
 			if (!messageChecker.checkFlagsValid()) {
 				await interaction.followUp({
-					content: `Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D`,
+					content: 'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
 					ephemeral: true,
 				})
 				return
 			}
 
-			const serverExists = await db.collections.servers?.findOne({
+			const serverExists = await db.collections.servers!.findOne({
 				guildId: interaction.guildId!,
 			})
 
@@ -78,32 +78,32 @@ module.exports = {
 				messageChecker.key,
 				messageChecker.expression,
 				messageChecker.response,
-				messageChecker.flags
+				messageChecker.flags,
 			)
 
 			if (serverExists) {
-				db.collections.servers?.updateOne(
+				db.collections.servers!.updateOne(
 					{ guildId: interaction.guildId! },
 					{ $push: { flaggedPatterns: toAdd } },
 				)
 
 				logger.debug(toAdd, `Adding pattern to guild: ${interaction.guildId}`)
 			} else {
-				db.collections.servers?.insertOne({
-					name: interaction.guild?.name!,
+				db.collections.servers!.insertOne({
+					name: interaction.guild!.name!,
 					guildId: interaction.guildId!,
 					flaggedPatterns: [toAdd],
 				})
 				logger.info(toAdd, `Creating server document and adding pattern for guildId: ${interaction.guildId}`)
 			}
-			
+
 			MessageChecker.addPatternToCache(interaction.guildId!, toAdd)
 			await interaction.followUp({
 				content: 'Your pattern has been created',
 				ephemeral: true,
 			})
 		} catch (error) {
-			console.error(error)
+			logger.error(error)
 		}
 	},
 }

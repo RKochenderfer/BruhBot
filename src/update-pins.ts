@@ -9,7 +9,7 @@ export const updatePins = async (
 ) => {
 	let pins: Pin[] = []
 
-	for (let [_channelId, base] of channels) {
+	for (const [_channelId, base] of channels) {
 		if (base.isTextBased() && !base.isVoiceBased()) {
 			const textChannel = base as BaseGuildTextChannel
 			const pinnedMessages = await textChannel.messages.fetchPinned()

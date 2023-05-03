@@ -98,7 +98,7 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 		await command.execute(interaction)
 	} catch (error) {
 		logger.error(error, error.message, baseInteraction)
-		
+
 		if (!interaction.deferred && !interaction.replied) {
 			await interaction.reply({
 				content: 'There was an error executing this command!',

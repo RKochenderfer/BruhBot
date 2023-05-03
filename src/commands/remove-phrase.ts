@@ -14,7 +14,7 @@ module.exports = {
 
 	async execute(interaction: ChatInputCommandInteraction) {
 		if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
-			interaction.reply({content: 'Only an Admin can use this command', ephemeral: true})
+			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
 		await interaction.deferReply()
@@ -37,8 +37,7 @@ module.exports = {
 			{ $pull: { flaggedPatterns: { key: key } } },
 		)
 
-		if (!res)
-			throw new Error('Database error. Unable to remove flaggedPhrase.')
+		if (!res) {throw new Error('Database error. Unable to remove flaggedPhrase.')}
 
 		interaction.followUp({
 			content:
