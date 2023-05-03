@@ -1,0 +1,17 @@
+### GET /ping
+GET http://localhost:5000/ping
+Content-Type: text/plain
+
+### POST /
+POST http://localhost:5000/
+Content-Type: application/json
+Accept: video/mp4
+
+{
+	"file_name": "output-test.mp4",
+	"messages": [
+		{"user_name": "Ray", "text_content": "look it's kind of working"},
+		{"user_name": "Nick From Michigan", "text_content": "I'm a bitch"},
+		{"user_name": "Ray", "text_content": "You sure are bud"}
+	]
+}
