@@ -119,5 +119,6 @@ Count|$c|`Word seen $c times` -> `Word seen 102 times`
 
 ## Troubleshooting
 
--   If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
--   ffmpeg is also required for the code to function
+- You can find the assets I use here: https://drive.google.com/file/d/1pSPUah0csO5XLEtw7OMxX-IzS37_Z6fd/view?usp=share_link
+- If you get a node-gyp error make sure you run the following `sudo npm install -g node-gyp`
+- ffmpeg is also required for the code to function
