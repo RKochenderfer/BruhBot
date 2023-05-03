@@ -1,5 +1,6 @@
 import {
 	ChatInputCommandInteraction,
+	PermissionsBitField,
 	SlashCommandBuilder,
 } from 'discord.js'
 import FlaggedPattern from '../message-checker/flagged-pattern'
@@ -40,6 +41,10 @@ module.exports = {
 		),
 
 	async execute(interaction: ChatInputCommandInteraction) {
+		if (!interaction.memberPermissions?.has(PermissionsBitField.Flags.Administrator)) {
+			interaction.reply({content: 'Only an Admin can use this command', ephemeral: true})
+			return
+		}
 		await interaction.deferReply()
 		try {
 			const key = interaction.options.getString('key', true)
