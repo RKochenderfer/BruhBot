@@ -13,6 +13,7 @@ services:
     image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes: 
       - ../build:/app/build
+      - ../assets:/app/assets
       - data:/app/data
       - objection_engine:/app/output/
     environment:

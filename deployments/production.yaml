@@ -12,6 +12,7 @@ services:
     image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes: 
       - data:/app/data
+      - /mnt/user/appdata/bruhbot/assets:/app/assets
       - objection_engine:/app/output
     restart: always
     environment:
