@@ -1,12 +1,20 @@
 # BruhBot
 [![Docker Image CI](https://github.com/RKochenderfer/BruhBot/actions/workflows/docker-image.yml/badge.svg?branch=master)](https://github.com/RKochenderfer/BruhBot/actions/workflows/docker-image.yml)
 
-Custom discord bot
+A custom Discord Bot
 
 ## Development Requirements
 * TypeScript > 5.0
+* Docker
+* Docker Compose
 
 ## Usage
+To start application run `./bash-scripts/up.sh`
+
+## Applications in Repo
+* Bruhbot - The discord bot
+* Chatty - The chatbot service
+* Objection Engine - The ace attorney rendering engine
 
 ### / Commands
 
