@@ -5,12 +5,12 @@ import {
 	Message,
 	TextBasedChannel,
 } from 'discord.js'
-import { ChatBot, Logger, State } from '.'
+import { ChatBot, State } from '.'
 import { updateCommands } from './command-updater'
 import { render } from './ace'
-import { logMessage } from './utils/utils'
 import { updatePins } from './update-pins'
 import * as utils from './utils/utils'
+import { logger } from './utils/logger'
 import { ServerState } from './models/state'
 import BotClient from './models/bot-client'
 import Command from './command'
@@ -31,7 +31,6 @@ export const onMessageCreate = async (message: Message<boolean>) => {
 		return
 	}
 
-	const start = Date.now()
 	// Check is message is part of the flagged phrases
 	try {
 		const flaggedMessage = await MessageChecker.getFlagged(message.guildId!, message)
@@ -40,11 +39,11 @@ export const onMessageCreate = async (message: Message<boolean>) => {
 			return
 		}
 	} catch (error) {
-		await logMessage(message, start, error)
+		logger.error(error.message, error, message)
 		return
 	}
 
-	await logMessage(message, start)
+	logger.debug(message)
 	if (State.servers.has(message.guildId!) && State.servers.get(message.guildId!)!.chattyEnabled) {
 		try {
 			// Reach out to chatbot to get reply
@@ -52,7 +51,7 @@ export const onMessageCreate = async (message: Message<boolean>) => {
 			if (!reply) return
 			await message.channel.send({ content: reply![0].text })
 		} catch (error) {
-			await Logger.logError(error)
+			logger.error(error)
 		}
 	}
 }
@@ -90,7 +89,7 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	const command = interactionClient.commands?.get(interaction.commandName) as Command
 
 	if (!command) {
-		Logger.logWarn(`No command matching ${interaction.commandName} was found`)
+		logger.info(`No command matching ${interaction.commandName} was found`)
 		return
 	}
 
@@ -98,13 +97,8 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	try {
 		await command.execute(interaction)
 	} catch (error) {
-		utils.logInteraction(
-			baseInteraction,
-			interaction.commandType.toString(),
-			interaction.commandName,
-			start,
-			error,
-		)
+		logger.error(error, error.message, baseInteraction)
+		
 		if (!interaction.deferred && !interaction.replied) {
 			await interaction.reply({
 				content: 'There was an error executing this command!',
@@ -117,10 +111,5 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 			})
 		}
 	}
-	utils.logInteraction(
-		baseInteraction,
-		interaction.commandType.toString(),
-		interaction.commandName,
-		start,
-	)
+	logger.debug(baseInteraction)
 }

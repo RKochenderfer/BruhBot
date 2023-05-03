@@ -1,9 +1,9 @@
 import FlaggedPattern from './flagged-pattern'
-import { Logger } from '..'
 import * as db from '../db'
 import FlaggedMessage from '../models/flagged-message'
 import { GuildInviteManager, Message } from 'discord.js'
 import { getTimestamp } from '../utils/utils'
+import { logger } from '../utils/logger'
 /**
  * Takes flagged messages and creates the RegExp on adding
  */
@@ -44,7 +44,7 @@ export class MessageChecker {
 	 * @param toAdd  - the pattern to add
 	 */
 	addPatternToCache = (guildId: string, toAdd: FlaggedPattern) => {
-		Logger.logDebug(`Adding pattern key: ${toAdd.key} from guild: ${guildId} to cache`)
+		logger.debug(toAdd, `Adding pattern to guild: ${guildId} to cache`)
 		if (MessageChecker.cache.has(guildId)) {
 			const current = MessageChecker.cache.get(guildId)!
 			current.patterns = [...current.patterns, new CachedPattern(toAdd)]
@@ -59,7 +59,7 @@ export class MessageChecker {
 	 * @param toRemove - The key of the pattern that is to be removed
 	 */
 	removePattern = (guildId: string, toRemove: string) => {
-		Logger.logDebug(`Removing pattern key: ${toRemove} with guildId: ${guildId}`)
+		logger.debug(`Removing pattern key: ${toRemove} with guildId: ${guildId}`)
 		if (MessageChecker.cache.has(guildId)) {
 			const cached = MessageChecker.cache.get(guildId)!
 			cached.patterns = cached.patterns.filter(val => val.flaggedPattern.key === toRemove)
@@ -133,9 +133,9 @@ export class MessageChecker {
 				{ guildId: guildId, 'flaggedPatterns.key': pattern.key },
 				{ $set: { 'flaggedPatterns.$': pattern } },
 			)
-			Logger.logDebug(`Updated pattern key: ${pattern.key} for guild: ${guildId}`)
+			logger.debug(`Updated pattern key: ${pattern.key} for guild: ${guildId}`)
 		} catch (error) {
-			Logger.logException(error)
+			logger.error(error)
 		}
 	}
 

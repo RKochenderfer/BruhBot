@@ -1,7 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { Parser } from 'expr-eval'
 import { AsciiTable } from '../ascii-table'
-import { Logger } from '../index'
 
 interface RollInformation {
 	diceCount: number
@@ -64,10 +63,6 @@ const processRoll = async (rollString: string): Promise<string> => {
 	for (let i = 0; i < dieCount; i++) {
 		values.push(getRandomInt(dieType))
 	}
-
-	await Logger.logInfo(
-		`--------------\n*ROLL COMMAND*\nDie Count: ${dieCount}\nDie Type: ${dieType}\nModifier: ${modString}\nValues: ${values}\n--------------`,
-	)
 
 	return displayRoll({
 		diceCount: dieCount,
