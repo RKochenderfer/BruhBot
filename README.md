@@ -75,12 +75,6 @@ To start application run `./bash-scripts/up.sh`
             <td>/chatty</td>
         </tr>
         <tr>
-            <td>leftist</td>
-            <td>bruhbot plays a clip from this <a href="https://youtu.be/o5EKuIus-oE">Parody video</a> in the users audio channel</td>
-            <td></td>
-            <td>/leftist</td>
-        </tr>
-        <tr>
             <td>addphrase</td>
             <td>Adds a flagged message phrase that bruhbot will issue a response to</td>
             <td></td>
