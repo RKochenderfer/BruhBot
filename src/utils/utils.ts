@@ -1,17 +1,14 @@
 import { BaseInteraction, GuildTextBasedChannel, Message, TextChannel } from 'discord.js'
-import { Logger } from '.'
-import { DiscordInfo, InteractionLog, LogLevel, Type, UserInfo } from './log'
+import { Logger } from '..'
+import { DiscordInfo, InteractionLog, LogLevel, Type, UserInfo } from '../log'
 
 export const getTimestamp = () => {
 	const pad = (n: any, s = 2) => `${new Array(s).fill(0)}${n}`.slice(-s)
 	const d = new Date()
 
-	return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(
-		d.getDate(),
-	)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(
-		d.getMilliseconds(),
-		3,
-	)}`
+	return `${pad(d.getFullYear(), 4)}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
+		d.getHours(),
+	)}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}`
 }
 
 export const logMessage = async (
@@ -20,9 +17,7 @@ export const logMessage = async (
 	regexString?: string,
 	error?: Error,
 ) => {
-	const channelName = (
-		message.channel as GuildTextBasedChannel as TextChannel
-	).name
+	const channelName = (message.channel as GuildTextBasedChannel as TextChannel).name
 	await Logger.logInteraction(
 		{
 			logLevel: LogLevel.INFO,
@@ -55,9 +50,7 @@ export const logInteraction = async (
 	start: number,
 	error?: Error,
 ) => {
-	const channelName = (
-		interaction.channel as GuildTextBasedChannel as TextChannel
-	).name
+	const channelName = (interaction.channel as GuildTextBasedChannel as TextChannel).name
 	await Logger.logInteraction(
 		{
 			logLevel: LogLevel.INFO,

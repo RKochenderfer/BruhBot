@@ -8,9 +8,9 @@ import {
 import { ChatBot, Logger, State } from '.'
 import { updateCommands } from './command-updater'
 import { render } from './ace'
-import { logMessage } from './utils'
+import { logMessage } from './utils/utils'
 import { updatePins } from './update-pins'
-import * as utils from './utils'
+import * as utils from './utils/utils'
 import { ServerState } from './models/state'
 import BotClient from './models/bot-client'
 import Command from './command'
@@ -22,10 +22,7 @@ import { MessageChecker } from '.'
  */
 export const onMessageCreate = async (message: Message<boolean>) => {
 	if (message.author.bot) return
-	if (
-		message.content === '!deploy' &&
-		message.author.id === '208376655129870346'
-	) {
+	if (message.content === '!deploy' && message.author.id === '208376655129870346') {
 		await updateCommands(message)
 		return
 	} else if (message.content.match(/^!ace \d+$/)) {
@@ -48,16 +45,10 @@ export const onMessageCreate = async (message: Message<boolean>) => {
 	}
 
 	await logMessage(message, start)
-	if (
-		State.servers.has(message.guildId!) &&
-		State.servers.get(message.guildId!)!.chattyEnabled
-	) {
+	if (State.servers.has(message.guildId!) && State.servers.get(message.guildId!)!.chattyEnabled) {
 		try {
 			// Reach out to chatbot to get reply
-			const reply = await ChatBot.getResponse(
-				message.content,
-				message.guildId!,
-			)
+			const reply = await ChatBot.getResponse(message.content, message.guildId!)
 			if (!reply) return
 			await message.channel.send({ content: reply![0].text })
 		} catch (error) {
@@ -96,14 +87,10 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	const interaction = baseInteraction as ChatInputCommandInteraction
 	const interactionClient = interaction.client as BotClient
 
-	const command = interactionClient.commands?.get(
-		interaction.commandName,
-	) as Command
+	const command = interactionClient.commands?.get(interaction.commandName) as Command
 
 	if (!command) {
-		Logger.logWarn(
-			`No command matching ${interaction.commandName} was found`,
-		)
+		Logger.logWarn(`No command matching ${interaction.commandName} was found`)
 		return
 	}
 

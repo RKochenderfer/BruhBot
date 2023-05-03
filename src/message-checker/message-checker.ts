@@ -3,7 +3,7 @@ import { Logger } from '..'
 import * as db from '../db'
 import FlaggedMessage from '../models/flagged-message'
 import { GuildInviteManager, Message } from 'discord.js'
-import { getTimestamp } from '../utils'
+import { getTimestamp } from '../utils/utils'
 /**
  * Takes flagged messages and creates the RegExp on adding
  */
@@ -109,7 +109,7 @@ export class MessageChecker {
 		const date = pattern.flaggedPattern.messageHistory.lastFound
 		const lastFound = pattern.flaggedPattern.messageHistory.prevLastFound
 		const timespan = (date as unknown as number) - (lastFound as unknown as number)
-		
+
 		return pattern.flaggedPattern.response
 			.replace('$k', pattern.flaggedPattern.key)
 			.replace('$c', `${pattern.flaggedPattern.messageHistory.count}`)

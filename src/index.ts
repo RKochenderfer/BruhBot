@@ -1,13 +1,6 @@
-import {
-	Client,
-	Collection,
-	Events,
-	GatewayIntentBits,
-	Partials,
-} from 'discord.js'
-import {
-	Logger as AppLogger,
-} from './log'
+import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js'
+import * as pino from 'pino'
+import { Logger as AppLogger } from './log'
 import BotClient from './models/bot-client'
 import { connectToDatabase } from './db'
 import { AppState } from './models/state'
@@ -15,11 +8,10 @@ import Chatbot from './chatbot'
 import { RenderQueue } from './ace'
 import { getCommands } from './command-updater'
 import * as listeners from './listeners'
-import * as utils from './utils'
+import * as utils from './utils/utils'
 import { MessageChecker as Checker } from './message-checker/message-checker'
 
 export const State = new AppState()
-export const Logger = new AppLogger()
 export const ChatBot = new Chatbot()
 export const MessageChecker = new Checker()
 export const ENV = process.env.ENVIRONMENT ?? 'Dev'
@@ -52,9 +44,7 @@ const init = () => {
 
 	// Log that client is online
 	botClient.once('ready', async (c: any) => {
-		await Logger.logInfo(
-			`Ready! logged in as ${c.user.tag} at ${utils.getTimestamp()}`,
-		)
+		await Logger.logInfo(`Ready! logged in as ${c.user.tag} at ${utils.getTimestamp()}`)
 	})
 
 	// start discord bot
