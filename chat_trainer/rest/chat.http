@@ -1,7 +1,0 @@
-POST http://0.0.0.0:5005/webhooks/rest/webhook HTTP/1.1
-Content-Type: application/json
-
-{
-    "sender": "706506150643892334",
-    "message": "hi"
-}
