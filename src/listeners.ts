@@ -5,7 +5,7 @@ import {
 	Message,
 	TextBasedChannel,
 } from 'discord.js'
-import { ChatBot, State } from '.'
+import { State } from '.'
 import { updateCommands } from './command-updater'
 import { render } from './ace'
 import { updatePins } from './update-pins'
@@ -43,16 +43,6 @@ export const onMessageCreate = async (message: Message<boolean>) => {
 	}
 
 	logger.debug(message)
-	if (State.servers.has(message.guildId!) && State.servers.get(message.guildId!)!.chattyEnabled) {
-		try {
-			// Reach out to chatbot to get reply
-			const reply = await ChatBot.getResponse(message.content, message.guildId!)
-			if (!reply) return
-			await message.channel.send({ content: reply![0].text })
-		} catch (error) {
-			logger.error(error)
-		}
-	}
 }
 
 /**
