@@ -1,6 +1,7 @@
 import { BaseGuildTextChannel, Collection, GuildBasedChannel } from 'discord.js'
 import Pin from './models/pin'
 import * as db from './db'
+import { logger } from './utils/logger'
 
 export const updatePins = async (
 	channels: Collection<string, GuildBasedChannel>,
@@ -38,7 +39,7 @@ export const updatePins = async (
 		}
 		db.collections.servers?.updateOne(key, newValues, { upsert: true })
 	} catch (error) {
-		console.error(error)
+		logger.error(error)
 		throw error
 	}
 }

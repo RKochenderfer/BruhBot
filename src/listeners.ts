@@ -9,7 +9,6 @@ import { ChatBot, State } from '.'
 import { updateCommands } from './command-updater'
 import { render } from './ace'
 import { updatePins } from './update-pins'
-import * as utils from './utils/utils'
 import { logger } from './utils/logger'
 import { ServerState } from './models/state'
 import BotClient from './models/bot-client'
@@ -69,7 +68,7 @@ export const onChannelPinsUpdate = async (channel: TextBasedChannel) => {
 			textChannel.guild.name,
 		)
 	} catch (error) {
-		console.error(error)
+		logger.error(error)
 	}
 }
 
@@ -93,7 +92,6 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 		return
 	}
 
-	const start = Date.now()
 	try {
 		await command.execute(interaction)
 	} catch (error) {

@@ -1,8 +1,6 @@
-import {
-	CommandInteraction,
-	SlashCommandBuilder,
-} from 'discord.js'
+import { CommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { updatePins } from '../update-pins'
+import { logger } from '../utils/logger'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -15,9 +13,13 @@ module.exports = {
 	 */
 	async execute(interaction: CommandInteraction) {
 		try {
-			await updatePins(interaction.guild?.channels.cache!, interaction.guildId!, interaction.guild?.name!)
+			await updatePins(
+				interaction.guild!.channels.cache!,
+				interaction.guildId!,
+				interaction.guild!.name!,
+			)
 		} catch (error) {
-			console.error(error)
+			logger.error(error)
 			throw error
 		}
 
