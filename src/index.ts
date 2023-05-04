@@ -42,7 +42,7 @@ const init = () => {
 	getCommands(botClient)
 
 	// Log that client is online
-	botClient.once('ready', async (c: any) => {
+	botClient.once('ready', async (c: Client<true>) => {
 		logger.info(`Ready! Logged in as ${c.user.tag} at ${utils.getTimestamp()}`)
 	})
 

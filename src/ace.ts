@@ -1,10 +1,9 @@
-import { AttachmentBuilder, Guild, Message, MessageType } from 'discord.js'
+import { AttachmentBuilder, Message, MessageType } from 'discord.js'
 import fs from 'fs'
 import crypto from 'crypto'
-import { ENV } from '.'
 import { logger } from './utils/logger'
 
-let rl = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
+const rl = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
 
 const RENDER_LIMIT = rl > 100 ? 100 : rl // The max render limit is 100
 
@@ -47,10 +46,10 @@ class RenderRequest {
 	private buildRequestBody = async () => {
 		// Get the message that the caller replied to
 		const repliedTo = await this.message.channel.messages.fetch(
-			this.message.reference?.messageId!,
+			this.message.reference!.messageId!,
 		)
 		// gather a number of messages that the sender requested
-		let messagesBefore = await this.message.channel.messages.fetch({
+		const messagesBefore = await this.message.channel.messages.fetch({
 			before: repliedTo.id,
 			limit: this.num - 1, // The -1 is so that the message they replied to is included and the total rendered matches the request
 		})
@@ -78,7 +77,7 @@ class RenderRequest {
 
 		const stream = fs.createReadStream(`output/${this.fileName}`) // Read the file from the shared output directory with the objection-engine
 		stream.on('error', err => {
-			console.error(err)
+			logger.error(err)
 		})
 		const file = new AttachmentBuilder(stream)
 		await this.message.reply({
@@ -95,7 +94,7 @@ class RenderRequest {
 export class RenderQueue {
 	private static queue: Array<RenderRequest> = []
 	public static timer: NodeJS.Timer
-	private static isRendering: boolean = false
+	private static isRendering = false
 
 	static render() {
 		if (RenderQueue.queue.length === 0 || this.isRendering) return
@@ -109,7 +108,7 @@ export class RenderQueue {
 		request
 			.render()
 			.then(() => RenderQueue.cleanup(request))
-			.catch(err => console.error(err))
+			.catch(err => logger.error(err))
 	}
 
 	private static cleanup(request: RenderRequest) {
@@ -126,7 +125,7 @@ export class RenderQueue {
 	}
 }
 
-export let render = async (message: Message) => {
+export const render = async (message: Message) => {
 	if (RENDER_LIMIT <= 0) {
 		message.reply('This functionality is disabled in the config.')
 		return
@@ -139,7 +138,7 @@ export let render = async (message: Message) => {
 	RenderQueue.addRequest(new RenderRequest(requestId, message, num))
 }
 
-let validate = (message: Message): number | null => {
+const validate = (message: Message): number | null => {
 	if (message.type !== MessageType.Reply) {
 		message.reply('To use this command you must reply to a message')
 		return null

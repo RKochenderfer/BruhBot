@@ -1,8 +1,6 @@
 import FlaggedPattern from './flagged-pattern'
 import * as db from '../db'
-import FlaggedMessage from '../models/flagged-message'
-import { GuildInviteManager, Message } from 'discord.js'
-import { getTimestamp } from '../utils/utils'
+import { Message } from 'discord.js'
 import { logger } from '../utils/logger'
 /**
  * Takes flagged messages and creates the RegExp on adding
@@ -19,8 +17,6 @@ export class CachedPattern {
 			this.regex = new RegExp(flaggedPattern.expression)
 		}
 	}
-
-	getFlaggedPattern() {}
 }
 
 export class CachedServerPatterns {
@@ -35,8 +31,6 @@ export class MessageChecker {
 	 * A map of the guildId to the regular expressions the server has
 	 */
 	private static cache: Map<string, CachedServerPatterns> = new Map()
-
-	constructor() {}
 
 	/**
 	 * Adds a pattern to the cache
@@ -95,7 +89,7 @@ export class MessageChecker {
 				}
 			}
 		} catch (error) {
-			console.error(error)
+			logger.error(error)
 		}
 		return null
 	}

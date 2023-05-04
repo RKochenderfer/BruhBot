@@ -5,7 +5,7 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('clipshow')
 		.setDescription(
-			'Gets a random quote from the pinned list or previously pinned comments'
+			'Gets a random quote from the pinned list or previously pinned comments',
 		),
 
 	async execute(interaction: CommandInteraction) {
@@ -14,7 +14,7 @@ module.exports = {
 
 		try {
 			const result = await db.collections.servers?.findOne(query)
-			
+
 			if (!result) {
 				await interaction.followUp(
 					'There was an issue finding the server',
@@ -35,6 +35,6 @@ module.exports = {
 		} catch (error) {
 			interaction.followUp('there was an error')
 		}
-		
-	}
+
+	},
 }

@@ -1,8 +1,10 @@
-import { Collection, Db, MongoClient } from 'mongodb'
+import { Collection, MongoClient } from 'mongodb'
 import Server from './models/server'
+import { logger } from './utils/logger'
 
 export type Database = {
 	servers?: Collection<Server>
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	logs?: Collection<any>
 }
 
@@ -21,13 +23,14 @@ const connect = async () => {
 
 		const db = client.db(process.env.MONGO_INITDB_DATABASE!)
 		const serversCollection = db.collection('servers') as Collection<Server>
+		/* eslint-disable @typescript-eslint/no-explicit-any */
 		const logsCollection = db.collection('logs') as Collection<any>
 		collections.servers = serversCollection
 		collections.logs = logsCollection
 
 		return true
 	} catch (error) {
-		console.error(error)
+		logger.error(error)
 		return false
 	}
 }
@@ -39,9 +42,4 @@ export const connectToDatabase = async () => {
 	}
 
 	throw new Error('Unable to connect to db')
-}
-
-export const addPins = (guildId: string) => {
-	const query = { guildId: guildId }
-	collections.servers?.updateOne(query, {})
 }

@@ -1,5 +1,3 @@
-import Chatbot from '../chatbot'
-
 export class ServerState {
 	constructor(public chattyEnabled: boolean = false) {}
 }

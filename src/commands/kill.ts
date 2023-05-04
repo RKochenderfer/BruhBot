@@ -1,16 +1,12 @@
 import {
-	AttachmentBuilder,
 	ChatInputCommandInteraction,
-	GuildMember,
 	SlashCommandBuilder,
 } from 'discord.js'
 // import { FileHandler } from '../message-interactions/file-handler'
-import { join } from 'path'
-
-const KILL_MESSAGES_PATH = join(
-	__dirname,
-	'../../data/kill-messages.json',
-)
+// const KILL_MESSAGES_PATH = join(
+// 	__dirname,
+// 	'../../data/kill-messages.json',
+// )
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -24,7 +20,7 @@ module.exports = {
 		),
 
 	async execute(interaction: ChatInputCommandInteraction) {
-		interaction.reply({content: 'This is currenlty out of service', ephemeral: true})
+		interaction.reply({ content: 'This is currently out of service', ephemeral: true })
 		// const fh = new FileHandler(KILL_MESSAGES_PATH)
 		// try {
 		// 	const json: any = await fh.readFile()

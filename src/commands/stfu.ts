@@ -11,7 +11,7 @@ module.exports = {
 		if (!interaction.guildId) return
 		try {
 			const connection = getVoiceConnection(interaction.guildId)
-			
+
 			connection?.destroy()
 			interaction.reply({
 				content: 'Attempting to disconnect',

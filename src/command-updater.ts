@@ -1,8 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import BotClient from './models/bot-client'
-import { Guild, Message, REST, Routes } from 'discord.js'
-import * as utils from './utils/utils'
+import { Message, REST, Routes } from 'discord.js'
 import { logger } from './utils/logger'
 
 /**
@@ -32,6 +31,7 @@ export const getCommands = (client: BotClient) => {
  */
 export const updateCommands = async (message: Message) => {
 	logger.info(`Updating commands for guild: ${message.guildId}`)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const commands: any[] = []
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
 
@@ -49,6 +49,7 @@ export const updateCommands = async (message: Message) => {
 
 		if (!message.guildId) return
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const data: any = await rest.put(
 			Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
 			{ body: commands },

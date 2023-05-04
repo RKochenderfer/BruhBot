@@ -1,4 +1,5 @@
 export const getTimestamp = () => {
+	/* eslint-disable @typescript-eslint/no-explicit-any */
 	const pad = (n: any, s = 2) => `${new Array(s).fill(0)}${n}`.slice(-s)
 	const d = new Date()
 
