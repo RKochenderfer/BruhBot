@@ -69,12 +69,6 @@ To start application run `./bash-scripts/up.sh`
             <td>/clipshow</td>
         </tr>
         <tr>
-            <td>chatty</td>
-            <td>bruhbot activates chat bot features</td>
-            <td></td>
-            <td>/chatty</td>
-        </tr>
-        <tr>
             <td>addphrase</td>
             <td>Adds a flagged message phrase that bruhbot will issue a response to</td>
             <td></td>
