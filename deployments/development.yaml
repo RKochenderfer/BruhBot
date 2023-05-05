@@ -27,16 +27,6 @@ services:
       - CHATBOT_URL=$CHATBOT_URL
       - RENDER_LIMIT=$RENDER_LIMIT
       - ENVIRONMENT=Dev
-  chatbot:
-    networks:
-      net:
-    image: ghcr.io/rkochenderfer/bruhbot-chatbot:latest
-    container_name: bruhbot-chatbot
-    # build: ../chat_trainer probably don't want this going as it would make it take forever everytime
-    volumes:
-      - data:/data/chatbot
-    ports:
-      - '5005:5005'
   objection-engine:
     networks:
       net:
