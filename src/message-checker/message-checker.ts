@@ -38,7 +38,7 @@ export class MessageChecker {
 	 * @param toAdd  - the pattern to add
 	 */
 	addPatternToCache = (guildId: string, toAdd: FlaggedPattern) => {
-		logger.debug(toAdd, `Adding pattern to guild: ${guildId} to cache`)
+		logger.debug(toAdd, `Adding pattern with key "${toAdd.key}" to guild: ${guildId} to cache`)
 		if (MessageChecker.cache.has(guildId)) {
 			const current = MessageChecker.cache.get(guildId)!
 			current.patterns = [...current.patterns, new CachedPattern(toAdd)]
@@ -53,7 +53,7 @@ export class MessageChecker {
 	 * @param toRemove - The key of the pattern that is to be removed
 	 */
 	removePattern = (guildId: string, toRemove: string) => {
-		logger.debug(`Removing pattern key: ${toRemove} with guildId: ${guildId}`)
+		logger.debug(`Removing pattern key: "${toRemove}" with guildId: ${guildId}`)
 		if (MessageChecker.cache.has(guildId)) {
 			const cached = MessageChecker.cache.get(guildId)!
 			cached.patterns = cached.patterns.filter(val => val.flaggedPattern.key === toRemove)

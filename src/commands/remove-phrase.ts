@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, PermissionsBitField, SlashCommandBuilder } from 'discord.js'
 import * as db from '../db'
+import { MessageChecker } from '..'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -36,14 +37,15 @@ module.exports = {
 			{ guildId: interaction.guildId! },
 			{ $pull: { flaggedPatterns: { key: key } } },
 		)
+		MessageChecker.removePattern(interaction.guildId!, key)
 
 		if (!res) {throw new Error('Database error. Unable to remove flaggedPhrase.')}
 
 		interaction.followUp({
 			content:
 				res?.modifiedCount === 1
-					? `Phrase with key: ${key} was removed.`
-					: `Key: ${key} was not found.`,
+					? `Phrase with key: "${key}" was removed.`
+					: `Key: "${key}" was not found.`,
 			ephemeral: true,
 		})
 	},
