@@ -2,7 +2,6 @@ import json
 from objection_engine.renderer import render_comment_list
 from objection_engine.beans.comment import Comment
 from flask import Flask, request, Response
-from time import gmtime, strftime
 
 app = Flask(__name__)
 

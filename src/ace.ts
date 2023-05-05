@@ -1,4 +1,11 @@
-import { AttachmentBuilder, Message, MessageType } from 'discord.js'
+import {
+	Attachment,
+	AttachmentBuilder,
+	Collection,
+	Message,
+	MessageType,
+	Snowflake,
+} from 'discord.js'
 import fs from 'fs'
 import crypto from 'crypto'
 import { logger } from './utils/logger'
@@ -8,7 +15,11 @@ const rl = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
 const RENDER_LIMIT = rl > 100 ? 100 : rl // The max render limit is 100
 
 class MessageInfo {
-	constructor(public readonly user_name: string, public readonly text_content: string) {}
+	constructor(
+		public readonly user_name: string,
+		public readonly text_content: string,
+		public readonly attachment_url: string | null,
+	) {}
 }
 
 class RenderRequest {
@@ -22,24 +33,26 @@ class RenderRequest {
 	async render() {
 		this.fileName = `${this.requestId}.mp4`
 
-		try {
-			const body = await this.buildRequestBody()
-			logger.info(
-				this.requestId,
-				`Rendering ${this.num} messages for ${this.message.author.username}`,
-			)
-			const res = await fetch('http://objection-engine:5000/', {
-				method: 'POST',
-				body: body,
-			})
+		const body = await this.buildRequestBody()
+		logger.info(
+			this.requestId,
+			`Rendering ${this.num} messages for ${this.message.author.username}`,
+		)
 
-			if (res.ok) {
-				await this.sendRenderedFile()
-			} else {
-				throw new Error(`Request failed: ${res}`)
-			}
-		} catch (error) {
-			logger.error(error)
+		// const res = await fetch('http://objection-engine:5000/', {
+		// 	method: 'POST',
+		// 	body: body,
+		// })
+
+		const res = await fetch('http://localhost:5000/', {
+			method: 'POST',
+			body: body,
+		})
+
+		if (res.ok) {
+			await this.sendRenderedFile()
+		} else {
+			throw new Error(`Request failed: ${JSON.stringify(res)}`)
 		}
 	}
 
@@ -55,11 +68,24 @@ class RenderRequest {
 		})
 
 		const messages: Array<MessageInfo> = [
-			new MessageInfo(repliedTo.author.username, repliedTo.content),
+			new MessageInfo(
+				repliedTo.author.username,
+				repliedTo.content,
+				repliedTo.attachments.first() === undefined
+					? null
+					: repliedTo.attachments.first()!.url,
+			),
 		]
 		messagesBefore.forEach((value, _key) => {
-			messages.push(new MessageInfo(value.author.username, value.content))
+			messages.push(
+				new MessageInfo(
+					value.author.username,
+					value.content,
+					value.attachments.first() === undefined ? null : value.attachments.first()!.url,
+				),
+			)
 		})
+		logger.debug(messages, 'Messages to be rendered')
 
 		return JSON.stringify({
 			file_name: this.fileName,
@@ -148,7 +174,9 @@ const validate = (message: Message): number | null => {
 
 	const parsed = Number.parseInt(num)
 	if (parsed > RENDER_LIMIT) {
-		message.reply(`The max number of messages that can be rendered in a request is ${RENDER_LIMIT} messages`)
+		message.reply(
+			`The max number of messages that can be rendered in a request is ${RENDER_LIMIT} messages`,
+		)
 		return null
 	}
 
