@@ -13,7 +13,7 @@ To start application run `./bash-scripts/up.sh`
 
 ## Applications in Repo
 * Bruhbot - The discord bot
-* Chatty - The chatbot service
+* Chatty - The chatbot service (deprecated)
 * Objection Engine - The ace attorney rendering engine
 
 ### / Commands
