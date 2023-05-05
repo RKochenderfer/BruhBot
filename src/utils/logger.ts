@@ -1,5 +1,7 @@
 import pino from 'pino'
 
+console.log(process.env.ENVIRONMENT === 'Dev' ? 'debug' : 'info')
+
 const transport = pino.transport({
 	target: 'pino-mongodb',
 	options: {
@@ -15,4 +17,7 @@ const transport = pino.transport({
 	},
 })
 
-export const logger = pino(transport)
+export const logger = pino(
+	{ level: process.env.ENVIRONMENT === 'Dev' ? 'debug' : 'info' },
+	transport,
+)
