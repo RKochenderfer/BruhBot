@@ -26,9 +26,15 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v3.2.0
+    - name: Build and push Bruhbot Docker image
+      uses: docker/build-push-action@v4
       with:
         context: .
         push: true
         tags: ghcr.io/${{ steps.string.outputs.lowercase }}:latest
+    - name: Build and push Bruhbot Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./objection-engine
+        push: true
+        tags: ghcr.io/${{ steps.string.outputs.lowercase }}-objection-engine:latest
