@@ -4,7 +4,6 @@ networks:
 services:
   bruhbot:
     depends_on:
-      - chatbot
       - mongodb
       - objection-engine
     networks:
