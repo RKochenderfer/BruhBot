@@ -62,6 +62,5 @@ try {
 	// start database
 	connectToDatabase().then(init)
 } catch (error) {
-	// Logger.logError(error.message)
 	logger.error(error)
 }

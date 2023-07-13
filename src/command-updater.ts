@@ -20,7 +20,9 @@ export const getCommands = (client: BotClient) => {
 		if ('data' in command && 'execute' in command) {
 			client.commands?.set(command.data.name, command)
 		} else {
-			logger.warn(`The command at ${filePath} is missing a required "data" or "execute" property.`)
+			logger.warn(
+				`The command at ${filePath} is missing a required "data" or "execute" property.`,
+			)
 		}
 	}
 }
@@ -54,32 +56,6 @@ export const updateCommands = async (message: Message) => {
 			Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
 			{ body: commands },
 		)
-
-		// delete commands
-		await rest.delete(
-			Routes.applicationGuildCommand(
-				process.env.CLIENT_ID!,
-				message.guildId,
-				'1034827085463695435',
-			),
-		)
-
-		await rest.delete(
-			Routes.applicationGuildCommand(
-				process.env.CLIENT_ID!,
-				message.guildId,
-				'1034548001332527104',
-			),
-		)
-
-		await rest.delete(
-			Routes.applicationGuildCommand(
-				process.env.CLIENT_ID!,
-				message.guildId,
-				'1034548028557762612',
-			),
-		)
-
 		logger.info(`Successfully reloaded ${data.length} application (/) commands`)
 	} catch (error) {
 		logger.error(error)
