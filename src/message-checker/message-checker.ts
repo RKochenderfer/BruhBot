@@ -56,7 +56,7 @@ export class MessageChecker {
 		logger.debug(`Removing pattern key: "${toRemove}" with guildId: ${guildId}`)
 		if (MessageChecker.cache.has(guildId)) {
 			const cached = MessageChecker.cache.get(guildId)!
-			cached.patterns = cached.patterns.filter(val => val.flaggedPattern.key === toRemove)
+			cached.patterns = [...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove)]
 		}
 	}
 
