@@ -39,12 +39,7 @@ class RenderRequest {
 			`Rendering ${this.num} messages for ${this.message.author.username}`,
 		)
 
-		// const res = await fetch('http://objection-engine:5000/', {
-		// 	method: 'POST',
-		// 	body: body,
-		// })
-
-		const res = await fetch('http://localhost:5000/', {
+		const res = await fetch('http://objection-engine:5000/', {
 			method: 'POST',
 			body: body,
 		})
