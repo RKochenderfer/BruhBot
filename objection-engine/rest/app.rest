@@ -11,7 +11,7 @@ Accept: video/mp4
 	"file_name": "output-test.mp4",
 	"messages": [
 		{"user_name": "Ray", "text_content": "look it's kind of working"},
-		{"user_name": "Nick From Michigan", "text_content": "I'm a bitch"},
+		{"user_name": "Nick From Michigan", "text_content": "I'm a goof"},
 		{"user_name": "Ray", "text_content": "You sure are bud"}
 	]
 }
