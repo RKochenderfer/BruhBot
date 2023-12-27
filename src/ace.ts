@@ -81,7 +81,9 @@ class RenderRequest {
 				new MessageInfo(
 					value.author.username,
 					value.content,
-					value.attachments.first() === undefined ? null : value.attachments.first()!.url,
+					value.attachments.first() === undefined
+						? null
+						: value.attachments.first()!.proxyURL,
 				),
 			)
 		})
