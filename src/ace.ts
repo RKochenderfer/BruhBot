@@ -124,7 +124,14 @@ export class RenderQueue {
 
 		this.isRendering = true
 		const request = RenderQueue.queue.pop()!
-		RenderQueue.performRender(request)
+		try {
+			RenderQueue.performRender(request)
+		} catch (error) {
+			request.message.reply({
+				content: 'There was an error rendering the video',
+			})
+		}
+		
 	}
 
 	private static performRender(request: RenderRequest) {
