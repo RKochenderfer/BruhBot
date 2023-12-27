@@ -26,7 +26,7 @@ class RenderRequest {
 	constructor(
 		public readonly requestId: string,
 		public readonly message: Message,
-		public readonly num: number,
+		public readonly messageCount: number,
 		public fileName = `${requestId}.mp4`,
 	) {}
 
@@ -36,7 +36,7 @@ class RenderRequest {
 		const body = await this.buildRequestBody()
 		logger.info(
 			this.requestId,
-			`Rendering ${this.num} messages for ${this.message.author.username}`,
+			`Rendering ${this.messageCount} messages for ${this.message.author.username}`,
 		)
 
 		const res = await fetch('http://objection-engine:5000/', {
@@ -59,7 +59,7 @@ class RenderRequest {
 		// gather a number of messages that the sender requested
 		const messagesBefore = await this.message.channel.messages.fetch({
 			before: repliedTo.id,
-			limit: this.num - 1, // The -1 is so that the message they replied to is included and the total rendered matches the request
+			limit: this.messageCount - 1, // The -1 is so that the message they replied to is included and the total rendered matches the request
 		})
 
 		const messages: Array<MessageInfo> = [
@@ -127,18 +127,15 @@ export class RenderQueue {
 		try {
 			RenderQueue.performRender(request)
 		} catch (error) {
+			logger.error(error)
 			request.message.reply({
 				content: 'There was an error rendering the video',
 			})
 		}
-		
 	}
 
 	private static performRender(request: RenderRequest) {
-		request
-			.render()
-			.then(() => RenderQueue.cleanup(request))
-			.catch(err => logger.error(err))
+		request.render().then(() => RenderQueue.cleanup(request))
 	}
 
 	private static cleanup(request: RenderRequest) {
@@ -147,6 +144,10 @@ export class RenderQueue {
 	}
 
 	static addRequest(request: RenderRequest) {
+		if (request.messageCount < 2) {
+			request.message.reply('A minimum of 2 messages must be rendered')
+			return
+		}
 		RenderQueue.queue.push(request)
 	}
 

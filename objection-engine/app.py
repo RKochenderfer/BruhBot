@@ -23,11 +23,19 @@ def render_messages():
     download_all_attachments(messages)
 
     for m in messages:
-        if 'attachment_file_path' in m:
+        if 'attachment_file_path' in m and m['text_content'].strip():
             comments.append(
                 Comment(
                     user_name=m['user_name'],
                     text_content=m['text_content'],
+                    evidence_path=m['attachment_file_path']
+                    )
+            )
+        elif 'attachment_file_path' in m and not m['text_content'].strip():
+            comments.append(
+                Comment(
+                    user_name=m['user_name'],
+                    text_content='(image)',
                     evidence_path=m['attachment_file_path']
                     )
             )
