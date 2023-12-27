@@ -15,3 +15,17 @@ Accept: video/mp4
 		{"user_name": "Ray", "text_content": "You sure are bud"}
 	]
 }
+
+### POST with image
+POST http://localhost:5000/
+Content-Type: application/json
+Accept: video/mp4
+
+{
+	"file_name": "output-test.mp4",
+	"messages": [
+		{"user_name": "Ray", "text_content": "look at this baby", "attachment_url": "https://cdn.discordapp.com/attachments/706506150643892337/1104146542107045979/Mara_In_flowers.jpg"},
+		{"user_name": "Nick From Michigan", "text_content": "I'm a goof", "attachment_url": null},
+		{"user_name": "Ray", "text_content": "You sure are bud", "attachment_url": null}
+	]
+}
