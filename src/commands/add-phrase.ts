@@ -1,11 +1,11 @@
-import { PermissionsBitField, SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 import FlaggedPattern from '../message-checker/flagged-pattern'
-import * as db from '../db'
 import { MessageChecker } from '..'
 import { logger } from '../utils/logger'
-import { ChatInputCommandInteraction } from '../extensions/base-interaction'
+import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
 import Server from '../models/server'
 import { ServerCollection } from '../extensions/server-collection'
+import { Database } from '../db'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -38,19 +38,21 @@ module.exports = {
 				.setRequired(false),
 		),
 
-	async execute(interaction: ChatInputCommandInteraction) {
-		const serverCollection = await db.collections.servers!
+	async execute(interaction: ChatInputCommandInteractionWrapper, collections: Database) {
+		const serverCollection = collections.servers!
 		const guildId = interaction.guildId!
 
+		logger.debug(`test log ${interaction.isNotAdmin}`)
 		if (interaction.isNotAdmin()) {
 			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
-		await interaction.deferReply()
-		try {
-			const flaggedPatternToAdd = FlaggedPattern.from(interaction.options)
+		await interaction.interaction.deferReply()
+
+		const flaggedPatternToAdd = FlaggedPattern.from(interaction.options)
+		try {			
 			if (!flaggedPatternToAdd.areFlagsValid()) {
-				await interaction.followUp({
+				await interaction.interaction.followUp({
 					content:
 						'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
 					ephemeral: true,
@@ -63,7 +65,7 @@ module.exports = {
 				logger.debug(flaggedPatternToAdd, `Adding pattern to guild: ${interaction.guildId}`)
 			} else {
 				const server: Server = {
-					name: interaction.guild!.name!,
+					name: interaction.serverName!,
 					guildId: guildId,
 					flaggedPatterns: [flaggedPatternToAdd],
 					pins: []

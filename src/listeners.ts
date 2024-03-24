@@ -14,6 +14,8 @@ import { ServerState } from './models/state'
 import BotClient from './models/bot-client'
 import Command from './command'
 import { MessageChecker } from '.'
+import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
+import * as db from './db'
 
 /**
  * Handles the MessageCreate event
@@ -83,7 +85,11 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	}
 
 	try {
-		await command.execute(interaction)
+		if (interaction.commandName.includes('phrase')) {
+			await command.execute(ChatInputCommandInteractionWrapper.from(interaction))
+		} else {
+			await command.execute(interaction)
+		}
 	} catch (error) {
 		logger.error(error, error.message, baseInteraction)
 

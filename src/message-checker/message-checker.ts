@@ -2,6 +2,7 @@ import FlaggedPattern from './flagged-pattern'
 import * as db from '../db'
 import { Message } from 'discord.js'
 import { logger } from '../utils/logger'
+import { cachedDataVersionTag } from 'v8'
 /**
  * Takes flagged messages and creates the RegExp on adding
  */
@@ -21,6 +22,12 @@ export class CachedPattern {
 
 export class CachedServerPatterns {
 	constructor(public patterns: CachedPattern[], public updatedLast = new Date()) {}
+
+	hasKey = (key: string): boolean => this.patterns.find(x => x.flaggedPattern.key == key) !== null
+	updatePattern = (toUpdate: FlaggedPattern) => {
+		const indexOfPatternToUpdate = this.patterns.findIndex(x => x.flaggedPattern.key === toUpdate.key)
+		this.patterns[indexOfPatternToUpdate] = new CachedPattern(toUpdate)
+	}
 }
 
 /**
@@ -45,6 +52,22 @@ export class MessageChecker {
 		} else {
 			MessageChecker.cache.set(guildId, new CachedServerPatterns([new CachedPattern(toAdd)]))
 		}
+	}
+
+	/**
+	 * Updates a pattern in the cache with the passed in value
+	 * @param guildId 
+	 * @param toUpdate 
+	 */
+	updatePatternInCache = (guildId: string, toUpdate: FlaggedPattern) => {
+		const currentCached = MessageChecker.cache.get(guildId)
+		if (!currentCached) {
+			throw "Guild not found in cache"
+		}
+		if (!currentCached.hasKey(toUpdate.key)) {
+			throw "Pattern not found in cache"
+		}
+		currentCached.updatePattern(toUpdate)
 	}
 
 	/**

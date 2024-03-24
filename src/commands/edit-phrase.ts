@@ -1,6 +1,11 @@
 import { PermissionsBitField, SlashCommandBuilder } from 'discord.js';
-import { ChatInputCommandInteraction } from '../extensions/base-interaction';
+import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper';
 import FlaggedPattern from '../message-checker/flagged-pattern';
+import { ServerCollection } from '../extensions/server-collection';
+import { logger } from '../utils/logger'
+import Server from '../models/server';
+import { MessageChecker } from '..';
+import { Database } from '../db';
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -33,16 +38,19 @@ module.exports = {
 				.setRequired(false),
 		),
 
-	async execute(interaction: ChatInputCommandInteraction) {
+	async execute(interaction: ChatInputCommandInteractionWrapper, collections: Database) {
+		const serverCollection = await collections.servers!
+		const guildId = interaction.guildId!
+
 		if (interaction.isNotAdmin()) {
 			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
 
 		await interaction.deferReply()
-		const messageChecker = FlaggedPattern.from(interaction.options)
+		const flaggedPatternToUpdate = FlaggedPattern.from(interaction.options)
 		try {
-			if (!messageChecker.areFlagsValid()) {
+			if (!flaggedPatternToUpdate.areFlagsValid()) {
 				await interaction.followUp({
 					content:
 						'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
@@ -50,6 +58,25 @@ module.exports = {
 				})
 				return
 			}
+
+			if (await serverCollection.isServerInDb(guildId)) {
+				await serverCollection.addPattern(guildId, flaggedPatternToUpdate)
+				logger.debug(flaggedPatternToUpdate, `Adding pattern to guild: ${interaction.guildId}`)
+			} else {
+				const server: Server = {
+					name: interaction.serverName!,
+					guildId: guildId,
+					flaggedPatterns: [flaggedPatternToUpdate],
+					pins: []
+				} 
+				await this.addServer(server, serverCollection)
+			}
+
+			MessageChecker.updatePatternInCache(interaction.guildId!, flaggedPatternToUpdate)
+			await interaction.followUp({
+				content: 'Your pattern has been created',
+				ephemeral: true,
+			})
 		} catch (error) {
 
 		}
