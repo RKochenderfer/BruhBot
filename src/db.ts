@@ -1,9 +1,10 @@
 import { Collection, MongoClient } from 'mongodb'
 import Server from './models/server'
 import { logger } from './utils/logger'
+import { ServerCollection } from './extensions/server-collection'
 
 export type Database = {
-	servers?: Collection<Server>
+	servers?: ServerCollection
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	logs?: Collection<any>
 }
@@ -22,7 +23,7 @@ const connect = async () => {
 		await client.connect()
 
 		const db = client.db(process.env.MONGO_INITDB_DATABASE!)
-		const serversCollection = db.collection('servers') as Collection<Server>
+		const serversCollection = db.collection('servers') as ServerCollection
 		/* eslint-disable @typescript-eslint/no-explicit-any */
 		const logsCollection = db.collection('logs') as Collection<any>
 		collections.servers = serversCollection
