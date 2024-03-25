@@ -3,12 +3,13 @@ import * as path from 'path'
 import BotClient from './models/bot-client'
 import { Message, REST, Routes } from 'discord.js'
 import { logger } from './utils/logger'
+import CommandRegister from './command-register'
 
 /**
  * Reads the files in commands and builds the commands
  * @param client The bot client instance
  */
-export const getCommands = (client: BotClient) => {
+export const getCommands = (client: BotClient, commandRegister: CommandRegister) => {
 	const commandsPath = path.join(__dirname, 'commands')
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
@@ -25,13 +26,19 @@ export const getCommands = (client: BotClient) => {
 			)
 		}
 	}
+
+	for (const command of commandRegister.generateCommandDetails()) {
+		logger.info({name: command.name, command})
+		client.commands?.set(command.name, command)
+	}
+	logger.info(client.commands)
 }
 
 /**
  * Updates the / commands for a server
  * @param message The sent message
  */
-export const updateCommands = async (message: Message) => {
+export const updateCommands = async (message: Message, commandRegister: CommandRegister) => {
 	logger.info(`Updating commands for guild: ${message.guildId}`)
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const commands: any[] = []
@@ -45,12 +52,16 @@ export const updateCommands = async (message: Message) => {
 			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const command = require(`./commands/${file}`)
 			if (file.includes('edit')) {
-				logger.info("test")
-				logger.info(command)
+				continue
 			}
 			commands.push(command.data.toJSON())
+			logger.info(command.data.toJSON())
 		}
 
+		logger.info('attempting to try edit')
+		for (let commandJSON of commandRegister.generateCommandDataJSON()) {
+			commands.push(commandJSON)
+		}
 		logger.info(`Started refreshing ${commands.length} application (/) commands`)
 
 		if (!message.guildId) return

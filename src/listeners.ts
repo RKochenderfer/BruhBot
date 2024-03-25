@@ -16,6 +16,7 @@ import Command from './command'
 import { MessageChecker } from '.'
 import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
 import * as db from './db'
+import { DiscordCommandRegister } from '.'
 
 /**
  * Handles the MessageCreate event
@@ -24,7 +25,7 @@ import * as db from './db'
 export const onMessageCreate = async (message: Message<boolean>) => {
 	if (message.author.bot) return
 	if (message.content === '!deploy' && message.author.id === '208376655129870346') {
-		await updateCommands(message)
+		await updateCommands(message, DiscordCommandRegister)
 		return
 	} else if (message.content.match(/^!ace \d+$/)) {
 		message.reply('Starting render')
