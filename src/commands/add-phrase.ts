@@ -6,6 +6,7 @@ import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-com
 import Server from '../models/server'
 import { ServerCollection } from '../extensions/server-collection'
 import { Database } from '../db'
+import { Collection } from 'mongodb'
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -38,11 +39,9 @@ module.exports = {
 				.setRequired(false),
 		),
 
-	async execute(interaction: ChatInputCommandInteractionWrapper, collections: Database) {
-		const serverCollection = collections.servers!
+	async execute(interaction: ChatInputCommandInteractionWrapper, serverCollection: ServerCollection ) {
 		const guildId = interaction.guildId!
 
-		logger.debug(`test log ${interaction.isNotAdmin}`)
 		if (interaction.isNotAdmin()) {
 			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return

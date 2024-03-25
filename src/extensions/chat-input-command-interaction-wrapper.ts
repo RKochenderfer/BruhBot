@@ -59,6 +59,6 @@ export class ChatInputCommandInteractionWrapper {
 	}
 
 	isNotAdmin = (): boolean => {
-		return this.isAdmin()
+		return !this.isAdmin()
 	}
 }

@@ -44,6 +44,10 @@ export const updateCommands = async (message: Message) => {
 		for (const file of commandFiles) {
 			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const command = require(`./commands/${file}`)
+			if (file.includes('edit')) {
+				logger.info("test")
+				logger.info(command)
+			}
 			commands.push(command.data.toJSON())
 		}
 
@@ -58,6 +62,7 @@ export const updateCommands = async (message: Message) => {
 		)
 		logger.info(`Successfully reloaded ${data.length} application (/) commands`)
 	} catch (error) {
+		message.reply({ content: 'Failed to update commands' })
 		logger.error(error)
 	}
 }
