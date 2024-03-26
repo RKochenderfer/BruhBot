@@ -1,13 +1,15 @@
 import { CacheType, CommandInteractionOptionResolver } from 'discord.js'
 import FlaggedMessage from '../models/flagged-message'
 
-export default class FlaggedPattern {
-	/**
+/**
 	 * This regex pattern performs a negative lookahead asserting that the Regex inside the square
 	 * brackets are the only characters found in the string.
+	 * 
+	 * This is outside of the class so when mongodb makes an object from this, it is not added to database
 	 */
-	private readonly flagCheckRegex = /^(?!.*[^gmixsuUAJD]).*$/
+const flagCheckRegex = /^(?!.*[^gmixsuUAJD]).*$/
 
+export default class FlaggedPattern {
 	public get messageHistory(): FlaggedMessage {
 		return this._messageHistory
 	}
@@ -43,7 +45,7 @@ export default class FlaggedPattern {
 	 */
 	areFlagsValid = (): boolean => {
 		if (!this.hasFlags) return true
-		return this.flagCheckRegex.test(this.flags!)
+		return flagCheckRegex.test(this.flags!)
 	}
 
 	static from = (

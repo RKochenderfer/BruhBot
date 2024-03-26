@@ -61,7 +61,7 @@ module.exports = {
 
 			if (await serverCollection.isServerInDb(guildId)) {
 				await serverCollection.addPattern(guildId, flaggedPatternToAdd)
-				logger.debug(flaggedPatternToAdd, `Adding pattern to guild: ${interaction.guildId}`)
+				logger.info(flaggedPatternToAdd, `Adding pattern to guild: ${interaction.guildId}`)
 			} else {
 				const server: Server = {
 					name: interaction.serverName!,
