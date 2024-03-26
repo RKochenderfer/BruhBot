@@ -1,20 +1,27 @@
-import { Collection } from 'mongodb'
+import { Collection, Db } from 'mongodb'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import Server from '../models/server'
 import { Nullable } from 'typescript-nullable'
 
-export class ServerCollection extends Collection<Server> {
+export class ServerCollection {
 	private existingServers = new Set()
-	async findServer(guildId: string): Promise<Nullable<Server>> {
-		return await this.findOne({ guildId: guildId })
+
+	private constructor(private _serverCollection: Collection<Server>) { }
+
+	static from = (serverCollection: Collection<Server>): ServerCollection => {
+		return new ServerCollection(serverCollection)
 	}
 
-	async isServerInDb(guildId: string): Promise<boolean> {
-		return this.serverExists(guildId)
+	findServer = async (guildId: string): Promise<Nullable<Server>> => {
+		return await this._serverCollection.findOne({ guildId: guildId })
 	}
 
-	async insertServer(server: Server): Promise<void> {
-		this.insertOne({
+	isServerInDb = async (guildId: string): Promise<boolean> => {
+		return await this.serverExists(guildId)
+	}
+
+	insertServer = async (server: Server): Promise<void> => {
+		this._serverCollection.insertOne({
 			name: server.name,
 			guildId: server.guildId,
 			pins: server.pins,
@@ -22,11 +29,19 @@ export class ServerCollection extends Collection<Server> {
 		})
 	}
 
-	async addPattern(guildId: string, patternToAdd: FlaggedPattern): Promise<void> {
-		await this.updateOne({ guildId: guildId }, { $push: { flaggedPatterns: patternToAdd } })
+	addPattern = async (guildId: string, patternToAdd: FlaggedPattern): Promise<void> => {
+		await this._serverCollection.updateOne({ guildId: guildId }, { $push: { flaggedPatterns: patternToAdd } })
 	}
 
-	private async serverExists(guildId: string): Promise<boolean> {
+	findOne = async (query: any): Promise<any> => {
+		return await this._serverCollection.findOne(query)
+	}
+
+	updateOne = async (filter: any, update: any, options?: any, callback?: any): Promise<any> => {
+		return await this._serverCollection.updateOne(filter, update, options, callback)
+	}
+
+	private serverExists = async (guildId: string): Promise<boolean> => {
 		if (this.existingServers.has(guildId)) {
 			return true
 		}

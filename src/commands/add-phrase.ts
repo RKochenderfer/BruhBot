@@ -46,12 +46,12 @@ module.exports = {
 			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
-		await interaction.interaction.deferReply()
+		await interaction.deferReply()
 
 		const flaggedPatternToAdd = FlaggedPattern.from(interaction.options)
 		try {			
 			if (!flaggedPatternToAdd.areFlagsValid()) {
-				await interaction.interaction.followUp({
+				await interaction.followUp({
 					content:
 						'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
 					ephemeral: true,
