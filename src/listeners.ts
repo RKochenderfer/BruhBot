@@ -14,6 +14,9 @@ import { ServerState } from './models/state'
 import BotClient from './models/bot-client'
 import Command from './command'
 import { MessageChecker } from '.'
+import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
+import * as db from './db'
+import { DiscordCommandRegister } from '.'
 
 /**
  * Handles the MessageCreate event
@@ -22,7 +25,7 @@ import { MessageChecker } from '.'
 export const onMessageCreate = async (message: Message<boolean>) => {
 	if (message.author.bot) return
 	if (message.content === '!deploy' && message.author.id === '208376655129870346') {
-		await updateCommands(message)
+		await updateCommands(message, DiscordCommandRegister)
 		return
 	} else if (message.content.match(/^!ace \d+$/)) {
 		message.reply('Starting render')
@@ -83,7 +86,14 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	}
 
 	try {
-		await command.execute(interaction)
+		if (interaction.commandName.includes('phrase')) {
+			await command.execute(
+				ChatInputCommandInteractionWrapper.from(interaction),
+				db.collections.servers!,
+			)
+		} else {
+			await command.execute(interaction)
+		}
 	} catch (error) {
 		logger.error(error, error.message, baseInteraction)
 

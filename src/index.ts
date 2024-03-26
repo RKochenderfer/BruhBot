@@ -8,10 +8,14 @@ import { MessageChecker as Checker } from './message-checker/message-checker'
 import * as listeners from './listeners'
 import * as utils from './utils/utils'
 import { logger } from './utils/logger'
+import Command from './command'
+import CommandRegister from './command-register'
+import EditPhrase from './commands/edit-phrase'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
 export const ENV = process.env.ENVIRONMENT ?? 'Dev'
+export const DiscordCommandRegister = CommandRegister.Instance
 
 const botClient: BotClient = new Client({
 	intents: [
@@ -37,7 +41,8 @@ const init = () => {
 	RenderQueue.timer = setInterval(async () => {
 		await RenderQueue.render()
 	}, 5000)
-	getCommands(botClient)
+	registerCommands()
+	getCommands(botClient, DiscordCommandRegister)
 
 	// Log that client is online
 	botClient.once('ready', async (c: Client<true>) => {
@@ -46,6 +51,10 @@ const init = () => {
 
 	// start discord bot
 	botClient.login(process.env.TOKEN)
+}
+
+const registerCommands = () => {
+	DiscordCommandRegister.register(new EditPhrase())
 }
 
 try {
