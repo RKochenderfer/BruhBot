@@ -28,7 +28,6 @@ export const getCommands = (client: BotClient, commandRegister: CommandRegister)
 	}
 
 	for (const command of commandRegister.generateCommandDetails()) {
-		logger.info({name: command.name, command})
 		client.commands?.set(command.name, command)
 	}
 	logger.info(client.commands)
@@ -55,12 +54,12 @@ export const updateCommands = async (message: Message, commandRegister: CommandR
 				continue
 			}
 			commands.push(command.data.toJSON())
-			logger.info(command.data.toJSON())
+			logger.debug(command.data.toJSON())
 		}
 
-		logger.info('attempting to try edit')
 		for (let commandJSON of commandRegister.generateCommandDataJSON()) {
 			commands.push(commandJSON)
+			logger.debug(commandJSON)
 		}
 		logger.info(`Started refreshing ${commands.length} application (/) commands`)
 

@@ -162,7 +162,7 @@ export class MessageChecker {
 
 		if (!patterns?.flaggedPatterns) return
 
-		const toAdd = patterns.flaggedPatterns.map(val => new CachedPattern(val))
+		const toAdd = patterns.flaggedPatterns.map((val: FlaggedPattern) => new CachedPattern(val))
 
 		MessageChecker.cache.set(guildId, new CachedServerPatterns(toAdd))
 	}

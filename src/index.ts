@@ -41,8 +41,8 @@ const init = () => {
 	RenderQueue.timer = setInterval(async () => {
 		await RenderQueue.render()
 	}, 5000)
-	getCommands(botClient, DiscordCommandRegister)
 	registerCommands()
+	getCommands(botClient, DiscordCommandRegister)
 
 	// Log that client is online
 	botClient.once('ready', async (c: Client<true>) => {
