@@ -2,6 +2,8 @@ import { Collection, Db } from 'mongodb'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import Server from '../models/server'
 import { Nullable } from 'typescript-nullable'
+import {logger} from '../utils/logger'
+
 
 export class ServerCollection {
 	private existingServers = new Set()
@@ -21,6 +23,7 @@ export class ServerCollection {
 	}
 
 	insertServer = async (server: Server): Promise<void> => {
+		logger.info(`Created server document for server ${server.name} with id ${server.guildId}`)
 		this._serverCollection.insertOne({
 			name: server.name,
 			guildId: server.guildId,

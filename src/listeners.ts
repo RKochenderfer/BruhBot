@@ -17,6 +17,7 @@ import { MessageChecker } from '.'
 import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
 import * as db from './db'
 import { DiscordCommandRegister } from '.'
+import Server from './models/server'
 
 /**
  * Handles the MessageCreate event
@@ -73,6 +74,15 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	if (!baseInteraction.isChatInputCommand()) return
 	if (!State.servers.has(baseInteraction.guildId!)) {
 		State.servers.set(baseInteraction.guildId!, new ServerState())
+
+		if (!db.collections.servers?.isServerInDb(baseInteraction.guildId!)) {
+			db.collections.servers?.insertServer({
+				name: baseInteraction.guild?.name,
+				guildId: baseInteraction.guildId,
+				pins: [],
+				flaggedPatterns: [],
+			} as Server)
+		}
 	}
 
 	const interaction = baseInteraction as ChatInputCommandInteraction
