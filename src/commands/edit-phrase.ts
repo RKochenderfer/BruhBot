@@ -1,54 +1,50 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
 import { ServerCollection } from '../extensions/server-collection'
 import Command from '../command'
 import FlaggedPattern from '../message-checker/flagged-pattern'
-import { logger } from '../utils/logger'
 import { MessageChecker } from '..'
-
+import Names from '../command-names'
+import { ChildProcess } from 'child_process'
 export default class EditPhrase extends Command {
 	private readonly _serverCollection: ServerCollection
 
-	constructor(serverCollection: ServerCollection) {
-		const name = 'editphrase'
-		const data = new SlashCommandBuilder()
-			.setName(name)
-			.setDescription('Edit a phrase to the message checker')
-			.addStringOption(option =>
-				option
-					.setName('key')
-					.setDescription('The existing phrase in the database')
-					.setRequired(true),
-			)
-			.addStringOption(option =>
-				option
-					.setName('regex_expression')
-					.setDescription(
-						'The regex expression for bruhbot to check against (ex: gonk). Do not include flags here',
-					)
-					.setRequired(true),
-			)
-			.addStringOption(option =>
-				option
-					.setName('response')
-					.setDescription('The response Bruhbot will give to the sender')
-					.setRequired(true),
-			)
-			.addStringOption(option =>
-				option
-					.setName('regex_flags')
-					.setDescription('The flags to be applied to the regex expression')
-					.setRequired(false),
-			)
+	protected data = new SlashCommandBuilder()
+		.setName('editphrase')
+		.setDescription('Edit a phrase to the message checker')
+		.addStringOption(option =>
+			option
+				.setName('key')
+				.setDescription('The existing phrase in the database')
+				.setRequired(true),
+		)
+		.addStringOption(option =>
+			option
+				.setName('regex_expression')
+				.setDescription(
+					'The regex expression for bruhbot to check against (ex: gonk). Do not include flags here',
+				)
+				.setRequired(true),
+		)
+		.addStringOption(option =>
+			option
+				.setName('response')
+				.setDescription('The response Bruhbot will give to the sender')
+				.setRequired(true),
+		)
+		.addStringOption(option =>
+			option
+				.setName('regex_flags')
+				.setDescription('The flags to be applied to the regex expression')
+				.setRequired(false),
+		)
 
-		super(name, data)
+	constructor(serverCollection: ServerCollection) {
+		super('editphrase')
 		this._serverCollection = serverCollection
 	}
 
-	execute = async (
-		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
-	): Promise<void> => {
-		interaction = interaction as ChatInputCommandInteractionWrapper
+	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
 		const guildId = interaction.guildId!
 
 		interaction.guardAgainstNonAdmin()
@@ -66,8 +62,9 @@ export default class EditPhrase extends Command {
 	private updatePattern = async (guildId: string, flaggedPatternToUpdate: FlaggedPattern) => {
 		flaggedPatternToUpdate.guardAgainstInvalidFlags()
 		await this._serverCollection.updatePattern(guildId, flaggedPatternToUpdate)
-		logger.info(flaggedPatternToUpdate, `Updating pattern for guild ${guildId}`)
+		this.logger?.info(flaggedPatternToUpdate, `Updated pattern for guild ${guildId}`)
 
-		MessageChecker.updatePatternInCache(guildId, flaggedPatternToUpdate)
+		MessageChecker.updatePatternInCache(guildId, flaggedPatternToUpdate, this.logger!)
+		this.logger?.debug('Pattern updated')
 	}
 }

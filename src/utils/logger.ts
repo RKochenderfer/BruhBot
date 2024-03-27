@@ -16,6 +16,8 @@ const transport = pino.transport({
 })
 
 export const logger = pino(
-	{ level: process.env.ENVIRONMENT === 'Dev' ? 'debug' : 'info' },
+	{
+		level: process.env.ENVIRONMENT === 'Dev' ? 'debug' : 'info',
+	},
 	transport,
 )

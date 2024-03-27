@@ -44,19 +44,6 @@ export const updateCommands = async (message: Message, commandRegister: CommandR
 	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
 
 	try {
-		const commandsPath = path.join(__dirname, 'commands')
-		const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
-
-		for (const file of commandFiles) {
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
-			const command = require(`./commands/${file}`)
-			if (file.includes('edit')) {
-				continue
-			}
-			commands.push(command.data.toJSON())
-			logger.debug(command.data.toJSON())
-		}
-
 		for (let commandJSON of commandRegister.generateCommandDataJSON()) {
 			commands.push(commandJSON)
 			logger.debug(commandJSON)

@@ -71,18 +71,13 @@ export const onChannelPinsUpdate = async (channel: TextBasedChannel) => {
  * @param baseInteraction - The interaction (slash command) used
  */
 export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
+	const child = logger.child({ correlationId: crypto.randomUUID() })
+	child.info('Start processing interaction')
 	if (!baseInteraction.isChatInputCommand()) return
 	if (!State.servers.has(baseInteraction.guildId!)) {
 		State.servers.set(baseInteraction.guildId!, new ServerState())
 
-		if (!db.collections.servers?.isServerInDb(baseInteraction.guildId!)) {
-			db.collections.servers?.insertServer({
-				name: baseInteraction.guild?.name,
-				guildId: baseInteraction.guildId,
-				pins: [],
-				flaggedPatterns: [],
-			} as Server)
-		}
+		await handleServerNotInCache(baseInteraction)
 	}
 
 	const interaction = baseInteraction as ChatInputCommandInteraction
@@ -91,16 +86,13 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 	const command = interactionClient.commands?.get(interaction.commandName) as Command
 
 	if (!command) {
-		logger.info(`No command matching ${interaction.commandName} was found`)
+		child.info(`No command matching ${interaction.commandName} was found`)
 		return
 	}
 
 	try {
-		if (interaction.commandName.includes('phrase')) {
-			await command.execute(ChatInputCommandInteractionWrapper.from(interaction))
-		} else {
-			await command.execute(interaction)
-		}
+		command.logger = child
+		await command.execute(ChatInputCommandInteractionWrapper.from(interaction), child)
 	} catch (error) {
 		logger.error(error, error.message, baseInteraction)
 
@@ -115,6 +107,25 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 				ephemeral: true,
 			})
 		}
+	} finally {
+		child.info('End processing interaction', baseInteraction)
+
+		if (interaction.deferred && !interaction.replied) {
+			await interaction.followUp({
+				content: 'there was an error preventing the response',
+				ephemeral: true
+			})
+		}
 	}
-	logger.debug(baseInteraction)
+}
+
+const handleServerNotInCache = async (baseInteraction: BaseInteraction) => {
+	if (await !db.collections.servers?.isServerInDb(baseInteraction.guildId!)) {
+		await db.collections.servers?.insertServer({
+			name: baseInteraction.guild?.name,
+			guildId: baseInteraction.guildId,
+			pins: [],
+			flaggedPatterns: [],
+		} as Server)
+	}
 }

@@ -3,6 +3,8 @@ import * as db from '../db'
 import { Message } from 'discord.js'
 import { logger } from '../utils/logger'
 import { cachedDataVersionTag } from 'v8'
+import { Logger } from 'pino'
+import { ServerCollection } from '../extensions/server-collection'
 /**
  * Takes flagged messages and creates the RegExp on adding
  */
@@ -24,9 +26,14 @@ export class CachedServerPatterns {
 	constructor(public patterns: CachedPattern[], public updatedLast = new Date()) {}
 
 	hasKey = (key: string): boolean => this.patterns.find(x => x.flaggedPattern.key == key) !== null
-	updatePattern = (toUpdate: FlaggedPattern) => {
-		const indexOfPatternToUpdate = this.patterns.findIndex(x => x.flaggedPattern.key === toUpdate.key)
+	updatePattern = (toUpdate: FlaggedPattern, logger: Logger) => {
+		logger.debug(`Attempting to find index of pattern to update for key: ${toUpdate.key}`)
+		const indexOfPatternToUpdate = this.patterns.findIndex(
+			x => x.flaggedPattern.key === toUpdate.key,
+		)
+		logger.debug(`Found index at index: ${indexOfPatternToUpdate}`)
 		this.patterns[indexOfPatternToUpdate] = new CachedPattern(toUpdate)
+		logger.debug(this.patterns)
 	}
 }
 
@@ -34,6 +41,8 @@ export class CachedServerPatterns {
  * The Message Checker system. It is meant to only be initialized once at server startup
  */
 export class MessageChecker {
+	constructor() {}
+
 	/**
 	 * A map of the guildId to the regular expressions the server has
 	 */
@@ -56,18 +65,19 @@ export class MessageChecker {
 
 	/**
 	 * Updates a pattern in the cache with the passed in value
-	 * @param guildId 
-	 * @param toUpdate 
+	 * @param guildId
+	 * @param toUpdate
 	 */
-	updatePatternInCache = (guildId: string, toUpdate: FlaggedPattern) => {
-		const currentCached = MessageChecker.cache.get(guildId)
-		if (!currentCached) {
-			throw "Guild not found in cache"
+	updatePatternInCache = (guildId: string, toUpdate: FlaggedPattern, logger: Logger) => {
+		let currentCached = MessageChecker.cache.get(guildId)
+
+		if (!currentCached || !currentCached.hasKey(toUpdate.key)) {
+			logger.debug('pulling from db')
+			this.pullFromDb(guildId)
+			currentCached = MessageChecker.cache.get(guildId)
 		}
-		if (!currentCached.hasKey(toUpdate.key)) {
-			throw "Pattern not found in cache"
-		}
-		currentCached.updatePattern(toUpdate)
+		logger.debug('Updating pattern in cache')
+		currentCached!.updatePattern(toUpdate, logger)
 	}
 
 	/**
@@ -79,7 +89,9 @@ export class MessageChecker {
 		logger.debug(`Removing pattern key: "${toRemove}" with guildId: ${guildId}`)
 		if (MessageChecker.cache.has(guildId)) {
 			const cached = MessageChecker.cache.get(guildId)!
-			cached.patterns = [...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove)]
+			cached.patterns = [
+				...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove),
+			]
 		}
 	}
 
@@ -155,7 +167,7 @@ export class MessageChecker {
 			logger.error(error)
 		}
 	}
-
+	
 	private pullFromDb = async (guildId: string) => {
 		const query = { guildId: guildId }
 		const patterns = await db.collections?.servers?.findOne(query)

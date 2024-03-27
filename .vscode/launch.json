@@ -21,6 +21,13 @@
             "outFiles": [
                 "build/**/*.js"
             ]
+        },
+        {
+            "name": "Docker Nod.js Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "platform": "node"
         }
     ]
 }

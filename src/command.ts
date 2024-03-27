@@ -4,26 +4,35 @@ import {
 	SlashCommandBuilder,
 } from 'discord.js'
 import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
+import { Logger } from 'pino'
 
 export default abstract class Command {
-	protected constructor(
-		private _name: string,
-		private _data: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>,
-	) {}
+	private _logger?: Logger
+	protected abstract readonly data: Omit<
+		SlashCommandBuilder,
+		'addSubcommand' | 'addSubcommandGroup'
+	>
+
+	protected constructor(private _name: string) {}
 
 	abstract execute: (
-		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
+		interaction: ChatInputCommandInteractionWrapper,
+		logger: Logger,
 	) => Promise<void>
 
 	toJSON(): RESTPostAPIChatInputApplicationCommandsJSONBody {
 		return this.data.toJSON()
 	}
 
-	get name(): string {
-		return this._name
+	set logger(logger: Logger | undefined) {
+		this._logger = logger
 	}
 
-	get data(): Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'> {
-		return this._data
+	get logger(): Logger | undefined {
+		return this._logger
+	}
+
+	get name(): string {
+		return this._name
 	}
 }

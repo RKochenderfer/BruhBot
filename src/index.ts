@@ -12,6 +12,7 @@ import CommandRegister from './command-register'
 import EditPhrase from './commands/edit-phrase'
 import AddPhrase from './commands/add-phrase'
 import { ServerCollection } from './extensions/server-collection'
+import { Logger } from 'pino'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -43,7 +44,7 @@ const init = async () => {
 	RenderQueue.timer = setInterval(async () => {
 		await RenderQueue.render()
 	}, 5000)
-	registerCommands(database.servers!)
+	registerCommands(database.servers!, logger)
 	getCommands(botClient, DiscordCommandRegister)
 
 	// Log that client is online
@@ -55,7 +56,7 @@ const init = async () => {
 	botClient.login(process.env.TOKEN)
 }
 
-const registerCommands = (serverCollection: ServerCollection) => {
+const registerCommands = (serverCollection: ServerCollection, logger: Logger) => {
 	DiscordCommandRegister.register(new EditPhrase(serverCollection))
 	DiscordCommandRegister.register(new AddPhrase(serverCollection))
 }
