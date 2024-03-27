@@ -8,9 +8,10 @@ import { MessageChecker as Checker } from './message-checker/message-checker'
 import * as listeners from './listeners'
 import * as utils from './utils/utils'
 import { logger } from './utils/logger'
-import Command from './command'
 import CommandRegister from './command-register'
 import EditPhrase from './commands/edit-phrase'
+import AddPhrase from './commands/add-phrase'
+import { ServerCollection } from './extensions/server-collection'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -35,13 +36,14 @@ botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
 
 botClient.on(Events.InteractionCreate, listeners.onInteractionCreate)
 
-const init = () => {
+const init = async () => {
+	const database = await connectToDatabase()
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
 	RenderQueue.timer = setInterval(async () => {
 		await RenderQueue.render()
 	}, 5000)
-	registerCommands()
+	registerCommands(database.servers!)
 	getCommands(botClient, DiscordCommandRegister)
 
 	// Log that client is online
@@ -53,23 +55,26 @@ const init = () => {
 	botClient.login(process.env.TOKEN)
 }
 
-const registerCommands = () => {
-	DiscordCommandRegister.register(new EditPhrase())
+const registerCommands = (serverCollection: ServerCollection) => {
+	DiscordCommandRegister.register(new EditPhrase(serverCollection))
+	DiscordCommandRegister.register(new AddPhrase(serverCollection))
 }
 
-try {
-	// Make sure required env values are found
-	if (!process.env.TOKEN) {
-		throw new Error('Token not found in env.')
-	} else if (!process.env.CLIENT_ID) {
-		throw new Error('Client ID not found in env.')
-	} else if (!process.env.BOT_USER_ID) {
-		throw new Error('Bot user ID not found in env.')
-	} else if (!process.env.MONGODB_CONNSTRING) {
-		throw new Error('No mongodb connection string found')
+(async () => {
+	try {
+		// Make sure required env values are found
+		if (!process.env.TOKEN) {
+			throw new Error('Token not found in env.')
+		} else if (!process.env.CLIENT_ID) {
+			throw new Error('Client ID not found in env.')
+		} else if (!process.env.BOT_USER_ID) {
+			throw new Error('Bot user ID not found in env.')
+		} else if (!process.env.MONGODB_CONNSTRING) {
+			throw new Error('No mongodb connection string found')
+		}
+		// start database
+		init()
+	} catch (error) {
+		logger.error(error)
 	}
-	// start database
-	connectToDatabase().then(init)
-} catch (error) {
-	logger.error(error)
-}
+})()

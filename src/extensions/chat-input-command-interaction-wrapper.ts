@@ -27,7 +27,10 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guildId
 	}
 
-	public get options(): Omit<CommandInteractionOptionResolver<CacheType>, "getMessage" | "getFocused"> {
+	public get options(): Omit<
+		CommandInteractionOptionResolver<CacheType>,
+		'getMessage' | 'getFocused'
+	> {
 		return this._interaction.options
 	}
 
@@ -35,9 +38,9 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guild!.name
 	}
 
-	followUp = async (followUpOptions: string | InteractionReplyOptions | MessagePayload): Promise<Message<boolean>> => (
-		await await this._interaction.followUp(followUpOptions)
-	)
+	followUp = async (
+		followUpOptions: string | InteractionReplyOptions | MessagePayload,
+	): Promise<Message<boolean>> => await await this._interaction.followUp(followUpOptions)
 
 	reply = async (
 		replyOptions: string | InteractionReplyOptions | MessagePayload,
@@ -60,5 +63,9 @@ export class ChatInputCommandInteractionWrapper {
 
 	isNotAdmin = (): boolean => {
 		return !this.isAdmin()
+	}
+
+	guardAgainstNonAdmin = () => {
+		if (this.isNotAdmin()) throw 'Invalid access. Admin required'
 	}
 }

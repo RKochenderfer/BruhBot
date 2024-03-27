@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 LABEL org.opencontainers.image.source https://github.com/RKochenderfer/BruhBot
 RUN apk add --no-cache ffmpeg && npm install typescript -g && npm install -g pnpm
 #RUN apk add python3 make gcc g++ && apk add --no-cache ffmpeg && npm install typescript -g

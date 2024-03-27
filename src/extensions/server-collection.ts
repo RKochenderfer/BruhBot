@@ -2,8 +2,7 @@ import { Collection, Db } from 'mongodb'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import Server from '../models/server'
 import { Nullable } from 'typescript-nullable'
-import {logger} from '../utils/logger'
-
+import { logger } from '../utils/logger'
 
 export class ServerCollection {
 	private existingServers = new Set()
@@ -48,7 +47,7 @@ export class ServerCollection {
 		)
 	}
 
-	upsertPattern = async (guildId: string, patternToUpdate: FlaggedPattern): Promise<void> => {
+	updatePattern = async (guildId: string, patternToUpdate: FlaggedPattern): Promise<void> => {
 		await this._serverCollection.updateOne(
 			{ guildId: guildId, 'flaggedPatterns.key': patternToUpdate.key },
 			{

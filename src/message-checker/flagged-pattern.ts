@@ -2,11 +2,11 @@ import { CacheType, CommandInteractionOptionResolver } from 'discord.js'
 import FlaggedMessage from '../models/flagged-message'
 
 /**
-	 * This regex pattern performs a negative lookahead asserting that the Regex inside the square
-	 * brackets are the only characters found in the string.
-	 * 
-	 * This is outside of the class so when mongodb makes an object from this, it is not added to database
-	 */
+ * This regex pattern performs a negative lookahead asserting that the Regex inside the square
+ * brackets are the only characters found in the string.
+ *
+ * This is outside of the class so when mongodb makes an object from this, it is not added to database
+ */
 const flagCheckRegex = /^(?!.*[^gmixsuUAJD]).*$/
 
 export default class FlaggedPattern {
@@ -46,6 +46,11 @@ export default class FlaggedPattern {
 	areFlagsValid = (): boolean => {
 		if (!this.hasFlags) return true
 		return flagCheckRegex.test(this.flags!)
+	}
+
+	guardAgainstInvalidFlags = () => {
+		if (!this.areFlagsValid())
+			throw 'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D'
 	}
 
 	static from = (

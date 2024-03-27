@@ -4,11 +4,12 @@ import { ServerCollection } from '../extensions/server-collection'
 import Command from '../command'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import { logger } from '../utils/logger'
-import Server from '../models/server'
 import { MessageChecker } from '..'
 
 export default class EditPhrase extends Command {
-	constructor() {
+	private readonly _serverCollection: ServerCollection
+
+	constructor(serverCollection: ServerCollection) {
 		const name = 'editphrase'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -41,55 +42,32 @@ export default class EditPhrase extends Command {
 			)
 
 		super(name, data)
+		this._serverCollection = serverCollection
 	}
 
 	execute = async (
 		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
-		serverCollection?: ServerCollection,
 	): Promise<void> => {
 		interaction = interaction as ChatInputCommandInteractionWrapper
 		const guildId = interaction.guildId!
 
-		if (interaction.isNotAdmin()) {
-			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
-			return
-		}
+		interaction.guardAgainstNonAdmin()
 		await interaction.deferReply()
 
 		const flaggedPatternToUpdate = FlaggedPattern.from(interaction.options)
+		this.updatePattern(guildId, flaggedPatternToUpdate)
 
-		if (!flaggedPatternToUpdate.areFlagsValid()) {
-			await interaction.followUp({
-				content:
-					'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
-				ephemeral: true,
-			})
-			return
-		}
-
-		if (await serverCollection?.isServerInDb(guildId)) {
-			logger.info(
-				flaggedPatternToUpdate,
-				`Updating pattern key: ${flaggedPatternToUpdate.key}`,
-			)
-			await serverCollection?.upsertPattern(guildId, flaggedPatternToUpdate)
-		} else {
-			logger.warn('Attempt to update flagged patterns for server not added')
-			return
-		}
-
-		MessageChecker.updatePatternInCache(interaction.guildId!, flaggedPatternToUpdate)
 		await interaction.followUp({
 			content: 'Your pattern has been created',
 			ephemeral: true,
 		})
 	}
 
-	async addServer(server: Server, serverCollection: ServerCollection) {
-		await serverCollection.insertServer(server)
-		logger.info(
-			server.flaggedPatterns,
-			`Creating server document and adding pattern for guildId: ${server.guildId}`,
-		)
+	private updatePattern = async (guildId: string, flaggedPatternToUpdate: FlaggedPattern) => {
+		flaggedPatternToUpdate.guardAgainstInvalidFlags()
+		await this._serverCollection.updatePattern(guildId, flaggedPatternToUpdate)
+		logger.info(flaggedPatternToUpdate, `Updating pattern for guild ${guildId}`)
+
+		MessageChecker.updatePatternInCache(guildId, flaggedPatternToUpdate)
 	}
 }
