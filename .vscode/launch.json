@@ -9,7 +9,7 @@
 			"request": "attach",
 			"name": "Docker: Attach to Node",
 			"remoteRoot": "/usr/src/app",
-			"port": 9299
+			"port": 9229
 		},
 		{
 			"command": "npm run dev",
