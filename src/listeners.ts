@@ -107,16 +107,8 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 				ephemeral: true,
 			})
 		}
-	} finally {
-		child.info('End processing interaction', baseInteraction)
-
-		if (interaction.deferred && !interaction.replied) {
-			await interaction.followUp({
-				content: 'there was an error preventing the response',
-				ephemeral: true
-			})
-		}
 	}
+	child.info('End processing interaction', baseInteraction)
 }
 
 const handleServerNotInCache = async (baseInteraction: BaseInteraction) => {

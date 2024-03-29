@@ -3,4 +3,4 @@ cd "$(dirname $0)"
 cd ../
 
 tsc
-docker compose --env-file ./config/.env.dev -f deployments/development.yaml up
+docker compose --env-file ./config/.env.dev -f deployments/docker-compose.debug.yaml up

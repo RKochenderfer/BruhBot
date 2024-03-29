@@ -76,8 +76,13 @@ export class MessageChecker {
 			this.pullFromDb(guildId)
 			currentCached = MessageChecker.cache.get(guildId)
 		}
-		logger.debug('Updating pattern in cache')
-		currentCached!.updatePattern(toUpdate, logger)
+		
+		if (!currentCached) {
+			logger.debug('Pattern not found after pulling from db')
+		} else {
+			logger.debug('Updating pattern in cache')
+			currentCached?.updatePattern(toUpdate, logger)
+		}
 	}
 
 	/**
@@ -167,7 +172,7 @@ export class MessageChecker {
 			logger.error(error)
 		}
 	}
-	
+
 	private pullFromDb = async (guildId: string) => {
 		const query = { guildId: guildId }
 		const patterns = await db.collections?.servers?.findOne(query)
