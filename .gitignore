@@ -5,3 +5,7 @@ build/
 socks.json
 config.json
 assets/
+
+# Added by cargo
+
+/target

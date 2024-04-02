@@ -1,0 +1,25 @@
+[package]
+name = "BruhBot"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "bruhbot"
+path = "src/main.rs"
+
+[lib]
+name = "bruhbot"
+path = "src/lib.rs"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.81"
+dotenvy = "0.15.7"
+env_logger = "0.11.3"
+log = "0.4.21"
+mongodb = { version = "2.8.2", features = ["tracing-unstable"] }
+poise = "0.6.1"
+thiserror = "1.0.58"
+tokio = { version = "1.37.0", features = ["full"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
