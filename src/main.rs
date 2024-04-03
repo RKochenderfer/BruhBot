@@ -1,34 +1,26 @@
 use anyhow::{Error, Result};
-use bruhbot::{self, models::user_data::UserData};
 use dotenvy;
 use log::{error, info, warn};
-use poise::{framework, serenity_prelude::{self as serenity, GatewayIntents}};
+use models::user_data::UserData;
+use poise::{
+    framework,
+    serenity_prelude::{self as serenity, GatewayIntents, GuildId},
+};
 use std::{env, path::Path, sync::Arc, time::Duration, vec};
+
+pub mod commands;
+pub mod models;
+
+pub type Context<'a> = poise::Context<'a, UserData, Error>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
     load_env()?;
-    let token = env::var("TOKEN").expect("Excepted a token in the environment");
-    let intents = GatewayIntents::all();
-
-    Ok(())
-}
-
-fn load_env() -> Result<()> {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() > 1 {
-        let provided_env_file_path = &args[1];
-        dotenvy::from_path(Path::new(provided_env_file_path))?;
-        info!("Env file path: {} provided.", provided_env_file_path);
-    } else {
-        info!("No env file provided. Using current environment variables");
-    }
 
     let options = poise::FrameworkOptions {
-        commands: vec![bruhbot::commands::bruh::bruh()],
+        commands: vec![commands::bruh::bruh()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("~".into()),
             edit_tracker: Some(Arc::new(poise::EditTracker::for_timespan(
@@ -68,7 +60,7 @@ fn load_env() -> Result<()> {
         skip_checks_for_owners: false,
         event_handler: |_ctx, event, _framework, _data| {
             Box::pin(async move {
-                println!(
+                info!(
                     "Got an event in event handler: {:?}",
                     event.snake_case_name()
                 );
@@ -82,25 +74,35 @@ fn load_env() -> Result<()> {
         .setup(move |ctx, _ready, framework| {
             Box::pin(async move {
                 println!("Logged in as {}", _ready.user.name);
-                poise::builtins::register_globally(ctx, &framework.options().commands).await?;
-                Ok(UserData {
-                    votes: Mutex::new(HashMap::new()),
-                })
+                poise::builtins::register_in_guild(ctx, &framework.options().commands, GuildId::new(706506150643892334)).await?;
+                Ok(UserData {})
             })
         })
         .options(options)
         .build();
 
-    let token = var("DISCORD_TOKEN")
-        .expect("Missing `DISCORD_TOKEN` env var, see README for more information.");
-    let intents =
-        serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT;
+    let token = env::var("TOKEN").expect("Missing `TOKEN` env var");
+    let intents = serenity::GatewayIntents::all();
 
     let client = serenity::ClientBuilder::new(token, intents)
         .framework(framework)
         .await;
 
-    client.unwrap().start().await.unwrap()
+    client.unwrap().start().await?;
+
+    Ok(())
+}
+
+fn load_env() -> Result<()> {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() > 1 {
+        let provided_env_file_path = &args[1];
+        dotenvy::from_path(Path::new(provided_env_file_path))?;
+        info!("Env file path: {} provided.", provided_env_file_path);
+    } else {
+        info!("No env file provided. Using current environment variables");
+    }
 
     Ok(())
 }

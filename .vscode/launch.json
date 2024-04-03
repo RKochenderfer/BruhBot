@@ -5,6 +5,17 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Cargo launch",
+			"cargo": {
+				"args": [
+					"build",
+				]
+			},
+			"args": []
+		},
+		{
 			"type": "node",
 			"request": "attach",
 			"name": "Docker: Attach to Node",
