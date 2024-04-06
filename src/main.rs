@@ -5,6 +5,7 @@ use models::user_data::UserData;
 use poise::{
     framework,
     serenity_prelude::{self as serenity, GatewayIntents, GuildId},
+    Framework, FrameworkOptions,
 };
 use std::{env, path::Path, sync::Arc, time::Duration, vec};
 
@@ -19,7 +20,56 @@ async fn main() -> Result<()> {
 
     load_env()?;
 
-    let options = poise::FrameworkOptions {
+    let options = setup_framework_options();
+
+    let framework = build_framework(options);
+
+    let token = env::var("TOKEN").expect("Missing `TOKEN` env var");
+    let intents = serenity::GatewayIntents::all();
+
+    let client = serenity::ClientBuilder::new(token, intents)
+        .framework(framework)
+        .await;
+
+    client.unwrap().start().await?;
+
+    Ok(())
+}
+
+fn load_env() -> Result<()> {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() > 1 {
+        let provided_env_file_path = &args[1];
+        dotenvy::from_path(Path::new(provided_env_file_path))?;
+        info!("Env file path: {} provided.", provided_env_file_path);
+    } else {
+        info!("No env file provided. Using current environment variables");
+    }
+
+    Ok(())
+}
+
+fn build_framework(options: FrameworkOptions<UserData, Error>) -> Framework<UserData, Error> {
+    poise::Framework::builder()
+        .setup(move |ctx, _ready, framework| {
+            Box::pin(async move {
+                info!("Logged in as {}", _ready.user.name);
+                poise::builtins::register_in_guild(
+                    ctx,
+                    &framework.options().commands,
+                    GuildId::new(706506150643892334),
+                )
+                .await?;
+                Ok(UserData {})
+            })
+        })
+        .options(options)
+        .build()
+}
+
+fn setup_framework_options() -> poise::FrameworkOptions<UserData, Error> {
+    poise::FrameworkOptions {
         commands: vec![commands::bruh::bruh()],
         prefix_options: poise::PrefixFrameworkOptions {
             prefix: Some("~".into()),
@@ -68,43 +118,7 @@ async fn main() -> Result<()> {
             })
         },
         ..Default::default()
-    };
-
-    let framework = poise::Framework::builder()
-        .setup(move |ctx, _ready, framework| {
-            Box::pin(async move {
-                println!("Logged in as {}", _ready.user.name);
-                poise::builtins::register_in_guild(ctx, &framework.options().commands, GuildId::new(706506150643892334)).await?;
-                Ok(UserData {})
-            })
-        })
-        .options(options)
-        .build();
-
-    let token = env::var("TOKEN").expect("Missing `TOKEN` env var");
-    let intents = serenity::GatewayIntents::all();
-
-    let client = serenity::ClientBuilder::new(token, intents)
-        .framework(framework)
-        .await;
-
-    client.unwrap().start().await?;
-
-    Ok(())
-}
-
-fn load_env() -> Result<()> {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() > 1 {
-        let provided_env_file_path = &args[1];
-        dotenvy::from_path(Path::new(provided_env_file_path))?;
-        info!("Env file path: {} provided.", provided_env_file_path);
-    } else {
-        info!("No env file provided. Using current environment variables");
     }
-
-    Ok(())
 }
 
 async fn on_error(error: poise::FrameworkError<'_, UserData, Error>) {
