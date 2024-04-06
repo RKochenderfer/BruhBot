@@ -9,10 +9,7 @@ pub struct Guild {
 }
 
 impl Guild {
-    pub fn new(
-        name: &str,
-        guild_id: &str,
-    ) -> Self {
+    pub fn new(name: &str, guild_id: &str) -> Self {
         Self {
             pins: vec![],
             flagged_messages: vec![],
@@ -24,7 +21,7 @@ impl Guild {
     pub fn guild_id(&self) -> &str {
         &self.guild_id
     }
-    
+
     pub fn name(&self) -> &str {
         &self.name
     }

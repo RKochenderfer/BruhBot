@@ -32,9 +32,9 @@ impl State {
         Ok(())
     }
 
-	pub async fn get_guild(&self, guild_id: &Uuid) -> Option<Guild> {
-		self.server_cache.get(&guild_id).await
-	}
+    pub async fn get_guild(&self, guild_id: &Uuid) -> Option<Guild> {
+        self.server_cache.get(guild_id).await
+    }
 }
 
 #[cfg(test)]
@@ -45,23 +45,23 @@ mod tests {
     async fn add_valid_guild_to_state() {
         // Arrange
         let state = State::new();
-		let guild_name = "name";
-		let guild_id = Uuid::new_v4();
+        let guild_name = "name";
+        let guild_id = Uuid::new_v4();
         let guild = Guild::new(&guild_name, &guild_id.to_string());
 
         // Act
-		let result = state.add_guild(&guild).await;
+        let result = state.add_guild(&guild).await;
 
         // Assert
-		assert!(result.is_ok());
-		
-		// Assert guild is in cache
-		let guild_option = state.get_guild(&guild_id).await;
-		assert!(guild_option.is_some());
+        assert!(result.is_ok());
 
-		// Assert guild information is correctly added to cache
-		let added_guild = guild_option.unwrap();
-		assert_eq!(guild_name, added_guild.name());
-		assert_eq!(guild_id, Uuid::parse_str(added_guild.guild_id()).unwrap());
+        // Assert guild is in cache
+        let guild_option = state.get_guild(&guild_id).await;
+        assert!(guild_option.is_some());
+
+        // Assert guild information is correctly added to cache
+        let added_guild = guild_option.unwrap();
+        assert_eq!(guild_name, added_guild.name());
+        assert_eq!(guild_id, Uuid::parse_str(added_guild.guild_id()).unwrap());
     }
 }
