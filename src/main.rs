@@ -1,10 +1,10 @@
+#![feature(let_chains)]
+
 use anyhow::{Error, Result};
-use dotenvy;
 use log::{error, info, warn};
-use models::user_data::UserData;
+use models::state::State;
 use poise::{
-    framework,
-    serenity_prelude::{self as serenity, GatewayIntents, GuildId},
+    serenity_prelude::{self as serenity, GuildId},
     Framework, FrameworkOptions,
 };
 use std::{env, path::Path, sync::Arc, time::Duration, vec};
@@ -12,7 +12,7 @@ use std::{env, path::Path, sync::Arc, time::Duration, vec};
 pub mod commands;
 pub mod models;
 
-pub type Context<'a> = poise::Context<'a, UserData, Error>;
+pub type Context<'a> = poise::Context<'a, State, Error>;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -50,7 +50,9 @@ fn load_env() -> Result<()> {
     Ok(())
 }
 
-fn build_framework(options: FrameworkOptions<UserData, Error>) -> Framework<UserData, Error> {
+fn build_framework(options: FrameworkOptions<State, Error>) -> Framework<State, Error> {
+    let state = State::new();
+
     poise::Framework::builder()
         .setup(move |ctx, _ready, framework| {
             Box::pin(async move {
@@ -61,14 +63,14 @@ fn build_framework(options: FrameworkOptions<UserData, Error>) -> Framework<User
                     GuildId::new(706506150643892334),
                 )
                 .await?;
-                Ok(UserData {})
+                Ok(state)
             })
         })
         .options(options)
         .build()
 }
 
-fn setup_framework_options() -> poise::FrameworkOptions<UserData, Error> {
+fn setup_framework_options() -> poise::FrameworkOptions<State, Error> {
     poise::FrameworkOptions {
         commands: vec![commands::bruh::bruh()],
         prefix_options: poise::PrefixFrameworkOptions {
@@ -86,15 +88,11 @@ fn setup_framework_options() -> poise::FrameworkOptions<UserData, Error> {
         on_error: |error| Box::pin(on_error(error)),
         // This code is run before every command
         pre_command: |ctx| {
-            Box::pin(async move {
-                info!("Executing command {}...", ctx.command().qualified_name);
-            })
+            Box::pin(handle_pre_command(ctx))
         },
         // This code is run after a command if it was successful (returned Ok)
         post_command: |ctx| {
-            Box::pin(async move {
-                info!("Executed command {}!", ctx.command().qualified_name);
-            })
+            Box::pin(handle_post_command(ctx))
         },
         // Every command invocation must pass this check to continue execution
         command_check: Some(|ctx| {
@@ -121,7 +119,21 @@ fn setup_framework_options() -> poise::FrameworkOptions<UserData, Error> {
     }
 }
 
-async fn on_error(error: poise::FrameworkError<'_, UserData, Error>) {
+async fn handle_pre_command(ctx: Context<'_>) {
+    let state = ctx.data();
+
+    if let Some(guild_id) = ctx.guild_id() && state.is_guild_not_in_cache(&guild_id).await {
+        state.add_guild(guild).await;
+    }
+
+    info!("Executing command {}...", ctx.command().qualified_name);
+}
+
+async fn handle_post_command(ctx: Context<'_>) {
+    info!("Executed command {}!", ctx.command().qualified_name);
+}
+
+async fn on_error(error: poise::FrameworkError<'_, State, Error>) {
     match error {
         poise::FrameworkError::Setup { error, .. } => panic!("Failed to start bot: {:?}", error),
         poise::FrameworkError::Command { error, ctx, .. } => {

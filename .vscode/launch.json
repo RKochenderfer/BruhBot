@@ -13,7 +13,7 @@
 					"build",
 				]
 			},
-			"args": []
+			"args": ["/home/ray/repos/BruhBot/config/.env.dev"]
 		},
 		{
 			"type": "node",
