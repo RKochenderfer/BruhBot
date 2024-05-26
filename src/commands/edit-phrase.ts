@@ -3,7 +3,7 @@ import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-com
 import { ServerCollection } from '../extensions/server-collection'
 import Command from '../command'
 import FlaggedPattern from '../message-checker/flagged-pattern'
-import { logger } from '../utils/logger'
+import { logger } from '../log/logger'
 import Server from '../models/server'
 import { MessageChecker } from '..'
 

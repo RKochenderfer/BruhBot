@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import BotClient from './models/bot-client'
 import { Message, REST, Routes } from 'discord.js'
-import { logger } from './utils/logger'
+import { logger } from './log/logger'
 import CommandRegister from './command-register'
 
 /**

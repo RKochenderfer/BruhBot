@@ -1,6 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { updatePins } from '../update-pins'
-import { logger } from '../utils/logger'
+import { logger } from '../log/logger'
 
 module.exports = {
 	data: new SlashCommandBuilder()

@@ -1,7 +1,7 @@
 import { BaseGuildTextChannel, Collection, GuildBasedChannel } from 'discord.js'
 import Pin from './models/pin'
 import * as db from './db'
-import { logger } from './utils/logger'
+import { logger } from './log/logger'
 
 export const updatePins = async (
 	channels: Collection<string, GuildBasedChannel>,

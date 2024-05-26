@@ -1,14 +1,11 @@
 import {
-	Attachment,
 	AttachmentBuilder,
-	Collection,
 	Message,
 	MessageType,
-	Snowflake,
 } from 'discord.js'
 import fs from 'fs'
 import crypto from 'crypto'
-import { logger } from './utils/logger'
+import { logger } from './log/logger'
 
 const rl = Number.parseInt(process.env.RENDER_LIMIT ?? '20')
 

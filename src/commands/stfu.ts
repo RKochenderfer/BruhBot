@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { getVoiceConnection } from '@discordjs/voice'
-import { logger } from '../utils/logger'
+import { logger } from '../log/logger'
 
 module.exports = {
 	data: new SlashCommandBuilder()

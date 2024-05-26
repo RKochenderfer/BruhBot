@@ -54,4 +54,9 @@ services:
       - '27029:27017'
 volumes:
   data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./.temp
   objection_engine:

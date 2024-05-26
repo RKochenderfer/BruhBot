@@ -1,8 +1,7 @@
 import FlaggedPattern from './flagged-pattern'
 import * as db from '../db'
 import { Message } from 'discord.js'
-import { logger } from '../utils/logger'
-import { cachedDataVersionTag } from 'v8'
+import { logger } from '../log/logger'
 /**
  * Takes flagged messages and creates the RegExp on adding
  */

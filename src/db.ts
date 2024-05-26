@@ -1,8 +1,7 @@
 import { Collection, MongoClient } from 'mongodb'
 import Server from './models/server'
-import { logger } from './utils/logger'
+import { logger } from './log/logger'
 import { ServerCollection } from './extensions/server-collection'
-import { CpuInfo } from 'os'
 
 export type Database = {
 	servers?: ServerCollection

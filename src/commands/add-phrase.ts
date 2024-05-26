@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import { MessageChecker } from '..'
-import { logger } from '../utils/logger'
+import { logger } from '../log/logger'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
 import Server from '../models/server'
 import { ServerCollection } from '../extensions/server-collection'
