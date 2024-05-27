@@ -13,19 +13,8 @@ import BotClient from './models/bot-client'
 import Command from './command'
 import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
 import * as db from './db'
-import Middleware from './middleware/middleware'
 import LogSession from './log/logSession'
 import { HandlerType } from './models/handlerType'
-
-/**
- * Handles the MessageCreate event
- * @param message - The sent message
- */
-export const onMessageCreate = async (message: Message<boolean>) => {
-	const logSession = LogSession.from(message)
-	const middleware = Middleware.new(logSession, HandlerType.Message, message)
-	middleware.execute()
-}
 
 /**
  * Handles the ChannelPinsUpdate event

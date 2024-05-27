@@ -1,47 +1,37 @@
-import { Logger } from 'pino';
-import { logger } from '../log/logger'
-import LogSession from '../log/logSession';
-import Handler from '../handlers/handler';
-import { HandlerType } from '../models/handlerType';
-import MessageHandler from '../handlers/messageHandler';
-import { Message } from 'discord.js';
+import { Logger } from 'pino'
+import LogSession from '../log/logSession'
 
-export default class Middleware<T> {
-	private _logger: Logger
-	private _handlerType: HandlerType
-	private _data: any
+export abstract class Middleware {
+	private _next: Middleware | undefined
+	protected _logger: Logger | undefined
 
-	private constructor(logSession: LogSession, handlerType: HandlerType, data: T) {
-		this._logger = logger.child(logSession)
-		this._handlerType = handlerType
+	constructor() {}
+
+	abstract execute(): Promise<void>
+	abstract generateLogSessionInfo(): LogSession
+
+	protected async next() {
+		await this._next?.execute()
 	}
 
-	public static new<T>(logSession: LogSession, handlerType: HandlerType, data: T): Middleware<T> { 
-		return new Middleware<T>(logSession, handlerType, data) 
+	protected setNext(next: Middleware) {
+		this._next = next
 	}
 
-	public execute = async (): Promise<void> => {
-		this._logger.debug(this._data, `Started to handle request of type ${this._handlerType}`)
-		const handler = this.getHandler()
-		handler.execute()
-		this._logger.debug('Completed executing handler')
+	protected getNextLogSessionInfo(): LogSession {
+		return this._next?.generateLogSessionInfo()!
 	}
 
-	private getHandler = (): Handler => {
-		switch(this._handlerType) {
-			case HandlerType.Message: return this.prepareMessageHandler()
-			case HandlerType.Interaction: return this.prepareInteractionHandler()
-			default: throw new Error('HandlerType not found')
-		}
+	protected setLogger(logger: Logger) {
+		this._logger = logger
 	}
 
-	private prepareMessageHandler = (): MessageHandler => {
-		const message: Message<boolean> = this._data as Message<boolean>
-
-		return new MessageHandler(this._logger, message)
+	protected setNextLogger(logger: Logger) {
+		this._next?.setLogger(logger)
 	}
 
-	private prepareInteractionHandler = (): Handler => {
-		throw new Error('Method not implemented.');
+	protected cleanup() {
+		this._next = undefined
+		this._logger = undefined
 	}
 }

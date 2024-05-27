@@ -34,7 +34,7 @@ export default class LogSession {
 		return this._displayName;
 	}
 
-	public static from(message: Message<boolean>): LogSession {
+	public static fromMessage(message: Message<boolean>): LogSession {
 		Guard.Against.NullOrUndefined(message.author.username)
 		Guard.Against.NullOrUndefined(message.author.id)
 		Guard.Against.NullOrUndefined(message.guildId)
@@ -46,6 +46,16 @@ export default class LogSession {
 			message.author.id,
 			message.guildId!,
 			message.guild?.name!
+		)
+	}
+
+	public static fromCorrelationId(correlationId: UUID): LogSession {
+		return new LogSession(
+			"",
+			correlationId,
+			"",
+			"",
+			"",
 		)
 	}
 }

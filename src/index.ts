@@ -7,9 +7,11 @@ import { getCommands } from './command-updater'
 import { MessageChecker as Checker } from './message-checker/message-checker'
 import * as listeners from './listeners'
 import * as utils from './utils/utils'
+import * as db from './db'
 import { logger } from './log/logger'
 import CommandRegister from './command-register'
 import EditPhrase from './commands/edit-phrase'
+import { RequestMiddleware } from './middleware/requestMiddleware'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -28,13 +30,16 @@ const botClient: BotClient = new Client({
 	partials: [Partials.Message, Partials.Channel, Partials.User],
 })
 
-botClient.on(Events.MessageCreate, listeners.onMessageCreate)
+const registerBotClientHandlers = () => {
+	const requestMiddleware = new RequestMiddleware(db.collections.servers!)
 
-botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
-
-botClient.on(Events.InteractionCreate, listeners.onInteractionCreate)
+	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
+	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
+	botClient.on(Events.InteractionCreate, listeners.onInteractionCreate)
+}
 
 const init = () => {
+	registerBotClientHandlers()
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
 	RenderQueue.timer = setInterval(async () => {
