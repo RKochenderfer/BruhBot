@@ -20,12 +20,28 @@ export default class GuildCache extends LFUCache<Server> {
 	}
 
 	public async add(server: Server) {
-		if (await this.has(server.guildId)) throw new Error('Server already in cache')
+		if (await this.has(server.guildId)) throw new Error('Guild already in cache')
 
 		super.addCacheEntry(server.guildId, server)
 
 		// add details to database
 		await this._serverCollection.insertServer(server)
+	}
+
+	public async update(guildId: string, server: Server) {
+		if (guildId !== server.guildId) throw new Error(`Provided guildId ${guildId} does not match guildId in server ${server.guildId}`)
+		if (!await this.has(guildId)) throw new Error(`Guild with id ${guildId} does not exist in cache`)
+
+		super.updateCacheEntry(guildId, server)
+
+		await this._serverCollection.updateOne(
+			{ guildId: guildId },
+			server
+		)
+	}
+
+	public get(guildId: string): Server | undefined {
+		return super.getCacheEntry(guildId)
 	}
 
 	public async has(guildId: string): Promise<boolean> {
