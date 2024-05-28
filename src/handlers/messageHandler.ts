@@ -1,12 +1,18 @@
-import { Message } from 'discord.js';
-import { Logger } from 'pino';
-import Handler from './handler';
-import { updateCommands } from '../command-updater';
-import { DiscordCommandRegister, MessageChecker } from '..';
-import OnAceHandler from './onAceHandler';
+import { Message } from 'discord.js'
+import { Logger } from 'pino'
+import Handler from './handler'
+import { updateCommands } from '../command-updater'
+import { DiscordCommandRegister } from '..'
+import OnAceHandler from './onAceHandler'
+import GuildCache from '../caches/guildCache'
+import MessageChecker from '../message-checker/messageChecker'
 
 export default class MessageHandler implements Handler {
-	constructor(private _logger: Logger, private _message: Message<boolean>) { }
+	constructor(
+		private _logger: Logger,
+		private _message: Message<boolean>,
+		private _guildCache: GuildCache,
+	) {}
 
 	async execute() {
 		this._logger.debug('Started message handler')
@@ -22,20 +28,22 @@ export default class MessageHandler implements Handler {
 
 		if (this.isAce(this._message.content)) {
 			const aceHandler = new OnAceHandler(this._logger, this._message)
-			aceHandler.execute()
+			await aceHandler.execute()
 		}
 
-		await this.CheckIfMessageFlagged()
+		await this.CheckIfMessageFlagged(this._message.content)
 		this._logger.debug('Completed message handler')
 	}
 
-	private CheckIfMessageFlagged = async () => {
-		const flaggedMessage = await MessageChecker.getFlagged(this._message.guildId!, this._message)
+	private CheckIfMessageFlagged = async (message: string): Promise<boolean> => {
+		const guild = await this._guildCache.get(this._message.guildId!)
 
-		if (flaggedMessage) {
-			this._logger.info(flaggedMessage, 'Flagged message found')
-			await this._message.channel.send(MessageChecker.buildResponse(flaggedMessage))
-		}
+		if (!guild) throw new Error('Guild in message was not found')
+
+		if (!guild.flaggedPatterns) return false
+
+		const messageChecker = new MessageChecker(guild.flaggedPatterns)
+		return messageChecker.isTextFlagged(message)
 	}
 
 	private isDeploy = (messageContent: string): boolean => {

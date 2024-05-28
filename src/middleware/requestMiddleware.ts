@@ -2,11 +2,12 @@ import { Message } from 'discord.js'
 import MessageMiddleware from './messageMiddleware'
 import LogSession from '../log/logSession'
 import { Middleware } from './middleware'
-import { ServerCollection } from '../extensions/server-collection'
 import { logger } from '../log/logger'
+import GuildCache from '../caches/guildCache'
+import Guild from '../models/server'
 
 export class RequestMiddleware extends Middleware {
-	constructor(private serverCollection: ServerCollection) {
+	constructor(private _guildCache: GuildCache) {
 		super()
 	}
 
@@ -17,9 +18,9 @@ export class RequestMiddleware extends Middleware {
 		super.setNextLogger(childLogger)
 
 		this._logger?.debug('Started to handle request')
-		await this.addGuildToDatabaseIfNotPresent(logSession.guildId)
+		await this.addGuildToDatabaseIfNotPresent(logSession)
 
-		super.next()
+		await super.next()
 		super.cleanup()
 
 		this._logger?.debug('Completed handling request')
@@ -30,14 +31,27 @@ export class RequestMiddleware extends Middleware {
 	}
 
 	onMessageCreate = async (message: Message<boolean>) => {
-		const messageMiddleware = new MessageMiddleware(message)
+		const messageMiddleware = new MessageMiddleware(message, this._guildCache)
 		super.setNext(messageMiddleware)
-		this.execute()
+		await this.execute()
 	}
 
-	private addGuildToDatabaseIfNotPresent = async (guildId: string): Promise<void> => {
+	private addGuildToDatabaseIfNotPresent = async (logSession: LogSession): Promise<void> => {
 		this._logger?.debug('Started to add guild to database if not present')
 
+		if (!await this._guildCache.has(logSession.guildId)) {
+			const guild = this.createGuildFromLogSession(logSession)
+			this._logger?.info(guild, 'New guild created')
+			await this._guildCache.add(guild)
+		}
+
 		this._logger?.debug('Completed handling request')
+	}
+
+	private createGuildFromLogSession(logSession: LogSession): Guild {
+		return {
+			name: logSession.guildName,
+			guildId: logSession.guildId,
+		} as Guild
 	}
 }

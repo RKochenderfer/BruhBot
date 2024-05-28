@@ -3,7 +3,7 @@ import FlaggedPattern from '../message-checker/flagged-pattern'
 import { MessageChecker } from '..'
 import { logger } from '../log/logger'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
-import Server from '../models/server'
+import Guild from '../models/server'
 import { ServerCollection } from '../extensions/server-collection'
 import { Database } from '../db'
 import { Collection } from 'mongodb'
@@ -39,7 +39,10 @@ module.exports = {
 				.setRequired(false),
 		),
 
-	async execute(interaction: ChatInputCommandInteractionWrapper, serverCollection: ServerCollection ) {
+	async execute(
+		interaction: ChatInputCommandInteractionWrapper,
+		serverCollection: ServerCollection,
+	) {
 		const guildId = interaction.guildId!
 
 		if (interaction.isNotAdmin()) {
@@ -49,7 +52,7 @@ module.exports = {
 		await interaction.deferReply()
 
 		const flaggedPatternToAdd = FlaggedPattern.from(interaction.options)
-		try {			
+		try {
 			if (!flaggedPatternToAdd.areFlagsValid()) {
 				await interaction.followUp({
 					content:
@@ -63,12 +66,12 @@ module.exports = {
 				await serverCollection.addPattern(guildId, flaggedPatternToAdd)
 				logger.info(flaggedPatternToAdd, `Adding pattern to guild: ${interaction.guildId}`)
 			} else {
-				const server: Server = {
+				const server: Guild = {
 					name: interaction.serverName!,
 					guildId: guildId,
 					flaggedPatterns: [flaggedPatternToAdd],
-					pins: []
-				} 
+					pins: [],
+				}
 				await this.addServer(server, serverCollection)
 			}
 
@@ -82,12 +85,11 @@ module.exports = {
 		}
 	},
 
-	async addServer(server: Server, serverCollection: ServerCollection) {
+	async addServer(server: Guild, serverCollection: ServerCollection) {
 		await serverCollection.insertServer(server)
 		logger.info(
 			server.flaggedPatterns,
 			`Creating server document and adding pattern for guildId: ${server.guildId}`,
 		)
-	}
+	},
 }
-

@@ -4,7 +4,7 @@ import { ServerCollection } from '../extensions/server-collection'
 import Command from '../command'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import { logger } from '../log/logger'
-import Server from '../models/server'
+import Guild from '../models/server'
 import { MessageChecker } from '..'
 
 export default class EditPhrase extends Command {
@@ -85,7 +85,7 @@ export default class EditPhrase extends Command {
 		})
 	}
 
-	async addServer(server: Server, serverCollection: ServerCollection) {
+	async addServer(server: Guild, serverCollection: ServerCollection) {
 		await serverCollection.insertServer(server)
 		logger.info(
 			server.flaggedPatterns,

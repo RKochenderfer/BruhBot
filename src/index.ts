@@ -12,6 +12,7 @@ import { logger } from './log/logger'
 import CommandRegister from './command-register'
 import EditPhrase from './commands/edit-phrase'
 import { RequestMiddleware } from './middleware/requestMiddleware'
+import GuildCache from './caches/guildCache'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -31,7 +32,8 @@ const botClient: BotClient = new Client({
 })
 
 const registerBotClientHandlers = () => {
-	const requestMiddleware = new RequestMiddleware(db.collections.servers!)
+	const guildCache = GuildCache.getInstance(db.collections.servers!)
+	const requestMiddleware = new RequestMiddleware(guildCache)
 
 	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
 	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)

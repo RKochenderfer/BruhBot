@@ -1,18 +1,18 @@
 import { Collection, Db } from 'mongodb'
 import FlaggedPattern from '../message-checker/flagged-pattern'
-import Server from '../models/server'
+import Guild from '../models/server'
 import { Nullable } from 'typescript-nullable'
 
 export class ServerCollection {
 	private existingServers = new Set()
 
-	private constructor(private _serverCollection: Collection<Server>) {}
+	private constructor(private _serverCollection: Collection<Guild>) {}
 
-	static from = (serverCollection: Collection<Server>): ServerCollection => {
+	static from = (serverCollection: Collection<Guild>): ServerCollection => {
 		return new ServerCollection(serverCollection)
 	}
 
-	findServer = async (guildId: string): Promise<Nullable<Server>> => {
+	findServer = async (guildId: string): Promise<Nullable<Guild>> => {
 		return await this._serverCollection.findOne({ guildId: guildId })
 	}
 
@@ -20,7 +20,7 @@ export class ServerCollection {
 		return await this.serverExists(guildId)
 	}
 
-	insertServer = async (server: Server): Promise<void> => {
+	insertServer = async (server: Guild): Promise<void> => {
 		this._serverCollection.insertOne({
 			name: server.name,
 			guildId: server.guildId,
