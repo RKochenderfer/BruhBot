@@ -13,6 +13,7 @@ import CommandRegister from './command-register'
 import EditPhrase from './commands/edit-phrase'
 import { RequestMiddleware } from './middleware/requestMiddleware'
 import GuildCache from './caches/guildCache'
+import AddPhrase from './commands/add-phrase'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -32,7 +33,7 @@ const botClient: BotClient = new Client({
 })
 
 const registerBotClientHandlers = () => {
-	const guildCache = GuildCache.getInstance(db.collections.servers!)
+	const guildCache = GuildCache.getInstance()
 	const requestMiddleware = new RequestMiddleware(guildCache)
 
 	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
@@ -41,6 +42,7 @@ const registerBotClientHandlers = () => {
 }
 
 const init = () => {
+	GuildCache.initialize(db.collections.servers!)
 	registerBotClientHandlers()
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
@@ -60,7 +62,9 @@ const init = () => {
 }
 
 const registerCommands = () => {
-	DiscordCommandRegister.register(new EditPhrase())
+	const guildCache = GuildCache.getInstance()
+	DiscordCommandRegister.register(new EditPhrase(guildCache))
+	DiscordCommandRegister.register(new AddPhrase(guildCache))
 }
 
 try {

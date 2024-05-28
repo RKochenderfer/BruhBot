@@ -1,10 +1,11 @@
-import { Message } from 'discord.js'
+import { BaseInteraction, Message, ThreadMemberFlagsBitField } from 'discord.js'
 import MessageMiddleware from './messageMiddleware'
 import LogSession from '../log/logSession'
 import { Middleware } from './middleware'
 import { logger } from '../log/logger'
 import GuildCache from '../caches/guildCache'
 import Guild from '../models/server'
+import InteractionMiddleware from './interactionMiddleware'
 
 export class RequestMiddleware extends Middleware {
 	constructor(private _guildCache: GuildCache) {
@@ -18,12 +19,17 @@ export class RequestMiddleware extends Middleware {
 		super.setNextLogger(childLogger)
 
 		this._logger?.debug('Started to handle request')
-		await this.addGuildToDatabaseIfNotPresent(logSession)
-
-		await super.next()
-		super.cleanup()
-
-		this._logger?.debug('Completed handling request')
+		try {
+			await this.addGuildToDatabaseIfNotPresent(logSession)
+			await super.next()
+		} catch (error) {
+			// handle uncaught errors
+			childLogger.error(error, 'Unhandled request processing error')
+		} finally {
+			super.cleanup()
+	
+			this._logger?.debug('Completed handling request')
+		}
 	}
 
 	generateLogSessionInfo(): LogSession {
@@ -33,6 +39,12 @@ export class RequestMiddleware extends Middleware {
 	onMessageCreate = async (message: Message<boolean>) => {
 		const messageMiddleware = new MessageMiddleware(message, this._guildCache)
 		super.setNext(messageMiddleware)
+		await this.execute()
+	}
+
+	onInteractionCreate = async (baseInteraction: BaseInteraction) => {
+		const interactionMiddleware = new InteractionMiddleware(baseInteraction, this._guildCache)
+		super.setNext(interactionMiddleware)
 		await this.execute()
 	}
 

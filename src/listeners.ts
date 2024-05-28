@@ -55,10 +55,10 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 
 	try {
 		if (interaction.commandName.includes('phrase')) {
-			await command.execute(
-				ChatInputCommandInteractionWrapper.from(interaction),
-				db.collections.servers!,
-			)
+			// await command.execute(
+			// 	ChatInputCommandInteractionWrapper.from(interaction),
+			// 	db.collections.servers!,
+			// )
 		} else {
 			await command.execute(interaction)
 		}

@@ -6,9 +6,10 @@ import FlaggedPattern from '../message-checker/flagged-pattern'
 import { logger } from '../log/logger'
 import Guild from '../models/server'
 import { MessageChecker } from '..'
+import GuildCache from '../caches/guildCache'
 
 export default class EditPhrase extends Command {
-	constructor() {
+	constructor(guildCache: GuildCache) {
 		const name = 'editphrase'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -40,12 +41,11 @@ export default class EditPhrase extends Command {
 					.setRequired(false),
 			)
 
-		super(name, data)
+		super(name, data, guildCache)
 	}
 
 	execute = async (
-		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
-		serverCollection?: ServerCollection,
+		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper
 	): Promise<void> => {
 		interaction = interaction as ChatInputCommandInteractionWrapper
 		const guildId = interaction.guildId!
@@ -67,29 +67,21 @@ export default class EditPhrase extends Command {
 			return
 		}
 
-		if (await serverCollection?.isServerInDb(guildId)) {
-			logger.info(
-				flaggedPatternToUpdate,
-				`Updating pattern key: ${flaggedPatternToUpdate.key}`,
-			)
-			await serverCollection?.upsertPattern(guildId, flaggedPatternToUpdate)
-		} else {
-			logger.warn('Attempt to update flagged patterns for server not added')
-			return
-		}
+		// if (await guildCache?.isServerInDb(guildId)) {
+		// 	logger.info(
+		// 		flaggedPatternToUpdate,
+		// 		`Updating pattern key: ${flaggedPatternToUpdate.key}`,
+		// 	)
+		// 	await guildCache?.upsertPattern(guildId, flaggedPatternToUpdate)
+		// } else {
+		// 	logger.warn('Attempt to update flagged patterns for server not added')
+		// 	return
+		// }
 
 		MessageChecker.updatePatternInCache(interaction.guildId!, flaggedPatternToUpdate)
 		await interaction.followUp({
 			content: 'Your pattern has been created',
 			ephemeral: true,
 		})
-	}
-
-	async addServer(server: Guild, serverCollection: ServerCollection) {
-		await serverCollection.insertServer(server)
-		logger.info(
-			server.flaggedPatterns,
-			`Creating server document and adding pattern for guildId: ${server.guildId}`,
-		)
 	}
 }

@@ -1,5 +1,5 @@
 import { UUID } from 'crypto';
-import { Message } from 'discord.js';
+import { BaseInteraction, Message } from 'discord.js';
 import { Guard } from '../guard/guard';
 
 export default class LogSession {
@@ -35,10 +35,10 @@ export default class LogSession {
 	}
 
 	public static fromMessage(message: Message<boolean>): LogSession {
-		Guard.Against.NullOrUndefined(message.author.username)
-		Guard.Against.NullOrUndefined(message.author.id)
-		Guard.Against.NullOrUndefined(message.guildId)
-		Guard.Against.NullOrUndefined(message.guild?.name)
+		Guard.Against.EmptyOrWhitespace(message.author.username)
+		Guard.Against.EmptyOrWhitespace(message.author.id)
+		Guard.Against.EmptyOrWhitespace(message.guildId)
+		Guard.Against.EmptyOrWhitespace(message.guild?.name)
 
 		return new LogSession(
 			message.author.username,
@@ -46,6 +46,21 @@ export default class LogSession {
 			message.author.id,
 			message.guildId!,
 			message.guild?.name!
+		)
+	}
+
+	public static fromBaseInteraction(baseInteraction: BaseInteraction): LogSession {
+		Guard.Against.EmptyOrWhitespace(baseInteraction.user.username)
+		Guard.Against.EmptyOrWhitespace(baseInteraction.user.id)
+		Guard.Against.EmptyOrWhitespace(baseInteraction.guildId)
+		Guard.Against.EmptyOrWhitespace(baseInteraction.guild?.name)
+
+		return new LogSession(
+			baseInteraction.user.username,
+			crypto.randomUUID(),
+			baseInteraction.user.id,
+			baseInteraction.guildId!,
+			baseInteraction.guild?.name!
 		)
 	}
 

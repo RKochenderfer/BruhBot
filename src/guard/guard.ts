@@ -5,9 +5,9 @@ export class Against {
 		}
 	}
 
-	public EmptyOrWhitespace(str: string) {
-		if (str.trim().length === 0) {
-			throw 'String is empty or only whitespace'
+	public EmptyOrWhitespace(str: string | null | undefined) {
+		if (!str || str.trim().length === 0) {
+			throw 'String is null, empty, or only whitespace'
 		}
 	}
 }

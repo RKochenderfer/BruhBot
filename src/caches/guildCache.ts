@@ -12,14 +12,15 @@ export default class GuildCache extends LFUCache<Guild> {
 		super(10)
 	}
 
-	public static getInstance(serverCollection?: ServerCollection) {
-		if (!this._instance && !serverCollection) {
-			throw new Error(
-				'The first usage of getInstance requires that server collection parameter is set',
-			)
-		} else if (!this._instance && serverCollection) {
-			return (this._instance = new this(serverCollection))
+	public static initialize(serverCollection: ServerCollection): GuildCache {
+		if (this._instance) {
+			throw new Error('Guild cache has already been initialized')
 		}
+
+		return this._instance = new this(serverCollection)
+	}
+
+	public static getInstance(): GuildCache {
 		return this._instance
 	}
 
