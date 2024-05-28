@@ -28,7 +28,7 @@ export class LFUCache<T> {
 	private _initialCapacity: number
 	private _cacheMap: Map<string, CacheEntry<T>> = new Map()
 
-	protected constructor(initialCapacity: number) {
+	constructor(initialCapacity: number) {
 		this._initialCapacity = initialCapacity
 	}
 
@@ -37,7 +37,7 @@ export class LFUCache<T> {
 	 * @param key
 	 * @param data
 	 */
-	protected addCacheEntry(key: string, data: T) {
+	public addCacheEntry(key: string, data: T) {
 		if (!this.isFull()) {
 			this._cacheMap.set(key, new CacheEntry(data))
 		} else {
@@ -51,9 +51,9 @@ export class LFUCache<T> {
 	 * get the least frequently used key
 	 * @returns the key of the least frequently used entry
 	 */
-	protected getLFUKey(): string | undefined {
+	public getLFUKey(): string | undefined {
 		let minValue = Number.MAX_SAFE_INTEGER
-		let keyToReturn = ''
+		let keyToReturn: string | undefined = undefined
 
 		for (let [key, entry] of this._cacheMap) {
 			if (minValue > entry.frequency) {
@@ -70,11 +70,11 @@ export class LFUCache<T> {
 	 * @param {T} key - the key of the entry to be returned
 	 * @returns
 	 */
-	protected getCacheEntry(key: string): T | undefined {
+	public getCacheEntry(key: string): T | undefined {
 		if (!this._cacheMap.has(key)) return undefined
 
 		const entry = this._cacheMap.get(key)!
-		entry.frequency = entry.frequency++
+		entry.frequency = entry.frequency + 1
 		this._cacheMap.set(key, entry)
 
 		return entry.data
@@ -84,7 +84,7 @@ export class LFUCache<T> {
 	 * Checks if the cache is full
 	 * @returns true if the map is full, false otherwise
 	 */
-	protected isFull(): boolean {
+	public isFull(): boolean {
 		return this._cacheMap.size === this._initialCapacity
 	}
 
@@ -93,12 +93,12 @@ export class LFUCache<T> {
 	 * @param {T} keyToUpdate - Key for the entry
 	 * @param {V} data - the data to replace the current one
 	 */
-	protected updateCacheEntry(keyToUpdate: string, data: T) {
+	public updateCacheEntry(keyToUpdate: string, data: T) {
 		if (!this._cacheMap.has(keyToUpdate)) throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
 
 		const oldEntry = this._cacheMap.get(keyToUpdate)!
 		const newEntry = new CacheEntry(data)
-		newEntry.frequency = oldEntry.frequency++
+		newEntry.frequency = oldEntry.frequency + 1
 
 		this._cacheMap.set(keyToUpdate, newEntry)
 	}

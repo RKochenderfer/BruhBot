@@ -1,20 +1,20 @@
 import { ServerCollection } from '../../src/extensions/server-collection'
 import Server from '../../src/models/server'
 import GuildCache from '../../src/caches/guildCache'
+import * as crypto from 'crypto'
 
 jest.mock('../../src/extensions/server-collection')
 jest.mock('mongodb')
 
-
 describe('testing Guild Caching', () => {
 	test('add should add the guild into the cache', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
-		
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
+
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 		const serverToAdd = {
 			name: 'test',
@@ -30,11 +30,11 @@ describe('testing Guild Caching', () => {
 
 	test('hasGuild should return true for guild in cache', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 		const serverToAdd = {
 			name: 'test',
@@ -51,11 +51,11 @@ describe('testing Guild Caching', () => {
 
 	test('hasGuild should return false for empty cache and cache not in server', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 
 		// Act
@@ -71,11 +71,11 @@ describe('testing Guild Caching', () => {
 			name: 'test',
 			guildId: crypto.randomUUID(),
 		} as Server
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(serverInDb)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(serverInDb)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 
 		// Act
@@ -87,11 +87,11 @@ describe('testing Guild Caching', () => {
 
 	test('get returns entry in cache if only entry', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 		const serverToAdd = {
@@ -111,11 +111,11 @@ describe('testing Guild Caching', () => {
 
 	test('get returns entry in cache if multiple entries in cache', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 		const serverToAdd1 = {
@@ -140,7 +140,9 @@ describe('testing Guild Caching', () => {
 
 	test('get returns entry undefined if cache is empty', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
 
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 
@@ -153,11 +155,11 @@ describe('testing Guild Caching', () => {
 
 	test('get returns entry undefined if entry is not in cache', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 		const serverToAdd1 = {
@@ -180,14 +182,13 @@ describe('testing Guild Caching', () => {
 
 	test('update should update the entry in cache with the new provided data', async () => {
 		// Arrange
-		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(ServerCollection) as any
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
 		// const spy = jest.spyOn(mockedServerCollection, 'findServer').mockImplementation(() => Promise)
-		mockedServerCollection.findServer = jest.fn()
-			.mockResolvedValue(null)
-		mockedServerCollection.insertServer = jest.fn()
-			.mockResolvedValue(undefined)
-		mockedServerCollection.updateOne = jest.fn()
-			.mockResolvedValue(undefined)
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
+		mockedServerCollection.updateOne = jest.fn().mockResolvedValue(undefined)
 		const guildCache = GuildCache.getInstance(mockedServerCollection)
 
 		const serverToAdd = {
@@ -198,7 +199,7 @@ describe('testing Guild Caching', () => {
 
 		const updatedServerData = {
 			name: 'new name',
-			guildId: serverToAdd.guildId
+			guildId: serverToAdd.guildId,
 		} as Server
 
 		// Act
@@ -206,7 +207,7 @@ describe('testing Guild Caching', () => {
 
 		// Assert
 		const entry = guildCache.get(serverToAdd.guildId)
-		
+
 		expect(entry).toBeDefined()
 		expect(entry!.name).toBe(updatedServerData.name)
 		expect(entry!.guildId).toBe(updatedServerData.guildId)
