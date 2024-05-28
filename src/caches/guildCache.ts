@@ -24,7 +24,6 @@ export default class GuildCache extends LFUCache<Server> {
 
 		super.addCacheEntry(server.guildId, server)
 
-		// add details to database
 		await this._serverCollection.insertServer(server)
 	}
 

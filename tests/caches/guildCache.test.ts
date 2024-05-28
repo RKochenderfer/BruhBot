@@ -26,9 +26,34 @@ describe('testing Guild Caching', () => {
 
 		// Assert
 		expect(guildCache.has(serverToAdd.guildId)).resolves.toBe(true)
+		expect(mockedServerCollection.insertServer).toHaveBeenCalledTimes(1)
 	})
 
-	test('hasGuild should return true for guild in cache', async () => {
+	test('add should throw an error if guildId is already in the cache', async () => {
+		// Arrange
+		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
+			ServerCollection,
+		) as any
+		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
+		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
+
+		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const serverToAdd = {
+			name: 'test',
+			guildId: crypto.randomUUID(),
+		} as Server
+		await guildCache.add(serverToAdd)
+
+		// Act
+		try {
+			await guildCache.add(serverToAdd)
+		} catch (error) {
+			// Assert
+			expect(error.message).toBe('Guild already in cache')
+		}
+	})
+
+	test('has should return true for guild in cache', async () => {
 		// Arrange
 		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
 			ServerCollection,
@@ -49,7 +74,7 @@ describe('testing Guild Caching', () => {
 		expect(hasGuild).toBe(true)
 	})
 
-	test('hasGuild should return false for empty cache and cache not in server', async () => {
+	test('has should return false for empty cache and cache not in server', async () => {
 		// Arrange
 		const mockedServerCollection: jest.Mocked<ServerCollection> = jest.mocked(
 			ServerCollection,
@@ -63,9 +88,10 @@ describe('testing Guild Caching', () => {
 
 		// Assert
 		expect(hasGuild).toBe(false)
+		expect(mockedServerCollection.findServer).toHaveBeenCalledTimes(1)
 	})
 
-	test('hasGuild should return true for empty cache and but cache in server', async () => {
+	test('has should return true for empty cache and but cache in server', async () => {
 		// Arrange
 		const serverInDb = {
 			name: 'test',
@@ -83,6 +109,7 @@ describe('testing Guild Caching', () => {
 
 		// Assert
 		expect(hasGuild).toBe(true)
+		expect(mockedServerCollection.findServer).toHaveBeenCalledTimes(1)
 	})
 
 	test('get returns entry in cache if only entry', async () => {
@@ -211,5 +238,6 @@ describe('testing Guild Caching', () => {
 		expect(entry).toBeDefined()
 		expect(entry!.name).toBe(updatedServerData.name)
 		expect(entry!.guildId).toBe(updatedServerData.guildId)
+		expect(mockedServerCollection.updateOne).toHaveBeenCalledTimes(1)
 	})
 })
