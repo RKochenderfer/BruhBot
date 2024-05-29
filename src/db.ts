@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from 'mongodb'
-import Guild from './models/server'
+import Guild from './models/guild'
 import { logger } from './log/logger'
 import { ServerCollection } from './extensions/server-collection'
 

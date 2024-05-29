@@ -3,14 +3,14 @@ import FlaggedPattern from '../message-checker/flagged-pattern'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
 import Command from '../command'
 import GuildCache from '../caches/guildCache'
-import Guild from '../models/server'
+import Guild from '../models/guild'
 import { Logger } from 'pino'
 
 export default class AddPhrase extends Command {
 	constructor(private _guildCache: GuildCache, private _logger: Logger) {
 		const name = 'addphrase'
 		const data = new SlashCommandBuilder()
-			.setName('addphrase')
+			.setName(name)
 			.setDescription('Adds a phrase to the message checker')
 			.addStringOption(option =>
 				option
@@ -64,7 +64,7 @@ export default class AddPhrase extends Command {
 
 			await interaction.followUp({
 				content: 'Your pattern has been created',
-				ephemeral: true
+				ephemeral: true,
 			})
 		}
 
@@ -78,7 +78,7 @@ export default class AddPhrase extends Command {
 		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
 		const updatedGuild = {
 			flaggedPatterns: [flaggedPattern, ...(currentGuild?.flaggedPatterns ?? [])],
-			...currentGuild
+			...currentGuild,
 		} as Guild
 
 		await this._guildCache.update(interaction.guildId!, updatedGuild)

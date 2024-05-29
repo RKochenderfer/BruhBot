@@ -1,6 +1,6 @@
-import { Collection, Db } from 'mongodb'
+import { Collection, Db, UpdateResult } from 'mongodb'
 import FlaggedPattern from '../message-checker/flagged-pattern'
-import Guild from '../models/server'
+import Guild from '../models/guild'
 import { Nullable } from 'typescript-nullable'
 
 export class ServerCollection {
@@ -67,6 +67,19 @@ export class ServerCollection {
 
 	updateOne = async (filter: any, update: any, options?: any): Promise<any> => {
 		return this._serverCollection.updateOne(filter, update, options)
+	}
+
+	updateGuild = async (guild: Guild): Promise<void> => {
+		await this._serverCollection.updateOne(
+			{ guildId: guild.guildId },
+			{
+				$set: {
+					name: guild.name,
+					pins: guild.pins,
+					flaggedPatterns: guild.flaggedPatterns,
+				},
+			},
+		)
 	}
 
 	private serverExists = async (guildId: string): Promise<boolean> => {

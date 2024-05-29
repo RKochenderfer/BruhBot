@@ -4,7 +4,7 @@ import LogSession from '../log/logSession'
 import { Middleware } from './middleware'
 import { logger } from '../log/logger'
 import GuildCache from '../caches/guildCache'
-import Guild from '../models/server'
+import Guild from '../models/guild'
 import InteractionMiddleware from './interactionMiddleware'
 
 export class RequestMiddleware extends Middleware {
@@ -27,7 +27,7 @@ export class RequestMiddleware extends Middleware {
 			childLogger.error(error, 'Unhandled request processing error')
 		} finally {
 			super.cleanup()
-	
+
 			this._logger?.debug('Completed handling request')
 		}
 	}
@@ -51,7 +51,7 @@ export class RequestMiddleware extends Middleware {
 	private addGuildToDatabaseIfNotPresent = async (logSession: LogSession): Promise<void> => {
 		this._logger?.debug('Started to add guild to database if not present')
 
-		if (!await this._guildCache.has(logSession.guildId)) {
+		if (!(await this._guildCache.has(logSession.guildId))) {
 			const guild = this.createGuildFromLogSession(logSession)
 			this._logger?.info(guild, 'New guild created')
 			await this._guildCache.add(guild)

@@ -2,14 +2,37 @@ import { CacheType, CommandInteractionOptionResolver } from 'discord.js'
 import FlaggedMessage from '../models/flagged-message'
 
 /**
-	 * This regex pattern performs a negative lookahead asserting that the Regex inside the square
-	 * brackets are the only characters found in the string.
-	 * 
-	 * This is outside of the class so when mongodb makes an object from this, it is not added to database
-	 */
+ * This regex pattern performs a negative lookahead asserting that the Regex inside the square
+ * brackets are the only characters found in the string.
+ *
+ * This is outside of the class so when mongodb makes an object from this, it is not added to database
+ */
 const flagCheckRegex = /^(?!.*[^gmixsuUAJD]).*$/
 
 export default class FlaggedPattern {
+	private _key: string
+	private _expression: string
+	private _response: string
+	private _flags: string | null
+	private _hasFlags: boolean
+	private _messageHistory: FlaggedMessage = new FlaggedMessage()
+
+	constructor(
+		key: string,
+		expression: string,
+		response: string,
+		flags: string | null,
+		// hasFlags = flags != undefined && flags.length > 0,
+		messageHistory: FlaggedMessage = new FlaggedMessage(),
+	) {
+		this._key = key
+		this._expression = expression
+		this._response = response
+		this._flags = flags
+		this._hasFlags = flags != undefined && flags.length > 0
+		this._messageHistory = messageHistory
+	}
+
 	public get messageHistory(): FlaggedMessage {
 		return this._messageHistory
 	}
@@ -28,15 +51,6 @@ export default class FlaggedPattern {
 	public get key(): string {
 		return this._key
 	}
-
-	constructor(
-		private _key: string,
-		private _expression: string,
-		private _response: string,
-		private _flags: string | null,
-		private _hasFlags = _flags !== null && _flags.length > 0,
-		private _messageHistory: FlaggedMessage = new FlaggedMessage(),
-	) {}
 
 	/**
 	 * Validates that flags are valid

@@ -1,8 +1,10 @@
 import { Nullable } from 'typescript-nullable'
 import { ServerCollection } from '../extensions/server-collection'
-import Guild from '../models/server'
+import Guild from '../models/guild'
 import { LFUCache } from './LFUCache'
 import { Logger } from 'pino'
+import Pin from '../models/pin'
+import FlaggedPattern from '../message-checker/flagged-pattern'
 
 export default class GuildCache extends LFUCache<Guild> {
 	private static _instance: GuildCache
@@ -17,7 +19,7 @@ export default class GuildCache extends LFUCache<Guild> {
 			return this._instance // maybe throw error here in future
 		}
 
-		return this._instance = new this(serverCollection)
+		return (this._instance = new this(serverCollection))
 	}
 
 	public static getInstance(): GuildCache {
@@ -51,20 +53,22 @@ export default class GuildCache extends LFUCache<Guild> {
 
 		super.updateCacheEntry(guildId, guild)
 
-		await this._serverCollection.updateOne({ guildId: guildId }, guild)
+		await this._serverCollection.updateGuild(guild)
 	}
 
 	public async get(guildId: string): Promise<Guild | undefined> {
 		this.logDebug(undefined, `Attempting to get guild ${guildId}`)
-		let guild = super.getCacheEntry(guildId)
+		let guildCacheEntry = super.getCacheEntry(guildId)
 
-		if (guild) return guild
+		if (guildCacheEntry) return guildCacheEntry
 
 		const findResult = await this._serverCollection.findServer(guildId)
 		if (Nullable.isNone(findResult)) return undefined
-		super.addCacheEntry(guildId, findResult)
 
-		return findResult
+		const guild = this.initializeGuild(findResult)
+		super.addCacheEntry(guildId, guild)
+
+		return guild
 	}
 
 	public async has(guildId: string): Promise<boolean> {
@@ -89,5 +93,51 @@ export default class GuildCache extends LFUCache<Guild> {
 		if (!this._logger) return
 
 		this._logger.debug(message)
+	}
+
+	private initializeGuild(uninitializedGuild: Guild): Guild {
+		const guild = {
+			name: uninitializedGuild.name,
+			guildId: uninitializedGuild.guildId,
+			pins: [],
+			flaggedPatterns: [],
+		} as Guild
+
+		// setup pins
+		if (uninitializedGuild.pins) {
+			guild.pins = [...this.initializePins(uninitializedGuild.pins)]
+		}
+
+		// setup flagged patterns
+		if (uninitializedGuild.flaggedPatterns) {
+			guild.flaggedPatterns = [...this.initializeFlaggedPatterns(uninitializedGuild.flaggedPatterns)]
+		}
+
+		return guild
+	}
+
+	private initializeFlaggedPatterns(uninitializedFlaggedPatterns: FlaggedPattern[]): FlaggedPattern[] {
+		const patterns = []
+		for (const pattern of uninitializedFlaggedPatterns) {
+			patterns.push(
+				new FlaggedPattern(
+					pattern.key,
+					pattern.expression,
+					pattern.response,
+					pattern.flags,
+					pattern.messageHistory,
+				),
+			)
+		}
+
+		return patterns
+	}
+
+	private initializePins(uninitializedPins: Pin[]): Pin[] {
+		const pins = []
+		for (const pin of uninitializedPins)
+			pins.push(new Pin(pin.message, pin.date, pin.userId))
+		
+		return pins
 	}
 }
