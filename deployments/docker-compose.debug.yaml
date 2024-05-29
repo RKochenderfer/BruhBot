@@ -11,10 +11,10 @@ services:
     container_name: bruhbot-dev
     image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes:
-        - ../build:/app/build
-        - ../assets:/app/assets
-        - data:/app/data
-        - objection_engine:/app/output/
+        - ../build:/usr/src/app/build
+        - ../assets:/usr/src/app/assets
+        - data:/usr/src/app/data
+        - objection_engine:/usr/src/app/output/
     environment:
         - TOKEN=${TOKEN}
         - CLIENT_ID=${CLIENT_ID}
@@ -38,8 +38,8 @@ services:
     ports:
       - '5000:5000'
     volumes:
-      - ../objection-engine/assets:/app/assets/
-      - objection_engine:/app/output/
+      - ../objection-engine/assets:/usr/src/app/assets/
+      - objection_engine:/usr/src/app/output/
   mongodb:
     container_name: bruhbot-mongodb-dev
     networks:
