@@ -15,7 +15,7 @@ describe('testing Guild Caching', () => {
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 		const serverToAdd = {
 			name: 'test',
 			guildId: crypto.randomUUID(),
@@ -37,7 +37,7 @@ describe('testing Guild Caching', () => {
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 		const serverToAdd = {
 			name: 'test',
 			guildId: crypto.randomUUID(),
@@ -60,7 +60,7 @@ describe('testing Guild Caching', () => {
 		) as any
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 		const serverToAdd = {
 			name: 'test',
 			guildId: crypto.randomUUID(),
@@ -81,7 +81,7 @@ describe('testing Guild Caching', () => {
 		) as any
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 
 		// Act
 		const hasGuild = await guildCache.has(crypto.randomUUID())
@@ -102,7 +102,7 @@ describe('testing Guild Caching', () => {
 		) as any
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(serverInDb)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 
 		// Act
 		const hasGuild = await guildCache.has(crypto.randomUUID())
@@ -119,7 +119,7 @@ describe('testing Guild Caching', () => {
 		) as any
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 		const serverToAdd = {
 			name: 'test',
 			guildId: crypto.randomUUID(),
@@ -142,7 +142,7 @@ describe('testing Guild Caching', () => {
 		) as any
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 		const serverToAdd1 = {
 			name: 'test 1',
 			guildId: crypto.randomUUID(),
@@ -169,7 +169,7 @@ describe('testing Guild Caching', () => {
 			ServerCollection,
 		) as any
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 
 		// Act
 		const getEntry = await guildCache.get(crypto.randomUUID())
@@ -186,7 +186,7 @@ describe('testing Guild Caching', () => {
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 		const serverToAdd1 = {
 			name: 'test 1',
 			guildId: crypto.randomUUID(),
@@ -216,7 +216,7 @@ describe('testing Guild Caching', () => {
 		} as Guild
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(guildInDb)
 
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 
 		// Act
 		const result = await guildCache.get(guildInDb.guildId)
@@ -236,7 +236,7 @@ describe('testing Guild Caching', () => {
 		mockedServerCollection.findServer = jest.fn().mockResolvedValue(null)
 		mockedServerCollection.insertServer = jest.fn().mockResolvedValue(undefined)
 		mockedServerCollection.updateOne = jest.fn().mockResolvedValue(undefined)
-		const guildCache = GuildCache.getInstance(mockedServerCollection)
+		const guildCache = GuildCache.initialize(mockedServerCollection)
 
 		const serverToAdd = {
 			name: 'test',

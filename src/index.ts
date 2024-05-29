@@ -13,7 +13,8 @@ import CommandRegister from './command-register'
 import EditPhrase from './commands/edit-phrase'
 import { RequestMiddleware } from './middleware/requestMiddleware'
 import GuildCache from './caches/guildCache'
-import AddPhrase from './commands/add-phrase'
+import AddPhrase from './commands/addPhrase'
+import { Logger } from 'pino'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -38,7 +39,7 @@ const registerBotClientHandlers = () => {
 
 	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
 	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
-	botClient.on(Events.InteractionCreate, listeners.onInteractionCreate)
+	botClient.on(Events.InteractionCreate, requestMiddleware.onInteractionCreate)
 }
 
 const init = () => {
@@ -63,8 +64,8 @@ const init = () => {
 
 const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
-	DiscordCommandRegister.register(new EditPhrase(guildCache))
-	DiscordCommandRegister.register(new AddPhrase(guildCache))
+	DiscordCommandRegister.register(EditPhrase.name, (logger: Logger) => new EditPhrase(guildCache, logger))
+	DiscordCommandRegister.register(AddPhrase.name, (logger: Logger) => new AddPhrase(guildCache, logger))
 }
 
 try {

@@ -14,14 +14,21 @@ export default class GuildCache extends LFUCache<Guild> {
 
 	public static initialize(serverCollection: ServerCollection): GuildCache {
 		if (this._instance) {
-			throw new Error('Guild cache has already been initialized')
+			return this._instance // maybe throw error here in future
 		}
 
 		return this._instance = new this(serverCollection)
 	}
 
 	public static getInstance(): GuildCache {
+		if (!this._instance) {
+			throw new Error('Guild cache has not been initialized')
+		}
 		return this._instance
+	}
+
+	public static isInitialized(): boolean {
+		return this._instance !== undefined
 	}
 
 	public async add(guild: Guild) {

@@ -1,16 +1,14 @@
-import { BaseInteraction, ChatInputCommandInteraction } from 'discord.js';
-import { Middleware } from './middleware';
-import GuildCache from '../caches/guildCache';
-import LogSession from '../log/logSession';
-import BotClient from '../models/bot-client';
-import Command from '../command';
-import InteractionHandler from '../handlers/interactionHandler';
+import { BaseInteraction, ChatInputCommandInteraction } from 'discord.js'
+import { Middleware } from './middleware'
+import GuildCache from '../caches/guildCache'
+import LogSession from '../log/logSession'
+import InteractionHandler from '../handlers/interactionHandler'
 
 export default class InteractionMiddleware extends Middleware {
 	constructor(private _baseInteraction: BaseInteraction, private _guildCache: GuildCache) {
 		super()
 	}
-	
+
 	async execute(): Promise<void> {
 		if (!this._logger) throw new Error('Logger cannot be undefined')
 		if (!this._baseInteraction.isChatInputCommand()) return
@@ -19,7 +17,6 @@ export default class InteractionMiddleware extends Middleware {
 		const interactionHandler = new InteractionHandler(
 			this._logger,
 			this._baseInteraction as ChatInputCommandInteraction,
-			this._guildCache
 		)
 
 		try {

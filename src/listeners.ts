@@ -60,7 +60,7 @@ export const onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 			// 	db.collections.servers!,
 			// )
 		} else {
-			await command.execute(interaction)
+			// await command.execute(interaction)
 		}
 	} catch (error) {
 		logger.error(error, error.message, baseInteraction)
