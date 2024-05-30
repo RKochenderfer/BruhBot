@@ -1,4 +1,4 @@
-import FlaggedPattern from '../message-checker/flagged-pattern'
+import FlaggedPattern from '../message-checker/flaggedPattern'
 import Pin from './pin'
 
 export default interface Guild {

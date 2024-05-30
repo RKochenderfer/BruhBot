@@ -1,4 +1,4 @@
-import FlaggedPattern from './flagged-pattern'
+import FlaggedPattern from './flaggedPattern'
 import * as db from '../db'
 import { Message } from 'discord.js'
 import { logger } from '../log/logger'
@@ -22,8 +22,7 @@ export class CachedPattern {
 export class CachedServerPatterns {
 	constructor(public patterns: CachedPattern[], public updatedLast = new Date()) {}
 
-	hasKey = (key: string): boolean =>
-		this.patterns.find(x => x.flaggedPattern.key == key) !== null
+	hasKey = (key: string): boolean => this.patterns.find(x => x.flaggedPattern.key == key) !== null
 	updatePattern = (toUpdate: FlaggedPattern) => {
 		const indexOfPatternToUpdate = this.patterns.findIndex(
 			x => x.flaggedPattern.key === toUpdate.key,

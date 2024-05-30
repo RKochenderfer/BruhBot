@@ -1,14 +1,14 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
 import Command from '../command'
-import FlaggedPattern from '../message-checker/flagged-pattern'
+import FlaggedPattern from '../message-checker/flaggedPattern'
 import { MessageChecker } from '..'
 import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
 
 export default class EditPhrase extends Command {
 	private _logger: Logger
-	
+
 	constructor(guildCache: GuildCache, logger: Logger) {
 		const name = 'editphrase'
 		const data = new SlashCommandBuilder()
@@ -40,13 +40,13 @@ export default class EditPhrase extends Command {
 					.setDescription('The flags to be applied to the regex expression')
 					.setRequired(false),
 			)
-		
+
 		super(name, data)
 		this._logger = logger
 	}
 
 	execute = async (
-		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper
+		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
 	): Promise<void> => {
 		interaction = interaction as ChatInputCommandInteractionWrapper
 		const guildId = interaction.guildId!

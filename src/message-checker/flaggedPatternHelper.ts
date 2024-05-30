@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import FlaggedPattern from './flagged-pattern'
+import FlaggedPattern from './flaggedPattern'
 import FlaggedMessage from '../models/flagged-message'
 
 export default class FlaggedPatternHelper {

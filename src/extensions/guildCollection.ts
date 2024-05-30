@@ -1,5 +1,5 @@
 import { Collection } from 'mongodb'
-import FlaggedPattern from '../message-checker/flagged-pattern'
+import FlaggedPattern from '../message-checker/flaggedPattern'
 import Guild from '../models/guild'
 import { Nullable } from 'typescript-nullable'
 

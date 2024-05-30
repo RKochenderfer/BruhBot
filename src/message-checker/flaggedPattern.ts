@@ -10,50 +10,17 @@ import FlaggedMessage from '../models/flagged-message'
 const flagCheckRegex = /^(?!.*[^gmixsuUAJD]).*$/
 
 export default class FlaggedPattern {
-	private _key: string
-	private _expression: string
-	private _response: string
-	private _flags: string | null
-	private _hasFlags: boolean
-	private _messageHistory: FlaggedMessage = new FlaggedMessage()
+	// All properties saved in database have to be public or else they queries will return objects with a _ prefix and break the models
+	public hasFlags: boolean
 
 	constructor(
-		key: string,
-		expression: string,
-		response: string,
-		flags: string | null,
-		messageHistory: FlaggedMessage = new FlaggedMessage(),
+		public key: string,
+		public expression: string,
+		public response: string,
+		public flags: string | null,
+		public messageHistory: FlaggedMessage = new FlaggedMessage(),
 	) {
-		this._key = key
-		this._expression = expression
-		this._response = response
-		this._flags = flags
-		this._hasFlags = flags != undefined && flags.length > 0
-		this._messageHistory = messageHistory
-	}
-
-	public get messageHistory(): FlaggedMessage {
-		return this._messageHistory
-	}
-
-	public set messageHistory(val: FlaggedMessage) {
-		this._messageHistory = val
-	}
-	
-	public get hasFlags() {
-		return this._hasFlags
-	}
-	public get flags(): string | null {
-		return this._flags
-	}
-	public get response(): string {
-		return this._response
-	}
-	public get expression(): string {
-		return this._expression
-	}
-	public get key(): string {
-		return this._key
+		this.hasFlags = flags != undefined && flags.length > 0
 	}
 
 	/**

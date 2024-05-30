@@ -4,7 +4,7 @@ import Guild from '../models/guild'
 import { LFUCache } from './LFUCache'
 import { Logger } from 'pino'
 import Pin from '../models/pin'
-import FlaggedPattern from '../message-checker/flagged-pattern'
+import FlaggedPattern from '../message-checker/flaggedPattern'
 
 export default class GuildCache extends LFUCache<Guild> {
 	private static _instance: GuildCache
@@ -90,7 +90,7 @@ export default class GuildCache extends LFUCache<Guild> {
 
 		const guild = this.initializeGuild(findResult)
 		super.addCacheEntry(guildId, guild)
-		
+
 		this.cleanup()
 
 		return guild

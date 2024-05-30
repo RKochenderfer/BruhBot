@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js'
-import FlaggedPattern from '../message-checker/flagged-pattern'
+import FlaggedPattern from '../message-checker/flaggedPattern'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
 import Command from '../command'
 import GuildCache from '../caches/guildCache'
@@ -78,7 +78,7 @@ export default class AddPhrase extends Command {
 		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
 		const updatedGuild = {
 			...currentGuild,
-			flaggedPatterns: [flaggedPattern, ...currentGuild?.flaggedPatterns ?? []],
+			flaggedPatterns: [flaggedPattern, ...(currentGuild?.flaggedPatterns ?? [])],
 		} as Guild
 
 		await this._guildCache.updateGuild(interaction.guildId!, updatedGuild)
