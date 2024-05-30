@@ -2,6 +2,7 @@ import { Collection } from 'mongodb'
 import FlaggedPattern from '../message-checker/flaggedPattern'
 import Guild from '../models/guild'
 import { Nullable } from 'typescript-nullable'
+import Pin from '../models/pin'
 
 export class GuildCollection {
 	private existingGuilds = new Set()
@@ -59,6 +60,17 @@ export class GuildCollection {
 					} as FlaggedPattern,
 				},
 			},
+		)
+	}
+
+	updatePins = async (guildId: string, pins: Pin[]): Promise<void> => {
+		await this._serverCollection.updateOne(
+			{ guildId: guildId },
+			{
+				$set: {
+					pins: pins
+				}
+			}
 		)
 	}
 

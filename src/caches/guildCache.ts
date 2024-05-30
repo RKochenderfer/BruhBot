@@ -79,6 +79,21 @@ export default class GuildCache extends LFUCache<Guild> {
 		this.cleanup()
 	}
 
+	public async updatePins(guildId: string, pins: Pin[]) {
+		this.logInfo('Updating guild pins')
+
+		const guild = await this.get(guildId)
+
+		if (!guild) throw new Error(`GuildId ${guildId} not found`)
+		
+		guild.pins = [...pins]
+		super.updateCacheEntry(guildId, guild)
+		await this._guildCollection.updatePins(guildId, pins)
+		this.cleanup()
+
+		this.logInfo('Completed updating guild pins')
+	}
+
 	public async get(guildId: string): Promise<Guild | undefined> {
 		this.logDebug(`Attempting to get guild ${guildId}`)
 		let guildCacheEntry = super.getCacheEntry(guildId)

@@ -1,4 +1,4 @@
-import { BaseInteraction, Message, ThreadMemberFlagsBitField } from 'discord.js'
+import { BaseGuildTextChannel, BaseInteraction, Message, TextBasedChannel, ThreadMemberFlagsBitField } from 'discord.js'
 import MessageMiddleware from './messageMiddleware'
 import LogSession from '../log/logSession'
 import { Middleware } from './middleware'
@@ -6,6 +6,7 @@ import { logger } from '../log/logger'
 import GuildCache from '../caches/guildCache'
 import Guild from '../models/guild'
 import InteractionMiddleware from './interactionMiddleware'
+import PinMiddleware from './pinMiddleware'
 
 export class RequestMiddleware extends Middleware {
 	constructor(private _guildCache: GuildCache) {
@@ -45,6 +46,12 @@ export class RequestMiddleware extends Middleware {
 	onInteractionCreate = async (baseInteraction: BaseInteraction) => {
 		const interactionMiddleware = new InteractionMiddleware(baseInteraction, this._guildCache)
 		super.setNext(interactionMiddleware)
+		await this.execute()
+	}
+
+	onChannelPinUpdate = async (channel: TextBasedChannel) => {
+		const pinMiddleware = new PinMiddleware(channel as BaseGuildTextChannel, this._guildCache)
+		super.setNext(pinMiddleware)
 		await this.execute()
 	}
 

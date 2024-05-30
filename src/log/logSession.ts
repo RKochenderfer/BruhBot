@@ -1,5 +1,5 @@
 import { UUID } from 'crypto';
-import { BaseInteraction, Message } from 'discord.js';
+import { BaseGuildTextChannel, BaseInteraction, Message } from 'discord.js';
 import { Guard } from '../guard/guard';
 
 export default class LogSession {
@@ -9,29 +9,29 @@ export default class LogSession {
 		private _userId: string,
 		private _guildId: string,
 		private _guildName: string,
-	) {	}
-	
+	) {}
+
 	public get guildName(): string {
-		return this._guildName;
+		return this._guildName
 	}
 	public get guildId(): string {
-		return this._guildId;
+		return this._guildId
 	}
 	public get correlationId(): UUID | undefined {
-		return this._correlationId;
+		return this._correlationId
 	}
 	public set correlationId(value: UUID | undefined) {
 		if (!value) {
 			this.correlationId = undefined
 		} else {
-			this._correlationId = value;
+			this._correlationId = value
 		}
 	}
 	public get userId(): string {
-		return this._userId;
+		return this._userId
 	}
 	public get displayName(): string {
-		return this._displayName;
+		return this._displayName
 	}
 
 	public static fromMessage(message: Message<boolean>): LogSession {
@@ -45,7 +45,7 @@ export default class LogSession {
 			crypto.randomUUID(),
 			message.author.id,
 			message.guildId!,
-			message.guild?.name!
+			message.guild?.name!,
 		)
 	}
 
@@ -60,17 +60,21 @@ export default class LogSession {
 			crypto.randomUUID(),
 			baseInteraction.user.id,
 			baseInteraction.guildId!,
-			baseInteraction.guild?.name!
+			baseInteraction.guild?.name!,
+		)
+	}
+
+	public static fromBaseGuildTextChannel(channel: BaseGuildTextChannel): LogSession {
+		return new LogSession(
+			`guild-	${channel.guild.name}`,
+			crypto.randomUUID(),
+			`guild-	${channel.guild.name}`,
+			channel.guildId,
+			channel.guild.name,
 		)
 	}
 
 	public static fromCorrelationId(correlationId: UUID): LogSession {
-		return new LogSession(
-			"",
-			correlationId,
-			"",
-			"",
-			"",
-		)
+		return new LogSession('', correlationId, '', '', '')
 	}
 }
