@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js'
 import GuildCache from '../caches/guildCache';
-import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper';
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper';
 import { Logger } from 'pino';
 import Command from '../command';
 

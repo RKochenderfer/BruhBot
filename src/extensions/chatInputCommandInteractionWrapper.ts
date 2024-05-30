@@ -2,6 +2,7 @@ import {
 	CacheType,
 	ChatInputCommandInteraction,
 	CommandInteractionOptionResolver,
+	Guild,
 	InteractionDeferReplyOptions,
 	InteractionReplyOptions,
 	InteractionResponse,
@@ -21,6 +22,10 @@ export class ChatInputCommandInteractionWrapper {
 
 	public get interaction(): ChatInputCommandInteraction {
 		return this._interaction
+	}
+
+	public get guild(): Guild | null {
+		return this._interaction.guild
 	}
 
 	public get guildId(): string | null {

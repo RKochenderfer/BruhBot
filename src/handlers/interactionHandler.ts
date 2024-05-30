@@ -3,7 +3,7 @@ import { Logger } from 'pino';
 import Handler from './handler';
 import BotClient from '../models/bot-client';
 import Command from '../command';
-import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper';
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper';
 
 export default class InteractionHandler implements Handler {
 	constructor(

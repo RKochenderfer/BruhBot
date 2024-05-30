@@ -2,7 +2,7 @@ import {
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
 	SlashCommandOptionsOnlyBuilder,
 } from 'discord.js'
-import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
+import { ChatInputCommandInteractionWrapper } from './extensions/chatInputCommandInteractionWrapper'
 
 export default abstract class Command {
 	constructor(

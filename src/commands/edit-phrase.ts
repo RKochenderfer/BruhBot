@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
-import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import Command from '../command'
 import FlaggedPattern from '../message-checker/flaggedPattern'
 import { MessageChecker } from '..'

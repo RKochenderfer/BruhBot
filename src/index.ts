@@ -16,6 +16,7 @@ import GuildCache from './caches/guildCache'
 import AddPhrase from './commands/addPhrase'
 import { Logger } from 'pino'
 import Bruh from './commands/bruh'
+import AddPins from './commands/addPins'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -76,6 +77,10 @@ const registerCommands = () => {
 	DiscordCommandRegister.register(
 		Bruh.name,
 		(logger: Logger) => new Bruh(guildCache, logger)
+	)
+	DiscordCommandRegister.register(
+		AddPins.name,
+		(logger: Logger) => new AddPins(guildCache, logger)
 	)
 }
 

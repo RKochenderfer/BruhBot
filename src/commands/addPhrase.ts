@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js'
 import FlaggedPattern from '../message-checker/flaggedPattern'
-import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import Command from '../command'
 import GuildCache from '../caches/guildCache'
 import Guild from '../models/guild'
