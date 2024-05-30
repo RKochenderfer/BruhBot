@@ -9,12 +9,13 @@ import * as listeners from './listeners'
 import * as utils from './utils/utils'
 import * as db from './db'
 import { logger } from './log/logger'
-import CommandRegister from './command-register'
+import CommandRegister from './commandRegister'
 import EditPhrase from './commands/edit-phrase'
 import { RequestMiddleware } from './middleware/requestMiddleware'
 import GuildCache from './caches/guildCache'
 import AddPhrase from './commands/addPhrase'
 import { Logger } from 'pino'
+import Bruh from './commands/bruh'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -64,8 +65,18 @@ const init = () => {
 
 const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
-	DiscordCommandRegister.register(EditPhrase.name, (logger: Logger) => new EditPhrase(guildCache, logger))
-	DiscordCommandRegister.register(AddPhrase.name, (logger: Logger) => new AddPhrase(guildCache, logger))
+	DiscordCommandRegister.register(
+		EditPhrase.name,
+		(logger: Logger) => new EditPhrase(guildCache, logger),
+	)
+	DiscordCommandRegister.register(
+		AddPhrase.name,
+		(logger: Logger) => new AddPhrase(guildCache, logger),
+	)
+	DiscordCommandRegister.register(
+		Bruh.name,
+		(logger: Logger) => new Bruh(guildCache, logger)
+	)
 }
 
 try {

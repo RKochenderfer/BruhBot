@@ -3,7 +3,7 @@ import * as path from 'path'
 import BotClient from './models/bot-client'
 import { Message, REST, Routes } from 'discord.js'
 import { logger } from './log/logger'
-import CommandRegister from './command-register'
+import CommandRegister from './commandRegister'
 
 /**
  * Reads the files in commands and builds the commands
