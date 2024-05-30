@@ -7,9 +7,7 @@ import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
 
 export default class EditPhrase extends Command {
-	private _logger: Logger
-
-	constructor(guildCache: GuildCache, logger: Logger) {
+	constructor(private _guildCache: GuildCache, private _logger: Logger) {
 		const name = 'editphrase'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -42,23 +40,23 @@ export default class EditPhrase extends Command {
 			)
 
 		super(name, data)
-		this._logger = logger
 	}
 
 	execute = async (
 		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
 	): Promise<void> => {
+		this._logger.debug('Started to edit a phrase')
+
 		interaction = interaction as ChatInputCommandInteractionWrapper
 		const guildId = interaction.guildId!
 
 		if (interaction.isNotAdmin()) {
-			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
+			await interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
 		await interaction.deferReply()
 
 		const flaggedPatternToUpdate = FlaggedPattern.from(interaction.options)
-
 		if (!flaggedPatternToUpdate.areFlagsValid()) {
 			await interaction.followUp({
 				content:
@@ -68,21 +66,19 @@ export default class EditPhrase extends Command {
 			return
 		}
 
-		// if (await guildCache?.isServerInDb(guildId)) {
-		// 	logger.info(
-		// 		flaggedPatternToUpdate,
-		// 		`Updating pattern key: ${flaggedPatternToUpdate.key}`,
-		// 	)
-		// 	await guildCache?.upsertPattern(guildId, flaggedPatternToUpdate)
-		// } else {
-		// 	logger.warn('Attempt to update flagged patterns for server not added')
-		// 	return
-		// }
+		const guild = await this._guildCache.get(guildId)
+		const oldPattern = guild?.flaggedPatterns?.find(x => x.key === flaggedPatternToUpdate.key)
+		if (!oldPattern) {
+			throw new Error('Pattern key to be updated was not found')
+		}
+		flaggedPatternToUpdate.messageHistory = oldPattern.messageHistory
+		await this._guildCache.updateFlaggedPattern(guildId, flaggedPatternToUpdate)
 
-		MessageChecker.updatePatternInCache(interaction.guildId!, flaggedPatternToUpdate)
 		await interaction.followUp({
-			content: 'Your pattern has been created',
+			content: `The pattern with key ${flaggedPatternToUpdate.key} has been updated`,
 			ephemeral: true,
 		})
+
+		this._logger.debug('Completed editing phrase')
 	}
 }
