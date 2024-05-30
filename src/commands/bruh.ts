@@ -1,11 +1,20 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js'
+import GuildCache from '../caches/guildCache';
+import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper';
+import { Logger } from 'pino';
+import Command from '../command';
 
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('bruh')
-		.setDescription('Replies to sender with bruh.'),
+export default class Bruh extends Command {
+	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+		const name = 'bruh'
+		const data = new SlashCommandBuilder()
+			.setName(name)
+			.setDescription('Replies to sender with bruh.')
 
-	async execute(interaction: ChatInputCommandInteraction) {
+		super(name, data)
+	}
+
+	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
 		await interaction.reply('bruh')
-	},
+	}
 }
