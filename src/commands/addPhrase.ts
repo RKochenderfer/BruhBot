@@ -77,11 +77,11 @@ export default class AddPhrase extends Command {
 	) => {
 		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
 		const updatedGuild = {
-			flaggedPatterns: [flaggedPattern, ...(currentGuild?.flaggedPatterns ?? [])],
 			...currentGuild,
+			flaggedPatterns: [flaggedPattern, ...currentGuild?.flaggedPatterns ?? []],
 		} as Guild
 
-		await this._guildCache.update(interaction.guildId!, updatedGuild)
+		await this._guildCache.updateGuild(interaction.guildId!, updatedGuild)
 		this._logger.info(flaggedPattern, 'Added flagged pattern to guild')
 	}
 }

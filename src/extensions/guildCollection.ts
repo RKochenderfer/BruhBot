@@ -1,31 +1,31 @@
-import { Collection, Db, UpdateResult } from 'mongodb'
+import { Collection } from 'mongodb'
 import FlaggedPattern from '../message-checker/flagged-pattern'
 import Guild from '../models/guild'
 import { Nullable } from 'typescript-nullable'
 
-export class ServerCollection {
-	private existingServers = new Set()
+export class GuildCollection {
+	private existingGuilds = new Set()
 
 	private constructor(private _serverCollection: Collection<Guild>) {}
 
-	static from = (serverCollection: Collection<Guild>): ServerCollection => {
-		return new ServerCollection(serverCollection)
+	static from = (guildCollection: Collection<Guild>): GuildCollection => {
+		return new GuildCollection(guildCollection)
 	}
 
-	findServer = async (guildId: string): Promise<Nullable<Guild>> => {
-		return await this._serverCollection.findOne({ guildId: guildId })
+	findGuild = async (guildId: string): Promise<Nullable<Guild>> => {
+		return (await this._serverCollection.findOne({ guildId: guildId })) as Guild
 	}
 
 	isServerInDb = async (guildId: string): Promise<boolean> => {
-		return await this.serverExists(guildId)
+		return await this.guildExists(guildId)
 	}
 
-	insertServer = async (server: Guild): Promise<void> => {
+	insertGuild = async (guild: Guild): Promise<void> => {
 		this._serverCollection.insertOne({
-			name: server.name,
-			guildId: server.guildId,
-			pins: server.pins,
-			flaggedPatterns: server.flaggedPatterns,
+			name: guild.name,
+			guildId: guild.guildId,
+			pins: guild.pins,
+			flaggedPatterns: guild.flaggedPatterns,
 		})
 	}
 
@@ -55,6 +55,7 @@ export class ServerCollection {
 						expression: patternToUpdate.expression,
 						response: patternToUpdate.response,
 						flags: patternToUpdate.flags,
+						messageHistory: patternToUpdate.messageHistory,
 					} as FlaggedPattern,
 				},
 			},
@@ -82,13 +83,13 @@ export class ServerCollection {
 		)
 	}
 
-	private serverExists = async (guildId: string): Promise<boolean> => {
-		if (this.existingServers.has(guildId)) {
+	private guildExists = async (guildId: string): Promise<boolean> => {
+		if (this.existingGuilds.has(guildId)) {
 			return true
 		}
 
-		if (Nullable.isSome(await this.findServer(guildId))) {
-			this.existingServers.add(guildId)
+		if (Nullable.isSome(await this.findGuild(guildId))) {
+			this.existingGuilds.add(guildId)
 			return true
 		}
 		return false

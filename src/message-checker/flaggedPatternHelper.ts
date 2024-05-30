@@ -1,12 +1,14 @@
+import { Message } from 'discord.js'
 import FlaggedPattern from './flagged-pattern'
+import FlaggedMessage from '../models/flagged-message'
 
 export default class FlaggedPatternHelper {
-	private _matchedFlag: FlaggedPattern | undefined
+	private _matchedPattern: FlaggedPattern | undefined
 
 	constructor(private _flaggedPatterns: FlaggedPattern[]) {}
 
 	public get matchedFlag(): FlaggedPattern | undefined {
-		return this._matchedFlag
+		return this._matchedPattern
 	}
 
 	isTextFlagged = (text: string): boolean => {
@@ -16,7 +18,7 @@ export default class FlaggedPatternHelper {
 				: new RegExp(flaggedPattern.expression)
 
 			if (regex.test(text)) {
-				this._matchedFlag = flaggedPattern
+				this._matchedPattern = flaggedPattern
 				return true
 			}
 		}
@@ -24,34 +26,21 @@ export default class FlaggedPatternHelper {
 	}
 
 	buildMatchedResponse = (): string => {
-		if (!this._matchedFlag) {
+		if (!this._matchedPattern) {
 			throw new Error('Matched flag is not set')
 		}
-		const lastFound = this._matchedFlag.messageHistory.dateTimePreviouslyFound
-		let response = this._matchedFlag.response
-		response.replace('$k', this._matchedFlag.key)
-		response.replace('$c', `${this._matchedFlag.messageHistory.count}`)
 
-		if (response.includes('$d')) {
-			if (lastFound) {
-				this.replaceTimeRelatedFlag(lastFound, response)
-			} else {
-				response.replace('$d', 'FIRST INSTANCE')
-			}
-		}
-
-		return response
-	}
-
-	private replaceTimeRelatedFlag(lastFound: Date, response: string) {
-		let temp = response
-		const date = this._matchedFlag!.messageHistory.lastFound
+		const lastFound = this._matchedPattern.messageHistory.dateTimePreviouslyFound
+		const date = this._matchedPattern!.messageHistory.lastFound
 		const timespan = (date as unknown as number) - (lastFound as unknown as number)
 
-		temp.replace(
-			'$d',
-			`${lastFound.getMonth() + 1}/${lastFound.getDate()}/${lastFound.getFullYear()}`,
-		)
+		let response = this._matchedPattern.response
+			.replace('$k', this._matchedPattern.key)
+			.replace('$c', `${this._matchedPattern.messageHistory.count}`)
+			.replace(
+				'$d',
+				`${lastFound.getMonth() + 1}/${lastFound.getDate()}/${lastFound.getFullYear()}`,
+			)
 			.replace('$s', `${timespan / 1000}`)
 			.replace('$h', `${timespan / (1000 * 60 * 60)}`)
 			.replace(
@@ -60,5 +49,19 @@ export default class FlaggedPatternHelper {
 					lastFound.getMonth() + 1
 				}/${lastFound.getDate()}${lastFound.getFullYear()} ${lastFound.getHours()}:${lastFound.getMinutes()}:${lastFound.getSeconds()}`,
 			)
+
+		return response
+	}
+
+	updateHistory = (message: Message<boolean>) => {
+		const previousHistory = this._matchedPattern!.messageHistory
+
+		this._matchedPattern!.messageHistory = new FlaggedMessage(
+			message.author.id,
+			message.author.displayName,
+			previousHistory.count + 1,
+			new Date(),
+			previousHistory.lastFound,
+		)
 	}
 }

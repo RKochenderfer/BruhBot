@@ -47,6 +47,8 @@ export default class MessageHandler implements Handler {
 
 		if (isFlagged) {
 			this._logger.debug(flaggedPatternHelper.matchedFlag, `Flagged message found in guild ${this._message.guild?.name} ${this._message.guildId}`)
+			flaggedPatternHelper.updateHistory(this._message)
+			await this._guildCache.updateFlaggedPattern(guild.guildId, flaggedPatternHelper.matchedFlag!)
 			await this._message.channel.send(flaggedPatternHelper.buildMatchedResponse())
 		}
 	}

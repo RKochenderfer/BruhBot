@@ -22,7 +22,6 @@ export default class FlaggedPattern {
 		expression: string,
 		response: string,
 		flags: string | null,
-		// hasFlags = flags != undefined && flags.length > 0,
 		messageHistory: FlaggedMessage = new FlaggedMessage(),
 	) {
 		this._key = key
@@ -36,6 +35,11 @@ export default class FlaggedPattern {
 	public get messageHistory(): FlaggedMessage {
 		return this._messageHistory
 	}
+
+	public set messageHistory(val: FlaggedMessage) {
+		this._messageHistory = val
+	}
+	
 	public get hasFlags() {
 		return this._hasFlags
 	}

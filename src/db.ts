@@ -1,10 +1,10 @@
 import { Collection, MongoClient } from 'mongodb'
 import Guild from './models/guild'
 import { logger } from './log/logger'
-import { ServerCollection } from './extensions/server-collection'
+import { GuildCollection } from './extensions/guildCollection'
 
 export type Database = {
-	servers?: ServerCollection
+	servers?: GuildCollection
 	/* eslint-disable @typescript-eslint/no-explicit-any */
 	logs?: Collection<any>
 }
@@ -23,7 +23,7 @@ const connect = async () => {
 		await client.connect()
 
 		const db = client.db(process.env.MONGO_INITDB_DATABASE!)
-		const serversCollection = ServerCollection.from(
+		const serversCollection = GuildCollection.from(
 			db.collection('servers') as Collection<Guild>,
 		)
 		/* eslint-disable @typescript-eslint/no-explicit-any */
