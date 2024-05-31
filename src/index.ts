@@ -17,6 +17,7 @@ import AddPhrase from './commands/addPhrase'
 import { Logger } from 'pino'
 import Bruh from './commands/bruh'
 import AddPins from './commands/addPins'
+import Clipshow from './commands/clipshow'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -81,6 +82,10 @@ const registerCommands = () => {
 	DiscordCommandRegister.register(
 		AddPins.name,
 		(logger: Logger) => new AddPins(guildCache, logger)
+	)
+	DiscordCommandRegister.register(
+		Clipshow.name,
+		(logger: Logger) => new Clipshow(guildCache, logger)
 	)
 }
 
