@@ -17,7 +17,7 @@ export default class DiceRoller extends Command {
 	private readonly _regex = /^\d+d\d+([+|-]\d)?/
 	private readonly _parser: Parser
 
-	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+	constructor(private _logger: Logger) {
 		const name = 'roll'
 		const data = new SlashCommandBuilder()
 			.setName('roll')

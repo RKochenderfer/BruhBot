@@ -79,6 +79,28 @@ export default class GuildCache extends LFUCache<Guild> {
 		this.cleanup()
 	}
 
+	public async removeFlaggedPattern(guildId: string, key: string) {
+		this.logInfo('Started to remove pattern')
+
+		const guild = await this.get(guildId)
+
+		if (!guild) throw new Error(`GuildId ${guildId} not found`)
+		if (guild.flaggedPatterns == undefined)
+			throw new Error(`Guild ${guildId} contains no flagged patterns to update`)
+
+		const index = guild.flaggedPatterns.findIndex(x => x.key === key)
+		if (index === -1)
+			throw new Error(`Index for flagged pattern ${key} was not found`)
+
+		guild.flaggedPatterns.splice(index, 1)
+
+		super.updateCacheEntry(guildId, guild)
+		await this._guildCollection.removePattern(guildId, key)
+		this.cleanup()
+
+		this.logInfo('Completed removing pattern')
+	}
+
 	public async updatePins(guildId: string, pins: Pin[]) {
 		this.logInfo('Updating guild pins')
 

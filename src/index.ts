@@ -19,6 +19,8 @@ import Bruh from './commands/bruh'
 import AddPins from './commands/addPins'
 import Clipshow from './commands/clipshow'
 import DiceRoller from './commands/diceRoller'
+import Hug from './commands/hug'
+import RemovePhrase from './commands/removePhrase'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -90,7 +92,15 @@ const registerCommands = () => {
 	)
 	DiscordCommandRegister.register(
 		DiceRoller.name,
-		(logger: Logger) => new DiceRoller(guildCache, logger)
+		(logger: Logger) => new DiceRoller(logger)
+	)
+	DiscordCommandRegister.register(
+		Hug.name,
+		(logger: Logger) => new Hug(logger)
+	)
+	DiscordCommandRegister.register(
+		RemovePhrase.name,
+		(logger: Logger) => new RemovePhrase(guildCache, logger)
 	)
 }
 
