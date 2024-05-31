@@ -1,8 +1,7 @@
-import FlaggedPattern from './flagged-pattern'
+import FlaggedPattern from './flaggedPattern'
 import * as db from '../db'
 import { Message } from 'discord.js'
-import { logger } from '../utils/logger'
-import { cachedDataVersionTag } from 'v8'
+import { logger } from '../log/logger'
 /**
  * Takes flagged messages and creates the RegExp on adding
  */
@@ -25,7 +24,9 @@ export class CachedServerPatterns {
 
 	hasKey = (key: string): boolean => this.patterns.find(x => x.flaggedPattern.key == key) !== null
 	updatePattern = (toUpdate: FlaggedPattern) => {
-		const indexOfPatternToUpdate = this.patterns.findIndex(x => x.flaggedPattern.key === toUpdate.key)
+		const indexOfPatternToUpdate = this.patterns.findIndex(
+			x => x.flaggedPattern.key === toUpdate.key,
+		)
 		this.patterns[indexOfPatternToUpdate] = new CachedPattern(toUpdate)
 	}
 }
@@ -56,16 +57,16 @@ export class MessageChecker {
 
 	/**
 	 * Updates a pattern in the cache with the passed in value
-	 * @param guildId 
-	 * @param toUpdate 
+	 * @param guildId
+	 * @param toUpdate
 	 */
 	updatePatternInCache = (guildId: string, toUpdate: FlaggedPattern) => {
 		const currentCached = MessageChecker.cache.get(guildId)
 		if (!currentCached) {
-			throw "Guild not found in cache"
+			throw 'Guild not found in cache'
 		}
 		if (!currentCached.hasKey(toUpdate.key)) {
-			throw "Pattern not found in cache"
+			throw 'Pattern not found in cache'
 		}
 		currentCached.updatePattern(toUpdate)
 	}
@@ -79,7 +80,9 @@ export class MessageChecker {
 		logger.debug(`Removing pattern key: "${toRemove}" with guildId: ${guildId}`)
 		if (MessageChecker.cache.has(guildId)) {
 			const cached = MessageChecker.cache.get(guildId)!
-			cached.patterns = [...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove)]
+			cached.patterns = [
+				...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove),
+			]
 		}
 	}
 
@@ -103,7 +106,7 @@ export class MessageChecker {
 					pattern.flaggedPattern.messageHistory.lastAuthorId = message.author.id
 					pattern.flaggedPattern.messageHistory.lastAuthorUsername =
 						message.author.username
-					pattern.flaggedPattern.messageHistory.prevLastFound =
+					pattern.flaggedPattern.messageHistory.dateTimePreviouslyFound =
 						pattern.flaggedPattern.messageHistory.lastFound
 					pattern.flaggedPattern.messageHistory.lastFound = new Date()
 
@@ -124,7 +127,7 @@ export class MessageChecker {
 	 */
 	buildResponse = (pattern: CachedPattern) => {
 		const date = pattern.flaggedPattern.messageHistory.lastFound
-		const lastFound = pattern.flaggedPattern.messageHistory.prevLastFound
+		const lastFound = pattern.flaggedPattern.messageHistory.dateTimePreviouslyFound
 		const timespan = (date as unknown as number) - (lastFound as unknown as number)
 
 		return pattern.flaggedPattern.response

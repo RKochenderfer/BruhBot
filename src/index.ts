@@ -7,10 +7,20 @@ import { getCommands } from './command-updater'
 import { MessageChecker as Checker } from './message-checker/message-checker'
 import * as listeners from './listeners'
 import * as utils from './utils/utils'
-import { logger } from './utils/logger'
-import Command from './command'
-import CommandRegister from './command-register'
-import EditPhrase from './commands/edit-phrase'
+import * as db from './db'
+import { logger } from './log/logger'
+import CommandRegister from './commandRegister'
+import EditPhrase from './commands/editPhrase'
+import { RequestMiddleware } from './middleware/requestMiddleware'
+import GuildCache from './caches/guildCache'
+import AddPhrase from './commands/addPhrase'
+import { Logger } from 'pino'
+import Bruh from './commands/bruh'
+import AddPins from './commands/addPins'
+import Clipshow from './commands/clipshow'
+import DiceRoller from './commands/diceRoller'
+import Hug from './commands/hug'
+import RemovePhrase from './commands/removePhrase'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -29,13 +39,18 @@ const botClient: BotClient = new Client({
 	partials: [Partials.Message, Partials.Channel, Partials.User],
 })
 
-botClient.on(Events.MessageCreate, listeners.onMessageCreate)
+const registerBotClientHandlers = () => {
+	const guildCache = GuildCache.getInstance()
+	const requestMiddleware = new RequestMiddleware(guildCache)
 
-botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
-
-botClient.on(Events.InteractionCreate, listeners.onInteractionCreate)
+	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
+	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
+	botClient.on(Events.InteractionCreate, requestMiddleware.onInteractionCreate)
+}
 
 const init = () => {
+	GuildCache.initialize(db.collections.servers!)
+	registerBotClientHandlers()
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
 	RenderQueue.timer = setInterval(async () => {
@@ -54,7 +69,39 @@ const init = () => {
 }
 
 const registerCommands = () => {
-	DiscordCommandRegister.register(new EditPhrase())
+	const guildCache = GuildCache.getInstance()
+	DiscordCommandRegister.register(
+		EditPhrase.name,
+		(logger: Logger) => new EditPhrase(guildCache, logger),
+	)
+	DiscordCommandRegister.register(
+		AddPhrase.name,
+		(logger: Logger) => new AddPhrase(guildCache, logger),
+	)
+	DiscordCommandRegister.register(
+		Bruh.name,
+		(logger: Logger) => new Bruh(guildCache, logger)
+	)
+	DiscordCommandRegister.register(
+		AddPins.name,
+		(logger: Logger) => new AddPins(guildCache, logger)
+	)
+	DiscordCommandRegister.register(
+		Clipshow.name,
+		(logger: Logger) => new Clipshow(guildCache, logger)
+	)
+	DiscordCommandRegister.register(
+		DiceRoller.name,
+		(logger: Logger) => new DiceRoller(logger)
+	)
+	DiscordCommandRegister.register(
+		Hug.name,
+		(logger: Logger) => new Hug(logger)
+	)
+	DiscordCommandRegister.register(
+		RemovePhrase.name,
+		(logger: Logger) => new RemovePhrase(guildCache, logger)
+	)
 }
 
 try {

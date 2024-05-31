@@ -1,5 +1,3 @@
 import { Collection } from 'mongodb'
-import Server from '../models/server'
+import Guild from '../models/guild'
 import { Nullable } from 'typescript-nullable'
-
-

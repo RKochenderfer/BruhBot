@@ -4,28 +4,32 @@ networks:
 services:
   bruhbot:
     depends_on:
-      - mongodb
-      - objection-engine
+        - mongodb
+        - objection-engine
     networks:
-      net:
+        net:
     container_name: bruhbot-dev
     image: ghcr.io/rkochenderfer/bruhbot:latest
-    volumes: 
-      - ../build:/app/build
-      - ../assets:/app/assets
-      - data:/app/data
-      - objection_engine:/app/output/
+    volumes:
+        - ../build:/usr/src/app/build
+        - ../assets:/usr/src/app/assets
+        - data:/usr/src/app/data
+        - objection_engine:/usr/src/app/output/
     environment:
-      - TOKEN=$TOKEN
-      - CLIENT_ID=$CLIENT_ID
-      - SAD_RATE=$SAD_RATE
-      - BOT_USER_ID=$BOT_USER_ID
-      - MONGODB_CONNSTRING=$MONGODB_CONNSTRING
-      - MONGO_USERNAME=$MONGO_USERNAME
-      - MONGO_PASSWORD=$MONGO_PASSWORD
-      - CHATBOT_URL=$CHATBOT_URL
-      - RENDER_LIMIT=$RENDER_LIMIT
-      - ENVIRONMENT=Dev
+        - TOKEN=${TOKEN}
+        - CLIENT_ID=${CLIENT_ID}
+        - SAD_RATE=${SAD_RATE}
+        - BOT_USER_ID=${BOT_USER_ID}
+        - MONGODB_CONNSTRING=${MONGODB_CONNSTRING}
+        - MONGO_USERNAME=${MONGO_USERNAME}
+        - MONGO_PASSWORD=${MONGO_PASSWORD}
+        - CHATBOT_URL=${CHATBOT_URL}
+        - RENDER_LIMIT=${RENDER_LIMIT}
+        - ENVIRONMENT=Dev
+        - NODE_ENV=development
+    ports:
+        - '9229:9229'
+    command: ['node', '--inspect=0.0.0.0:9229', './build/index.js']
   objection-engine:
     networks:
       net:
@@ -34,8 +38,8 @@ services:
     ports:
       - '5000:5000'
     volumes:
-      - ../objection-engine/assets:/app/assets/
-      - objection_engine:/app/output/
+      - ../objection-engine/assets:/usr/src/app/assets/
+      - objection_engine:/usr/src/app/output/
   mongodb:
     container_name: bruhbot-mongodb-dev
     networks:
@@ -54,4 +58,9 @@ services:
       - '27029:27017'
 volumes:
   data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./.temp
   objection_engine:

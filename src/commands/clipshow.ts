@@ -1,40 +1,42 @@
-import { CommandInteraction, SlashCommandBuilder } from 'discord.js'
-import * as db from '../db'
+import { SlashCommandBuilder } from 'discord.js'
+import GuildCache from '../caches/guildCache'
+import { Logger } from 'pino'
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
+import Command from '../command'
 
-module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('clipshow')
-		.setDescription(
-			'Gets a random quote from the pinned list or previously pinned comments',
-		),
+export default class Clipshow extends Command {
+	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+		const name = 'clipshow'
+		const data = new SlashCommandBuilder()
+			.setName('clipshow')
+			.setDescription(
+				'Gets a random quote from the pinned list or previously pinned comments',
+			)
 
-	async execute(interaction: CommandInteraction) {
-		const query = { guildId: interaction.guildId! }
+		super(name, data)
+	}
+
+	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		this._logger.debug('Started clipshow')
 		await interaction.deferReply()
 
-		try {
-			const result = await db.collections.servers?.findOne(query)
+		const guild = await this._guildCache.get(interaction.guildId!)
+		if (!guild) throw new Error('Guild not found')
 
-			if (!result) {
-				await interaction.followUp(
-					'There was an issue finding the server',
-				)
-				return
-			}
-
-			if (result.pins === null || result.pins?.length === 0) {
-				await interaction.followUp('There are no pinned messages')
-				return
-			}
-
-			const pinnedMessage =
-				result.pins![Math.floor(Math.random() * result.pins!.length)]
-			const author = await interaction.guild?.members.fetch(pinnedMessage.userId!)
-
-			await interaction.followUp(`> ${pinnedMessage.message}\n\t-**${author?.nickname ? author.nickname : author?.user.username}**`)
-		} catch (error) {
-			interaction.followUp('there was an error')
+		if (guild.pins == undefined || guild.pins?.length === 0) {
+			await interaction.followUp({ content: 'The server has no pins', ephemeral: true })
+			return
 		}
 
-	},
+		const randomPinnedMessage = guild.pins[Math.floor(Math.random() * guild.pins.length)]
+		const author = await interaction.guild?.members.fetch(randomPinnedMessage.userId!)
+
+		await interaction.followUp(
+			`> ${randomPinnedMessage.message}\n\t-**${
+				author?.nickname ? author.nickname : author?.user.username
+			}**`,
+		)
+
+		this._logger.debug('Completed clipshow')
+	}
 }

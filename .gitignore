@@ -5,3 +5,5 @@ build/
 socks.json
 config.json
 assets/
+.temp/
+coverage/

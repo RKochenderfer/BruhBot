@@ -1,20 +1,17 @@
 import {
-	ChatInputCommandInteraction,
 	RESTPostAPIChatInputApplicationCommandsJSONBody,
-	SlashCommandBuilder,
+	SlashCommandOptionsOnlyBuilder,
 } from 'discord.js'
-import { ChatInputCommandInteractionWrapper } from './extensions/chat-input-command-interaction-wrapper'
-import { ServerCollection } from './extensions/server-collection'
+import { ChatInputCommandInteractionWrapper } from './extensions/chatInputCommandInteractionWrapper'
 
 export default abstract class Command {
-	protected constructor(
+	constructor(
 		private _name: string,
-		private _data: Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>,
+		private _data: SlashCommandOptionsOnlyBuilder,
 	) {}
 
 	abstract execute: (
-		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
-		collection?: ServerCollection,
+		interaction: ChatInputCommandInteractionWrapper
 	) => Promise<void>
 
 	toJSON(): RESTPostAPIChatInputApplicationCommandsJSONBody {
@@ -25,7 +22,7 @@ export default abstract class Command {
 		return this._name
 	}
 
-	get data(): Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'> {
+	get data(): SlashCommandOptionsOnlyBuilder {
 		return this._data
 	}
 }

@@ -4,6 +4,6 @@ export default class FlaggedMessage {
 		public lastAuthorUsername: string = '',
 		public count: number = 0,
 		public lastFound: Date = new Date(),
-		public prevLastFound: Date = new Date(),
+		public dateTimePreviouslyFound: Date = new Date(),
 	) {}
 }

@@ -2,8 +2,8 @@ import * as fs from 'fs'
 import * as path from 'path'
 import BotClient from './models/bot-client'
 import { Message, REST, Routes } from 'discord.js'
-import { logger } from './utils/logger'
-import CommandRegister from './command-register'
+import { logger } from './log/logger'
+import CommandRegister from './commandRegister'
 
 /**
  * Reads the files in commands and builds the commands
@@ -13,19 +13,19 @@ export const getCommands = (client: BotClient, commandRegister: CommandRegister)
 	const commandsPath = path.join(__dirname, 'commands')
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
-	for (const file of commandFiles) {
-		const filePath = path.join(commandsPath, file)
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
-		const command = require(filePath)
+	// for (const file of commandFiles) {
+	// 	const filePath = path.join(commandsPath, file)
+	// 	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	// 	const command = require(filePath)
 
-		if ('data' in command && 'execute' in command) {
-			client.commands?.set(command.data.name, command)
-		} else {
-			logger.warn(
-				`The command at ${filePath} is missing a required "data" or "execute" property.`,
-			)
-		}
-	}
+	// 	if ('data' in command && 'execute' in command) {
+	// 		client.commands?.set(command.data.name, command)
+	// 	} else {
+	// 		logger.warn(
+	// 			`The command at ${filePath} is missing a required "data" or "execute" property.`,
+	// 		)
+	// 	}
+	// }
 
 	for (const command of commandRegister.generateCommandDetails()) {
 		client.commands?.set(command.name, command)
@@ -47,15 +47,15 @@ export const updateCommands = async (message: Message, commandRegister: CommandR
 		const commandsPath = path.join(__dirname, 'commands')
 		const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
-		for (const file of commandFiles) {
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
-			const command = require(`./commands/${file}`)
-			if (file.includes('edit')) {
-				continue
-			}
-			commands.push(command.data.toJSON())
-			logger.debug(command.data.toJSON())
-		}
+		// for (const file of commandFiles) {
+		// 	// eslint-disable-next-line @typescript-eslint/no-var-requires
+		// 	const command = require(`./commands/${file}`)
+		// 	if (file.includes('edit') || file.includes('add')) {
+		// 		continue
+		// 	}
+		// 	commands.push(command.data.toJSON())
+		// 	logger.debug(command.data.toJSON())
+		// }
 
 		for (let commandJSON of commandRegister.generateCommandDataJSON()) {
 			commands.push(commandJSON)

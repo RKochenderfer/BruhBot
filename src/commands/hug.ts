@@ -1,15 +1,17 @@
 import {
 	AttachmentBuilder,
-	ChatInputCommandInteraction,
 	SlashCommandBuilder,
 } from 'discord.js'
+import { Logger } from 'pino'
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
+import Command from '../command'
 
-const refusalRate = 10
-/**
- * Hug a mentioned user
- */
-module.exports = {
-	data: new SlashCommandBuilder()
+export default class Hug extends Command {
+	private readonly _refusalRate
+
+	constructor(private _logger: Logger) {
+		const name = 'hug'
+		const data = new SlashCommandBuilder()
 		.setName('hug')
 		.setDescription('Sends a hug to a user.')
 		.addMentionableOption(option =>
@@ -17,11 +19,18 @@ module.exports = {
 				.setName('user')
 				.setDescription('The mentioned user to hug')
 				.setRequired(true),
-		),
+		)
 
-	async execute(interaction: ChatInputCommandInteraction) {
+		super(name, data)
+
+		this._refusalRate = 10
+	}
+
+	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		this._logger.debug('Started hug')
+
 		const val = Math.floor(Math.random() * 100)
-		if (val > refusalRate) {
+		if (val > this._refusalRate) {
 			const words = [
 				'super ',
 				'big ',
@@ -34,17 +43,18 @@ module.exports = {
 			const randWord = words[Math.floor(Math.random() * words.length)]
 			const mentioned = interaction.options.getMentionable('user')
 			if (!mentioned) {
-				interaction.reply({
+				await interaction.reply({
 					content: 'Something went wrong when giving the hug :(.',
 				})
 			} else {
-				interaction.reply(`${mentioned} gets a ${randWord}hug`)
+				await interaction.reply(`${mentioned} gets a ${randWord}hug`)
 			}
 		} else {
-			// msg.channel.send('No')
 			const file = new AttachmentBuilder('./assets/gifs/no-i-dont-think-i-will.gif')
 
-			interaction.reply({ files: [file] })
+			await interaction.reply({ files: [file] })
 		}
-	},
+
+		this._logger.debug('Completed hug')
+	}
 }

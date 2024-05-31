@@ -1,14 +1,13 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
-import { ChatInputCommandInteractionWrapper } from '../extensions/chat-input-command-interaction-wrapper'
-import { ServerCollection } from '../extensions/server-collection'
+import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import Command from '../command'
-import FlaggedPattern from '../message-checker/flagged-pattern'
-import { logger } from '../utils/logger'
-import Server from '../models/server'
+import FlaggedPattern from '../message-checker/flaggedPattern'
 import { MessageChecker } from '..'
+import GuildCache from '../caches/guildCache'
+import { Logger } from 'pino'
 
 export default class EditPhrase extends Command {
-	constructor() {
+	constructor(private _guildCache: GuildCache, private _logger: Logger) {
 		const name = 'editphrase'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -45,19 +44,19 @@ export default class EditPhrase extends Command {
 
 	execute = async (
 		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
-		serverCollection?: ServerCollection,
 	): Promise<void> => {
+		this._logger.debug('Started to edit a phrase')
+
 		interaction = interaction as ChatInputCommandInteractionWrapper
 		const guildId = interaction.guildId!
 
 		if (interaction.isNotAdmin()) {
-			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
+			await interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
 			return
 		}
 		await interaction.deferReply()
 
 		const flaggedPatternToUpdate = FlaggedPattern.from(interaction.options)
-
 		if (!flaggedPatternToUpdate.areFlagsValid()) {
 			await interaction.followUp({
 				content:
@@ -67,29 +66,19 @@ export default class EditPhrase extends Command {
 			return
 		}
 
-		if (await serverCollection?.isServerInDb(guildId)) {
-			logger.info(
-				flaggedPatternToUpdate,
-				`Updating pattern key: ${flaggedPatternToUpdate.key}`,
-			)
-			await serverCollection?.upsertPattern(guildId, flaggedPatternToUpdate)
-		} else {
-			logger.warn('Attempt to update flagged patterns for server not added')
-			return
+		const guild = await this._guildCache.get(guildId)
+		const oldPattern = guild?.flaggedPatterns?.find(x => x.key === flaggedPatternToUpdate.key)
+		if (!oldPattern) {
+			throw new Error('Pattern key to be updated was not found')
 		}
+		flaggedPatternToUpdate.messageHistory = oldPattern.messageHistory
+		await this._guildCache.updateFlaggedPattern(guildId, flaggedPatternToUpdate)
 
-		MessageChecker.updatePatternInCache(interaction.guildId!, flaggedPatternToUpdate)
 		await interaction.followUp({
-			content: 'Your pattern has been created',
+			content: `The pattern with key ${flaggedPatternToUpdate.key} has been updated`,
 			ephemeral: true,
 		})
-	}
 
-	async addServer(server: Server, serverCollection: ServerCollection) {
-		await serverCollection.insertServer(server)
-		logger.info(
-			server.flaggedPatterns,
-			`Creating server document and adding pattern for guildId: ${server.guildId}`,
-		)
+		this._logger.debug('Completed editing phrase')
 	}
 }

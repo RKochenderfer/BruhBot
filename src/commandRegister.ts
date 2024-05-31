@@ -1,10 +1,12 @@
 import { RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
 import Command from './command';
+import { Logger } from 'pino';
+import { logger as baseLogger } from './log/logger'
 
 
 export default class CommandRegister {
 	private static _instance: CommandRegister
-	private readonly _commands: Set<Command> = new Set()
+	private readonly _commands: Map<string, (logger: Logger) => Command> = new Map()
 
 	private constructor() { }
 
@@ -12,19 +14,20 @@ export default class CommandRegister {
 		return this._instance || (this._instance = new this())
 	}
 
-	register = (command: Command) => {
-		this._commands.add(command)
+	register = (name: string, create: (logger: Logger) => Command) => {
+		this._commands.set(name, create)
 	}
 
 	*generateCommandDataJSON(): IterableIterator<RESTPostAPIChatInputApplicationCommandsJSONBody> {
-		for (const command of this._commands) {
+		for (const [name, construct] of this._commands) {
+			const command = construct(baseLogger)
 			yield command.toJSON()
 		}
 	}
 
 	*generateCommandDetails(): IterableIterator<Command> {
-		for (const command of this._commands) {
-			yield command
+		for (const [name, construct] of this._commands) {
+			yield construct(baseLogger)
 		}
 	}
 }

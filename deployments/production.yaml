@@ -25,7 +25,7 @@ services:
       - MONGO_PASSWORD=$MONGO_PASSWORD
       - CHATBOT_URL=$CHATBOT_URL
       - RENDER_LIMIT=$RENDER_LIMIT
-      - ENVIRONMENT=Prod
+      - ENVIRONMENT=Production
   objection-engine:
     networks:
       net:
@@ -56,4 +56,9 @@ services:
       - '27029:27017'
 volumes:
   data:
+    driver: local
+    driver_opts:
+        o: bind
+        type: none
+        device: /mnt/user/BruhBot/mongo
   objection_engine:
