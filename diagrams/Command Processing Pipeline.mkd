@@ -1,0 +1,38 @@
+```mermaid
+sequenceDiagram
+	title Handling generic message
+	actor User
+	User->>DiscordAPI: send message
+	DiscordAPI->>Bruhbot: receive message via webhook
+	Bruhbot->>RequestMiddleware: onMessageCreate
+	activate RequestMiddleware
+	RequestMiddleware->>GuildCache: has(guildId: string)
+	activate GuildCache
+	GuildCache->>+LFUCache: getCacheEntry
+	alt this._cacheMap.has(guildId)==true
+		LFUCache-->>GuildCache: Guild in cache
+		GuildCache-->>RequestMiddleware: true
+	else this._cacheMap.has(guildId)==false
+		LFUCache-->>-GuildCache: undefined
+		Note right of GuildCache: Guild was not in cache
+		GuildCache->>+GuildRepository: findGuild(guildId: string)
+		GuildRepository-->>-GuildCache: Guild | undefined
+		alt findResult==undefined
+			GuildCache-->>RequestMiddleware: false
+		else findResult==Guild
+			GuildCache-->>RequestMiddleware: true
+		end
+	end
+	opt hasGuild=false
+		RequestMiddleware-->>+Guild: <<Create>>
+		RequestMiddleware-)GuildCache: add(Guild)
+	end
+	deactivate GuildCache
+	RequestMiddleware->>+Middleware: next
+	Middleware->>+MessageMiddleware: execute
+	MessageMiddleware-->>MessageHandler: <<Create>>
+	activate MessageHandler
+	MessageMiddleware->>MessageHandler: execute
+	deactivate MessageHandler
+	deactivate RequestMiddleware
+```
