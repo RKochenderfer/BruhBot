@@ -1,4 +1,30 @@
-import { LFUCache } from '../../src/caches/LFUCache'
+import { LFUCache as Cache } from '../../src/caches/LFUCache'
+
+class LFUCache<T> extends Cache<T> {
+	constructor(initialCapacity: number) {
+		super(initialCapacity)
+	}
+
+	addCacheEntry(key: string, data: T) {
+		super.addCacheEntry(key, data)
+	}
+
+	getLFUKey(): string | undefined {
+		return super.getLFUKey()
+	}
+
+	getCacheEntry(key: string): T | undefined {
+		return super.getCacheEntry(key)
+	}
+
+	isFull(): boolean {
+		return super.isFull()
+	}
+
+	updateCacheEntry(keyToUpdate: string, data: T) {
+		super.updateCacheEntry(keyToUpdate, data)
+	}
+}
 
 describe('LFU Cache tests', () => {
 	test('add should add the entry to the cache map', () => {
@@ -208,7 +234,7 @@ describe('LFU Cache tests', () => {
 
 		// Act
 		lfuCache.updateCacheEntry(key, updatedEntry)
-		
+
 		// Assert
 		const result = lfuCache.getCacheEntry(key)
 

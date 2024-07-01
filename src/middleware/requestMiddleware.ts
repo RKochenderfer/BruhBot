@@ -1,34 +1,30 @@
-import { BaseGuildTextChannel, BaseInteraction, Message, TextBasedChannel, ThreadMemberFlagsBitField } from 'discord.js'
-import MessageMiddleware from './messageMiddleware'
 import LogSession from '../log/logSession'
-import { Middleware } from './middleware'
-import { logger } from '../log/logger'
-import GuildCache from '../caches/guildCache'
 import Guild from '../models/guild'
-import InteractionMiddleware from './interactionMiddleware'
-import PinMiddleware from './pinMiddleware'
+import GuildService from '../services/guildService'
+import Handler from '../handlers/handler'
+import { Logger } from 'pino'
 
-export class RequestMiddleware extends Middleware {
-	constructor(private _guildCache: GuildCache) {
-		super()
-	}
+export class RequestMiddleware {
+	constructor(
+		private _logger: Logger,
+		private _guildService: GuildService,
+		private _handler: Handler,
+		private _guild: Guild,
+	) {}
 
 	execute = async () => {
-		const logSession = super.getNextLogSessionInfo()
-		const childLogger = logger.child(logSession)
-		super.setLogger(childLogger)
-		super.setNextLogger(childLogger)
+		this.prepareRequest()
+		this._handler.execute()
+	}
 
-		this._logger?.debug('Started to handle request')
+	private prepareRequest = async () => {
+		this._logger.debug('Started to handle request')
 		try {
-			await this.addGuildToDatabaseIfNotPresent(logSession)
-			await super.next()
+			await this.addGuildToDatabaseIfNotPresent()
 		} catch (error) {
 			// handle uncaught errors
-			childLogger.error(error, 'Unhandled request processing error')
+			this._logger.error(error, 'Unhandled error while processing request')
 		} finally {
-			super.cleanup()
-
 			this._logger?.debug('Completed handling request')
 		}
 	}
@@ -37,40 +33,9 @@ export class RequestMiddleware extends Middleware {
 		throw new Error('Method not implemented.')
 	}
 
-	onMessageCreate = async (message: Message<boolean>) => {
-		const messageMiddleware = new MessageMiddleware(message, this._guildCache)
-		super.setNext(messageMiddleware)
-		await this.execute()
-	}
-
-	onInteractionCreate = async (baseInteraction: BaseInteraction) => {
-		const interactionMiddleware = new InteractionMiddleware(baseInteraction, this._guildCache)
-		super.setNext(interactionMiddleware)
-		await this.execute()
-	}
-
-	onChannelPinUpdate = async (channel: TextBasedChannel) => {
-		const pinMiddleware = new PinMiddleware(channel as BaseGuildTextChannel, this._guildCache)
-		super.setNext(pinMiddleware)
-		await this.execute()
-	}
-
-	private addGuildToDatabaseIfNotPresent = async (logSession: LogSession): Promise<void> => {
-		this._logger?.debug('Started to add guild to database if not present')
-
-		if (!(await this._guildCache.has(logSession.guildId))) {
-			const guild = this.createGuildFromLogSession(logSession)
-			this._logger?.info(guild, 'New guild created')
-			await this._guildCache.add(guild)
+	private addGuildToDatabaseIfNotPresent = async (): Promise<void> => {
+		if (!(await this._guildService.isNewGuild(this._guild.guildId))) {
+			await this._guildService.add(this._guild)
 		}
-
-		this._logger?.debug('Completed handling request')
-	}
-
-	private createGuildFromLogSession(logSession: LogSession): Guild {
-		return {
-			name: logSession.guildName,
-			guildId: logSession.guildId,
-		} as Guild
 	}
 }

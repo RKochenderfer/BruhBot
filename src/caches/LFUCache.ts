@@ -37,7 +37,7 @@ export class LFUCache<T> {
 	 * @param key
 	 * @param data
 	 */
-	public addCacheEntry(key: string, data: T) {
+	protected addCacheEntry(key: string, data: T) {
 		if (!this.isFull()) {
 			this._cacheMap.set(key, new CacheEntry(data))
 		} else {
@@ -51,7 +51,7 @@ export class LFUCache<T> {
 	 * get the least frequently used key
 	 * @returns the key of the least frequently used entry
 	 */
-	public getLFUKey(): string | undefined {
+	protected getLFUKey(): string | undefined {
 		let minValue = Number.MAX_SAFE_INTEGER
 		let keyToReturn: string | undefined = undefined
 
@@ -70,7 +70,7 @@ export class LFUCache<T> {
 	 * @param {T} key - the key of the entry to be returned
 	 * @returns
 	 */
-	public getCacheEntry(key: string): T | undefined {
+	protected getCacheEntry(key: string): T | undefined {
 		if (!this._cacheMap.has(key)) return undefined
 
 		const entry = this._cacheMap.get(key)!
@@ -84,7 +84,7 @@ export class LFUCache<T> {
 	 * Checks if the cache is full
 	 * @returns true if the map is full, false otherwise
 	 */
-	public isFull(): boolean {
+	protected isFull(): boolean {
 		return this._cacheMap.size === this._initialCapacity
 	}
 
@@ -93,8 +93,9 @@ export class LFUCache<T> {
 	 * @param {T} keyToUpdate - Key for the entry
 	 * @param {V} data - the data to replace the current one
 	 */
-	public updateCacheEntry(keyToUpdate: string, data: T) {
-		if (!this._cacheMap.has(keyToUpdate)) throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
+	protected updateCacheEntry(keyToUpdate: string, data: T) {
+		if (!this._cacheMap.has(keyToUpdate))
+			throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
 
 		const oldEntry = this._cacheMap.get(keyToUpdate)!
 		const newEntry = new CacheEntry(data)

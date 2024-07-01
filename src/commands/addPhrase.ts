@@ -75,7 +75,7 @@ export default class AddPhrase extends Command {
 		interaction: ChatInputCommandInteractionWrapper,
 		flaggedPattern: FlaggedPattern,
 	) => {
-		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
+		const currentGuild = this._guildCache.get(interaction.guildId!)
 		const updatedGuild = {
 			...currentGuild,
 			flaggedPatterns: [flaggedPattern, ...(currentGuild?.flaggedPatterns ?? [])],

@@ -4,14 +4,14 @@ import Handler from './handler'
 import { updateCommands } from '../command-updater'
 import { DiscordCommandRegister } from '..'
 import OnAceHandler from './onAceHandler'
-import GuildCache from '../caches/guildCache'
 import FlaggedPatternHelper from '../message-checker/flaggedPatternHelper'
+import GuildService from '../services/guildService'
 
 export default class MessageHandler implements Handler {
 	constructor(
 		private _logger: Logger,
 		private _message: Message<boolean>,
-		private _guildCache: GuildCache,
+		private _guildService: GuildService,
 	) {}
 
 	async execute() {
@@ -36,7 +36,7 @@ export default class MessageHandler implements Handler {
 	}
 
 	private handleFlaggedMessages = async (message: string): Promise<void> => {
-		const guild = await this._guildCache.get(this._message.guildId!)
+		const guild = await this._guildService.get(this._message.guildId!)
 
 		if (!guild) throw new Error('Guild in message was not found')
 
@@ -48,7 +48,7 @@ export default class MessageHandler implements Handler {
 		if (isFlagged) {
 			this._logger.debug(flaggedPatternHelper.matchedFlag, `Flagged message found in guild ${this._message.guild?.name} ${this._message.guildId}`)
 			flaggedPatternHelper.updateHistory(this._message)
-			await this._guildCache.updateFlaggedPattern(guild.guildId, flaggedPatternHelper.matchedFlag!)
+			await this._guildService.updateFlaggedPattern(guild.guildId, flaggedPatternHelper.matchedFlag!)
 			await this._message.channel.send(flaggedPatternHelper.buildMatchedResponse())
 		}
 	}

@@ -1,19 +1,18 @@
 import { Collection } from 'mongodb'
 import FlaggedPattern from '../message-checker/flaggedPattern'
 import Guild from '../models/guild'
-import { Nullable } from 'typescript-nullable'
 import Pin from '../models/pin'
 
-export class GuildCollection {
+export class GuildRepository {
 	private existingGuilds = new Set()
 
 	private constructor(private _serverCollection: Collection<Guild>) {}
 
-	static from = (guildCollection: Collection<Guild>): GuildCollection => {
-		return new GuildCollection(guildCollection)
+	static from = (guildCollection: Collection<Guild>): GuildRepository => {
+		return new GuildRepository(guildCollection)
 	}
 
-	findGuild = async (guildId: string): Promise<Nullable<Guild>> => {
+	findGuild = async (guildId: string): Promise<Guild | undefined> => {
 		return (await this._serverCollection.findOne({ guildId: guildId })) as Guild
 	}
 
@@ -66,7 +65,7 @@ export class GuildCollection {
 	removePattern = async (guildId: string, keyToBeRemoved: string): Promise<void> => {
 		await this._serverCollection.updateOne(
 			{ guildId: guildId },
-			{ $pull: { flaggedPatterns: { key: keyToBeRemoved } } }
+			{ $pull: { flaggedPatterns: { key: keyToBeRemoved } } },
 		)
 	}
 
@@ -75,9 +74,9 @@ export class GuildCollection {
 			{ guildId: guildId },
 			{
 				$set: {
-					pins: pins
-				}
-			}
+					pins: pins,
+				},
+			},
 		)
 	}
 
@@ -107,7 +106,7 @@ export class GuildCollection {
 			return true
 		}
 
-		if (Nullable.isSome(await this.findGuild(guildId))) {
+		if ((await this.findGuild(guildId)) !== undefined ) {
 			this.existingGuilds.add(guildId)
 			return true
 		}

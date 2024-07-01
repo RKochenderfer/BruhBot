@@ -1,11 +1,23 @@
-import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js'
+import {
+	BaseGuildTextChannel,
+	BaseInteraction,
+	CacheType,
+	ChatInputCommandInteraction,
+	Client,
+	Collection,
+	Events,
+	GatewayIntentBits,
+	Interaction,
+	Message,
+	Partials,
+	TextBasedChannel,
+} from 'discord.js'
 import BotClient from './models/bot-client'
 import { connectToDatabase } from './db'
 import { AppState } from './models/state'
 import { RenderQueue } from './ace'
 import { getCommands } from './command-updater'
 import { MessageChecker as Checker } from './message-checker/message-checker'
-import * as listeners from './listeners'
 import * as utils from './utils/utils'
 import * as db from './db'
 import { logger } from './log/logger'
@@ -21,6 +33,12 @@ import Clipshow from './commands/clipshow'
 import DiceRoller from './commands/diceRoller'
 import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
+import LogSession from './log/logSession'
+import GuildService from './services/guildService'
+import MessageHandler from './handlers/messageHandler'
+import Guild from './models/guild'
+import PinHandler from './handlers/pinHandler'
+import InteractionHandler from './handlers/interactionHandler'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -40,16 +58,73 @@ const botClient: BotClient = new Client({
 })
 
 const registerBotClientHandlers = () => {
-	const guildCache = GuildCache.getInstance()
-	const requestMiddleware = new RequestMiddleware(guildCache)
+	botClient.on(Events.MessageCreate, (message: Message<boolean>) => onMessageCreate(message))
 
-	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
-	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
-	botClient.on(Events.InteractionCreate, requestMiddleware.onInteractionCreate)
+	botClient.on(Events.ChannelPinsUpdate, (channelWithPinsUpdated: TextBasedChannel) =>
+		onChannelPinsUpdate(channelWithPinsUpdated),
+	)
+	botClient.on(Events.InteractionCreate, interaction => onInteractionCreate(interaction))
+}
+
+const onMessageCreate = (message: Message<boolean>) => {
+	const logSession = LogSession.fromMessage(message)
+	const loggerForRequest = logger.child(logSession)
+	const guildCache = GuildCache.getInstance()
+	const guildService = new GuildService(loggerForRequest, db.collections.servers!, guildCache)
+	const messageHandler = new MessageHandler(loggerForRequest, message, guildService)
+
+	const requestMiddleware = new RequestMiddleware(
+		loggerForRequest,
+		guildService,
+		messageHandler,
+		createGuildFromLogSession(logSession),
+	)
+	requestMiddleware.execute()
+}
+
+const onChannelPinsUpdate = (channelWithPinsUpdated: TextBasedChannel) => {
+	const baseGuildTextChannel = channelWithPinsUpdated as BaseGuildTextChannel
+	const logSession = LogSession.fromBaseGuildTextChannel(baseGuildTextChannel)
+	const loggerForRequest = logger.child(logSession)
+	const guildCache = GuildCache.getInstance()
+	const guildService = new GuildService(loggerForRequest, db.collections.servers!, guildCache)
+	const pinHandler = new PinHandler(loggerForRequest, baseGuildTextChannel, guildCache)
+
+	const requestMiddleware = new RequestMiddleware(
+		loggerForRequest,
+		guildService,
+		pinHandler,
+		createGuildFromLogSession(logSession),
+	)
+	requestMiddleware.execute()
+}
+
+const onInteractionCreate = (interaction: Interaction<CacheType>) => {
+	const baseInteraction = interaction as BaseInteraction
+	const logSession = LogSession.fromBaseInteraction(baseInteraction)
+	const loggerForRequest = logger.child(logSession)
+	const guildCache = GuildCache.getInstance()
+	const guildService = new GuildService(loggerForRequest, db.collections.servers!, guildCache)
+	const pinHandler = new InteractionHandler(loggerForRequest, baseInteraction as ChatInputCommandInteraction)
+
+	const requestMiddleware = new RequestMiddleware(
+		loggerForRequest,
+		guildService,
+		pinHandler,
+		createGuildFromLogSession(logSession),
+	)
+	requestMiddleware.execute()
+}
+
+const createGuildFromLogSession = (logSession: LogSession): Guild => {
+	return {
+		name: logSession.guildName,
+		guildId: logSession.guildId,
+	} as Guild
 }
 
 const init = () => {
-	GuildCache.initialize(db.collections.servers!)
+	GuildCache.initialize()
 	registerBotClientHandlers()
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
@@ -78,29 +153,20 @@ const registerCommands = () => {
 		AddPhrase.name,
 		(logger: Logger) => new AddPhrase(guildCache, logger),
 	)
-	DiscordCommandRegister.register(
-		Bruh.name,
-		(logger: Logger) => new Bruh(guildCache, logger)
-	)
+	DiscordCommandRegister.register(Bruh.name, (logger: Logger) => new Bruh(guildCache, logger))
 	DiscordCommandRegister.register(
 		AddPins.name,
-		(logger: Logger) => new AddPins(guildCache, logger)
+		(logger: Logger) => new AddPins(guildCache, logger),
 	)
 	DiscordCommandRegister.register(
 		Clipshow.name,
-		(logger: Logger) => new Clipshow(guildCache, logger)
+		(logger: Logger) => new Clipshow(guildCache, logger),
 	)
-	DiscordCommandRegister.register(
-		DiceRoller.name,
-		(logger: Logger) => new DiceRoller(logger)
-	)
-	DiscordCommandRegister.register(
-		Hug.name,
-		(logger: Logger) => new Hug(logger)
-	)
+	DiscordCommandRegister.register(DiceRoller.name, (logger: Logger) => new DiceRoller(logger))
+	DiscordCommandRegister.register(Hug.name, (logger: Logger) => new Hug(logger))
 	DiscordCommandRegister.register(
 		RemovePhrase.name,
-		(logger: Logger) => new RemovePhrase(guildCache, logger)
+		(logger: Logger) => new RemovePhrase(guildCache, logger),
 	)
 }
 
