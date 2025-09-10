@@ -1,21 +1,21 @@
-# FROM node:lts-alpine
-# LABEL org.opencontainers.image.source https://github.com/RKochenderfer/BruhBot
-# RUN apk add --no-cache ffmpeg && npm install typescript -g && npm install -g pnpm
-# #RUN apk add python3 make gcc g++ && apk add --no-cache ffmpeg && npm install typescript -g
-# WORKDIR /usr/src/app
-# COPY . .
-# # RUN npm install --production && tsc && apk del python3 make gcc g++
-# RUN pnpm install --production && tsc && rm -rf src/
+# 1) Builder stage
+FROM node:lts-alpine AS builder
+RUN apk add --no-cache python3 make g++ libc-dev ffmpeg \
+    && npm install -g typescript pnpm
 
-# CMD ["node", "./build/index.js"]
-FROM node:lts-alpine
-LABEL org.opencontainers.image.source https://github.com/RKochenderfer/BruhBot
-RUN apk add --no-cache ffmpeg && npm install typescript -g && npm install -g pnpm
-#RUN apk add python3 make gcc g++ && apk add --no-cache ffmpeg && npm install typescript -g
 WORKDIR /usr/src/app
 COPY . .
-# RUN npm install --production && tsc && apk del python3 make gcc g++
-RUN pnpm install --production --silent && tsc && rm -rf src/
-RUN chown -R node /usr/src/app
+RUN pnpm install --production --silent \
+    && tsc \
+    && rm -rf src/
+
+# 2) Runtime stage
+FROM node:lts-alpine
+RUN apk add --no-cache ffmpeg
+
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/build ./build
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
 USER node
-CMD ["node", "./build/index.js"]
+CMD ["node", "build/index.js"]
