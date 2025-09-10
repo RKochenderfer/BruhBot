@@ -1,4 +1,4 @@
-import { Message } from 'discord.js'
+import { Message, TextChannel } from 'discord.js'
 import { Logger } from 'pino'
 import Handler from './handler'
 import { updateCommands } from '../command-updater'
@@ -49,7 +49,8 @@ export default class MessageHandler implements Handler {
 			this._logger.debug(flaggedPatternHelper.matchedFlag, `Flagged message found in guild ${this._message.guild?.name} ${this._message.guildId}`)
 			flaggedPatternHelper.updateHistory(this._message)
 			await this._guildCache.updateFlaggedPattern(guild.guildId, flaggedPatternHelper.matchedFlag!)
-			await this._message.channel.send(flaggedPatternHelper.buildMatchedResponse())
+			const channel = this._message.channel as TextChannel
+			await channel.send(flaggedPatternHelper.buildMatchedResponse())
 		}
 	}
 
