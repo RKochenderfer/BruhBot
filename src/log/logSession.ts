@@ -34,6 +34,16 @@ export default class LogSession {
 		return this._displayName
 	}
 
+	public static new(): LogSession {
+		return new LogSession(
+			'',
+			crypto.randomUUID(),
+			'',
+			'',
+			''
+		)
+	}
+
 	public static fromMessage(message: Message<boolean>): LogSession {
 		Guard.Against.EmptyOrWhitespace(message.author.username)
 		Guard.Against.EmptyOrWhitespace(message.author.id)

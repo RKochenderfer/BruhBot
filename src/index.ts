@@ -1,4 +1,12 @@
-import { Client, Collection, Events, GatewayIntentBits, Partials } from 'discord.js'
+import {
+	Client,
+	Collection,
+	Events,
+	GatewayIntentBits,
+	Message,
+	OmitPartialGroupDMChannel,
+	Partials,
+} from 'discord.js'
 import BotClient from './models/bot-client'
 import { connectToDatabase } from './db'
 import { AppState } from './models/state'
@@ -21,9 +29,16 @@ import Clipshow from './commands/clipshow'
 import DiceRoller from './commands/diceRoller'
 import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
-import { EventBuss } from './events'
-import { BotMessageReceivedHandler, UserMessageReceivedHandler } from './eventHandlers'
+import { EventBuss as EventBus } from './events'
+import {
+	BotMessageReceivedHandler,
+	MessageReceivedHandler,
+	UserMessageReceivedHandler,
+} from './eventHandlers'
 import { NotificationBuilder } from './extensions/notificationBuilder'
+import LogSession from './log/logSession'
+import { CommandUpdaterService } from './services/commandUpdaterService'
+import { DeployMessageReceivedHandler } from './eventHandlers/deployMessageReceivedHandler'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -42,28 +57,34 @@ const botClient: BotClient = new Client({
 	partials: [Partials.Message, Partials.Channel, Partials.User],
 })
 
-const registerBotClientHandlers = (eventBus: EventBuss) => {
+const registerBotClientHandlers = (eventBus: EventBus) => {
 	const guildCache = GuildCache.getInstance()
 	const requestMiddleware = new RequestMiddleware(guildCache)
 
 	botClient.on(Events.MessageCreate, async message => {
 		await requestMiddleware.onMessageCreate(message)
-		const notification = message.author?.bot
-			? NotificationBuilder.buildNotification('botMessageReceived', message)
-			: NotificationBuilder.buildNotification('userMessageReceived', message)
-		if (!notification) {
-			logger.error('Failed to build notification for messageReceived event')
-			return
-		} else {
-			await eventBus.publish(notification.event, notification)
-		}
+		await publishMessage(eventBus, message)
 	})
 	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
 	botClient.on(Events.InteractionCreate, requestMiddleware.onInteractionCreate)
 }
 
+const publishMessage = async (eventBus: EventBus, message: Message<boolean>) => {
+	const childLogger = logger.child(LogSession.fromMessage(message))
+	try {
+		const notification = NotificationBuilder.buildNotification('messageReceived', message)
+		if (!notification) {
+			childLogger.error('Failed to build notification for messageReceived event')
+		} else {
+			await eventBus.publish(notification.event, notification, childLogger)
+		}
+	} catch (error) {
+		childLogger.error(error, 'Error publishing messageReceived event')
+	}
+}
+
 const init = () => {
-	const eventBus = EventBuss.getinstance()
+	const eventBus = EventBus.getinstance()
 
 	GuildCache.initialize(db.collections.servers!)
 	setupSubscribers(eventBus)
@@ -88,13 +109,19 @@ const init = () => {
 /**
  * Sets up the event bus and subscriptions for events
  */
-const setupSubscribers = (eventBus: EventBuss) => {
-	const userMessageReceivedHandler = new UserMessageReceivedHandler(logger)
-	const botMessageReceivedHandler = new BotMessageReceivedHandler(logger)
+const setupSubscribers = (eventBus: EventBus) => {
+	const commandUpdaterService = new CommandUpdaterService(logger, DiscordCommandRegister)
+
+	const messageReceivedHandler = new MessageReceivedHandler(eventBus)
+	const userMessageReceivedHandler = new UserMessageReceivedHandler()
+	const botMessageReceivedHandler = new BotMessageReceivedHandler()
+	const deployMessageReceivedHandler = new DeployMessageReceivedHandler(commandUpdaterService)
 
 	// setup subscriptions
+	eventBus.subscribe('messageReceived', messageReceivedHandler.handle)
 	eventBus.subscribe('userMessageReceived', userMessageReceivedHandler.handle)
 	eventBus.subscribe('botMessageReceived', botMessageReceivedHandler.handle)
+	eventBus.subscribe('deployMessageReceived', deployMessageReceivedHandler.handle)
 }
 
 const registerCommands = () => {

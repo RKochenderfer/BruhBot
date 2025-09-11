@@ -10,23 +10,6 @@ import CommandRegister from './commandRegister'
  * @param client The bot client instance
  */
 export const getCommands = (client: BotClient, commandRegister: CommandRegister) => {
-	const commandsPath = path.join(__dirname, 'commands')
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
-
-	// for (const file of commandFiles) {
-	// 	const filePath = path.join(commandsPath, file)
-	// 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-	// 	const command = require(filePath)
-
-	// 	if ('data' in command && 'execute' in command) {
-	// 		client.commands?.set(command.data.name, command)
-	// 	} else {
-	// 		logger.warn(
-	// 			`The command at ${filePath} is missing a required "data" or "execute" property.`,
-	// 		)
-	// 	}
-	// }
-
 	for (const command of commandRegister.generateCommandDetails()) {
 		client.commands?.set(command.name, command)
 	}

@@ -1,19 +1,20 @@
 import { AsyncLocalStorage } from 'async_hooks'
-import { DiscordEvent, Notification } from '.';
+import { DiscordEvent, Notification } from '.'
+import { Logger } from 'pino'
 
 const isPublishingStorage = new AsyncLocalStorage<{ isPublishing: boolean }>()
 
-type EventHandler = (notification: Notification<any>) => Promise<void>
+type EventHandler = (logger: Logger, notification: Notification<any>) => Promise<void>
 
 /**
  * A simple event bus implementation for subscribing to and publishing events.
  */
 export class EventBuss {
-	private static instance?: EventBuss;
+	private static instance?: EventBuss
 	private events: Map<string, EventHandler[]> = new Map()
 
 	private constructor() {}
-	
+
 	/**
 	 * Retrieve the singleton instance of the EventBus
 	 * @returns an instance of EventBus
@@ -42,21 +43,15 @@ export class EventBuss {
 	 * @param eventType
 	 * @param data
 	 */
-	async publish(eventType: DiscordEvent, data: Notification<any>) {	
-		// TODO: Double check that this is correct
-		if (this.isPublishing) {
-			throw new Error('Cannot publish events while already publishing')
-		}
-		await isPublishingStorage.run({ isPublishing: true }, async () => {
-			const handlers = this.events.get(eventType) || []
-			for (const handler of handlers) {
-				try {
-					await handler(data)
-				} catch (error) {
-					console.error(`Error in event handler for event type "${eventType}":`, error)
-				}
+	async publish(eventType: DiscordEvent, data: Notification<any>, logger: Logger) {
+		const handlers = this.events.get(eventType) || []
+		for (const handler of handlers) {
+			try {
+				await handler(logger, data)
+			} catch (error) {
+				console.error(`Error in event handler for event type "${eventType}":`, error)
 			}
-		})
+		}
 	}
 
 	/**
