@@ -21,6 +21,9 @@ import Clipshow from './commands/clipshow'
 import DiceRoller from './commands/diceRoller'
 import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
+import { EventBuss } from './events'
+import { BotMessageReceivedHandler, UserMessageReceivedHandler } from './eventHandlers'
+import { NotificationBuilder } from './extensions/notificationBuilder'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -39,18 +42,32 @@ const botClient: BotClient = new Client({
 	partials: [Partials.Message, Partials.Channel, Partials.User],
 })
 
-const registerBotClientHandlers = () => {
+const registerBotClientHandlers = (eventBus: EventBuss) => {
 	const guildCache = GuildCache.getInstance()
 	const requestMiddleware = new RequestMiddleware(guildCache)
 
-	botClient.on(Events.MessageCreate, requestMiddleware.onMessageCreate)
+	botClient.on(Events.MessageCreate, async message => {
+		await requestMiddleware.onMessageCreate(message)
+		const notification = message.author?.bot
+			? NotificationBuilder.buildNotification('botMessageReceived', message)
+			: NotificationBuilder.buildNotification('userMessageReceived', message)
+		if (!notification) {
+			logger.error('Failed to build notification for messageReceived event')
+			return
+		} else {
+			await eventBus.publish(notification.event, notification)
+		}
+	})
 	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
 	botClient.on(Events.InteractionCreate, requestMiddleware.onInteractionCreate)
 }
 
 const init = () => {
+	const eventBus = EventBuss.getinstance()
+
 	GuildCache.initialize(db.collections.servers!)
-	registerBotClientHandlers()
+	setupSubscribers(eventBus)
+	registerBotClientHandlers(eventBus)
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
 	RenderQueue.timer = setInterval(async () => {
@@ -68,6 +85,18 @@ const init = () => {
 	botClient.login(process.env.TOKEN)
 }
 
+/**
+ * Sets up the event bus and subscriptions for events
+ */
+const setupSubscribers = (eventBus: EventBuss) => {
+	const userMessageReceivedHandler = new UserMessageReceivedHandler(logger)
+	const botMessageReceivedHandler = new BotMessageReceivedHandler(logger)
+
+	// setup subscriptions
+	eventBus.subscribe('userMessageReceived', userMessageReceivedHandler.handle)
+	eventBus.subscribe('botMessageReceived', botMessageReceivedHandler.handle)
+}
+
 const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
 	DiscordCommandRegister.register(
@@ -78,29 +107,20 @@ const registerCommands = () => {
 		AddPhrase.name,
 		(logger: Logger) => new AddPhrase(guildCache, logger),
 	)
-	DiscordCommandRegister.register(
-		Bruh.name,
-		(logger: Logger) => new Bruh(guildCache, logger)
-	)
+	DiscordCommandRegister.register(Bruh.name, (logger: Logger) => new Bruh(guildCache, logger))
 	DiscordCommandRegister.register(
 		AddPins.name,
-		(logger: Logger) => new AddPins(guildCache, logger)
+		(logger: Logger) => new AddPins(guildCache, logger),
 	)
 	DiscordCommandRegister.register(
 		Clipshow.name,
-		(logger: Logger) => new Clipshow(guildCache, logger)
+		(logger: Logger) => new Clipshow(guildCache, logger),
 	)
-	DiscordCommandRegister.register(
-		DiceRoller.name,
-		(logger: Logger) => new DiceRoller(logger)
-	)
-	DiscordCommandRegister.register(
-		Hug.name,
-		(logger: Logger) => new Hug(logger)
-	)
+	DiscordCommandRegister.register(DiceRoller.name, (logger: Logger) => new DiceRoller(logger))
+	DiscordCommandRegister.register(Hug.name, (logger: Logger) => new Hug(logger))
 	DiscordCommandRegister.register(
 		RemovePhrase.name,
-		(logger: Logger) => new RemovePhrase(guildCache, logger)
+		(logger: Logger) => new RemovePhrase(guildCache, logger),
 	)
 }
 
