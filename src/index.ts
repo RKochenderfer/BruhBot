@@ -1,10 +1,11 @@
 import {
+	Base,
+	BaseInteraction,
 	Client,
 	Collection,
 	Events,
 	GatewayIntentBits,
 	Message,
-	OmitPartialGroupDMChannel,
 	Partials,
 } from 'discord.js'
 import BotClient from './models/bot-client'
@@ -40,6 +41,7 @@ import { NotificationBuilder } from './extensions/notificationBuilder'
 import LogSession from './log/logSession'
 import { CommandUpdaterService } from './services/commandUpdaterService'
 import { DeployMessageReceivedHandler } from './eventHandlers/deployMessageReceivedHandler'
+import { InteractionCreatedReceivedHandler } from './eventHandlers/interactionCreatedReceivedHandler'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -67,7 +69,9 @@ const registerBotClientHandlers = (eventBus: EventBus) => {
 		await publishMessage(eventBus, message)
 	})
 	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
-	botClient.on(Events.InteractionCreate, requestMiddleware.onInteractionCreate)
+	botClient.on(Events.InteractionCreate, async baseInteraction => {
+		await publishInteraction(eventBus, baseInteraction)
+	})
 }
 
 const publishMessage = async (eventBus: EventBus, message: Message<boolean>) => {
@@ -81,6 +85,23 @@ const publishMessage = async (eventBus: EventBus, message: Message<boolean>) => 
 		}
 	} catch (error) {
 		childLogger.error(error, 'Error publishing messageReceived event')
+	}
+}
+
+const publishInteraction = async (
+	eventBus: EventBus,
+	interaction: BaseInteraction,
+) => {
+	const childLogger = logger.child(LogSession.fromBaseInteraction(interaction))
+	try {
+		const notification = NotificationBuilder.buildNotification('interactionCreated', interaction)
+		if (!notification) {
+			childLogger.error('Failed to build notification for interactionCreated event')
+		} else {
+			await eventBus.publish(notification.event, notification, childLogger)
+		}
+	} catch (error) {
+		childLogger.error(error, 'Error publishing interactionCreated event')
 	}
 }
 
@@ -114,10 +135,11 @@ const setupSubscribers = (eventBus: EventBus) => {
 	const commandUpdaterService = new CommandUpdaterService(logger, DiscordCommandRegister)
 
 	const messageReceivedHandler = new MessageReceivedHandler(eventBus)
-	const userMessageReceivedHandler = new UserMessageReceivedHandler()
+	const userMessageReceivedHandler = new UserMessageReceivedHandler(GuildCache.getInstance())
 	const botMessageReceivedHandler = new BotMessageReceivedHandler()
 	const deployMessageReceivedHandler = new DeployMessageReceivedHandler(commandUpdaterService)
 	const aceMessageReceivedHandler = new AceMessageReceivedHandler()
+	const interactionCreatedReceivedHandler = new InteractionCreatedReceivedHandler()
 
 	// setup subscriptions
 	eventBus.subscribe('messageReceived', messageReceivedHandler.handle)
@@ -125,6 +147,7 @@ const setupSubscribers = (eventBus: EventBus) => {
 	eventBus.subscribe('botMessageReceived', botMessageReceivedHandler.handle)
 	eventBus.subscribe('deployMessageReceived', deployMessageReceivedHandler.handle)
 	eventBus.subscribe('aceRenderRequestMessageReceived', aceMessageReceivedHandler.handle)
+	eventBus.subscribe('interactionCreated', interactionCreatedReceivedHandler.handle)
 }
 
 const registerCommands = () => {
