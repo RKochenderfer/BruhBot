@@ -11,9 +11,9 @@ services:
       net:
     image: ghcr.io/rkochenderfer/bruhbot:latest
     volumes: 
-      - data:/app/data
+      - data:/usr/src/app/data
       - /mnt/user/appdata/bruhbot/assets:/app/assets
-      - objection_engine:/app/output
+      - objection_engine:/usr/src/app/output/
     restart: always
     environment:
       - TOKEN=$TOKEN
@@ -35,7 +35,6 @@ services:
     ports:
       - '5000:5000'
     volumes:
-      - /mnt/user/appdata/bruhbot/objection-engine/assets:/app/assets/
       - objection_engine:/app/output/
   mongodb:
     container_name: bruhbot-mongodb
@@ -62,3 +61,8 @@ volumes:
         type: none
         device: /mnt/user/BruhBot/mongo
   objection_engine:
+    driver: local
+    driver_opts:
+        o: bind
+        type: none
+        device: /mnt/user/appdata/bruhbot/objection-engine

@@ -40,7 +40,6 @@ services:
       - '5678:5678'
     volumes:
       - ../objection-engine/app.py:/app/app.py
-      - ../objection-engine/assets:/usr/src/app/assets/
       - objection_engine:/app/output/
     environment:
       - DEBUG=True
