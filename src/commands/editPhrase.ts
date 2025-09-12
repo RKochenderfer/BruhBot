@@ -6,7 +6,7 @@ import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
 
 export default class EditPhrase extends Command {
-	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+	constructor(private _guildCache: GuildCache) {
 		const name = 'editphrase'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -26,8 +26,8 @@ export default class EditPhrase extends Command {
 		super(name, data)
 	}
 
-	execute = async (interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.debug('Started to edit a phrase')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.debug('Started to edit a phrase')
 
 		interaction = interaction as ChatInputCommandInteractionWrapper
 		const guildId = interaction.guildId!
@@ -63,6 +63,6 @@ export default class EditPhrase extends Command {
 			ephemeral: true,
 		})
 
-		this._logger.debug('Completed editing phrase')
+		logger.debug('Completed editing phrase')
 	}
 }

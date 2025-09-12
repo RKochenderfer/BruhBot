@@ -5,7 +5,7 @@ import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputComma
 import Command from '../command'
 
 export default class Clipshow extends Command {
-	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+	constructor(private _guildCache: GuildCache) {
 		const name = 'clipshow'
 		const data = new SlashCommandBuilder()
 			.setName('clipshow')
@@ -14,8 +14,8 @@ export default class Clipshow extends Command {
 		super(name, data)
 	}
 
-	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.debug('Started clipshow')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.debug('Started clipshow')
 		await interaction.deferReply()
 
 		const guild = await this._guildCache.get(interaction.guildId!)
@@ -31,6 +31,6 @@ export default class Clipshow extends Command {
 
 		await interaction.followUp(`> ${randomPinnedMessage.message}\n\t-**${author?.nickname ? author.nickname : author?.user.username}**`)
 
-		this._logger.debug('Completed clipshow')
+		logger.debug('Completed clipshow')
 	}
 }

@@ -6,23 +6,23 @@ import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputComma
 import Pin from '../models/pin'
 
 export default class AddPins extends Command {
-	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+	constructor(private _guildCache: GuildCache) {
 		const name = 'addpins'
 		const data = new SlashCommandBuilder().setName('addpins').setDescription('Adds all pinned comments to quote database')
 
 		super(name, data)
 	}
 
-	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.debug('Started to add pins')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.debug('Started to add pins')
 
 		const pins = await this.aggregatePins(interaction.guild!.channels.cache)
 		await this._guildCache.updatePins(interaction.guildId!, pins)
 
-		this._logger.debug('Completed adding pins')
+		logger.debug('Completed adding pins')
 	}
 
-	private aggregatePins = async (guildChannels: Collection<string, GuildBasedChannel>): Promise<Pin[]> => {
+	private async aggregatePins(guildChannels: Collection<string, GuildBasedChannel>): Promise<Pin[]> {
 		let pins: Pin[] = []
 
 		for (const [_channelId, guildBaseChannel] of guildChannels) {

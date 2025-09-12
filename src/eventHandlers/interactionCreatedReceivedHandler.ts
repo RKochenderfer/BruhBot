@@ -17,7 +17,7 @@ export class InteractionCreatedReceivedHandler implements Handler {
 			// Interaction handling logic would go here
 			const command = this.getCommand(logger, data.data)
 			logger.debug(`Executing command: ${command.name}`)
-			await command.execute(ChatInputCommandInteractionWrapper.from(data.data))
+			await command.execute(logger, ChatInputCommandInteractionWrapper.from(data.data))
 		} catch (error) {
 			this.resolveErroredInteraction(data.data)
 			logger.error(error, 'Error occurred while handling interaction created event')

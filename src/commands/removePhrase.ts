@@ -5,7 +5,7 @@ import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
 
 export default class RemovePhrase extends Command {
-	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+	constructor(private _guildCache: GuildCache) {
 		const name = 'rmphrase'
 		const data = new SlashCommandBuilder()
 			.setName('rmphrase')
@@ -15,8 +15,8 @@ export default class RemovePhrase extends Command {
 		super(name, data)
 	}
 
-	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.info('Started to remove flagged phrase from guild')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.info('Started to remove flagged phrase from guild')
 
 		if (interaction.isNotAdmin()) {
 			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
@@ -32,6 +32,6 @@ export default class RemovePhrase extends Command {
 			ephemeral: true,
 		})
 
-		this._logger.info('Completed removing flagged phrase from guild')
+		logger.info('Completed removing flagged phrase from guild')
 	}
 }

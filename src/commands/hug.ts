@@ -6,7 +6,7 @@ import Command from '../command'
 export default class Hug extends Command {
 	private readonly _refusalRate
 
-	constructor(private _logger: Logger) {
+	constructor() {
 		const name = 'hug'
 		const data = new SlashCommandBuilder()
 			.setName('hug')
@@ -18,8 +18,8 @@ export default class Hug extends Command {
 		this._refusalRate = 10
 	}
 
-	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.debug('Started hug')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.debug('Started hug')
 
 		const val = Math.floor(Math.random() * 100)
 		if (val > this._refusalRate) {
@@ -39,6 +39,6 @@ export default class Hug extends Command {
 			await interaction.reply({ files: [file] })
 		}
 
-		this._logger.debug('Completed hug')
+		logger.debug('Completed hug')
 	}
 }

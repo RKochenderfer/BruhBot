@@ -1,12 +1,4 @@
-import {
-	BaseInteraction,
-	Client,
-	Collection,
-	Events,
-	GatewayIntentBits,
-	Message,
-	Partials,
-} from 'discord.js'
+import { BaseInteraction, Client, Collection, Events, GatewayIntentBits, Message, Partials } from 'discord.js'
 import BotClient from './models/bot-client'
 import { connectToDatabase } from './db'
 import { AppState } from './models/state'
@@ -29,12 +21,7 @@ import DiceRoller from './commands/diceRoller'
 import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
 import { EventBuss as EventBus } from './events'
-import {
-	AceMessageReceivedHandler,
-	BotMessageReceivedHandler,
-	MessageReceivedHandler,
-	UserMessageReceivedHandler,
-} from './eventHandlers'
+import { AceMessageReceivedHandler, BotMessageReceivedHandler, MessageReceivedHandler, UserMessageReceivedHandler } from './eventHandlers'
 import { NotificationBuilder } from './extensions/notificationBuilder'
 import LogSession from './log/logSession'
 import { CommandUpdaterService } from './services/commandUpdaterService'
@@ -82,10 +69,7 @@ const publishMessage = async (eventBus: EventBus, message: Message<boolean>) => 
 	}
 }
 
-const publishInteraction = async (
-	eventBus: EventBus,
-	interaction: BaseInteraction,
-) => {
+const publishInteraction = async (eventBus: EventBus, interaction: BaseInteraction) => {
 	const childLogger = logger.child(LogSession.fromBaseInteraction(interaction))
 	try {
 		const notification = NotificationBuilder.buildNotification('interactionCreated', interaction)
@@ -146,29 +130,14 @@ const setupSubscribers = (eventBus: EventBus) => {
 
 const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
-	DiscordCommandRegister.register(
-		EditPhrase.name,
-		(commandLogger: Logger) => new EditPhrase(guildCache, commandLogger),
-	)
-	DiscordCommandRegister.register(
-		AddPhrase.name,
-		(commandLogger: Logger) => new AddPhrase(guildCache, commandLogger),
-	)
-	DiscordCommandRegister.register(Bruh.name, (commandLogger: Logger) => new Bruh(guildCache, commandLogger))
-	DiscordCommandRegister.register(
-		AddPins.name,
-		(commandLogger: Logger) => new AddPins(guildCache, commandLogger),
-	)
-	DiscordCommandRegister.register(
-		Clipshow.name,
-		(commandLogger: Logger) => new Clipshow(guildCache, commandLogger),
-	)
-	DiscordCommandRegister.register(DiceRoller.name, (commandLogger: Logger) => new DiceRoller(commandLogger))
-	DiscordCommandRegister.register(Hug.name, (commandLogger: Logger) => new Hug(commandLogger))
-	DiscordCommandRegister.register(
-		RemovePhrase.name,
-		(commandLogger: Logger) => new RemovePhrase(guildCache, commandLogger),
-	)
+	DiscordCommandRegister.register(EditPhrase.name, () => new EditPhrase(guildCache))
+	DiscordCommandRegister.register(AddPhrase.name, () => new AddPhrase(guildCache))
+	DiscordCommandRegister.register(Bruh.name, () => new Bruh(guildCache))
+	DiscordCommandRegister.register(AddPins.name, () => new AddPins(guildCache))
+	DiscordCommandRegister.register(Clipshow.name, () => new Clipshow(guildCache))
+	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller())
+	DiscordCommandRegister.register(Hug.name, () => new Hug())
+	DiscordCommandRegister.register(RemovePhrase.name, () => new RemovePhrase(guildCache))
 }
 
 try {

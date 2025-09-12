@@ -3,6 +3,7 @@ import {
 	SlashCommandOptionsOnlyBuilder,
 } from 'discord.js'
 import { ChatInputCommandInteractionWrapper } from './extensions/chatInputCommandInteractionWrapper'
+import { Logger } from 'pino'
 
 export default abstract class Command {
 	constructor(
@@ -11,6 +12,7 @@ export default abstract class Command {
 	) {}
 
 	abstract execute: (
+		logger: Logger,
 		interaction: ChatInputCommandInteractionWrapper
 	) => Promise<void>
 

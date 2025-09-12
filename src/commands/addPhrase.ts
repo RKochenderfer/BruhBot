@@ -7,7 +7,7 @@ import Guild from '../models/guild'
 import { Logger } from 'pino'
 
 export default class AddPhrase extends Command {
-	constructor(private _guildCache: GuildCache, private _logger: Logger) {
+	constructor(private _guildCache: GuildCache) {
 		const name = 'addphrase'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -27,8 +27,8 @@ export default class AddPhrase extends Command {
 		super(name, data)
 	}
 
-	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.info('Started to add flagged phrase to guild')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.info('Started to add flagged phrase to guild')
 
 		if (interaction.isNotAdmin()) {
 			interaction.reply({ content: 'Only an Admin can use this command', ephemeral: true })
@@ -38,13 +38,13 @@ export default class AddPhrase extends Command {
 
 		const flaggedPatternToAdd = FlaggedPattern.from(interaction.options)
 		if (!flaggedPatternToAdd.areFlagsValid()) {
-			this._logger.warn(flaggedPatternToAdd, 'Invalid flags in add pattern request')
+			logger.warn(flaggedPatternToAdd, 'Invalid flags in add pattern request')
 			await interaction.followUp({
 				content: 'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
 				ephemeral: true,
 			})
 		} else {
-			await this.addPattern(interaction, flaggedPatternToAdd)
+			await this.addPattern(logger, interaction, flaggedPatternToAdd)
 
 			await interaction.followUp({
 				content: 'Your pattern has been created',
@@ -52,10 +52,10 @@ export default class AddPhrase extends Command {
 			})
 		}
 
-		this._logger.info('Completed adding flagged phrase to guild')
+		logger.info('Completed adding flagged phrase to guild')
 	}
 
-	private addPattern = async (interaction: ChatInputCommandInteractionWrapper, flaggedPattern: FlaggedPattern) => {
+	private async addPattern(logger: Logger, interaction: ChatInputCommandInteractionWrapper, flaggedPattern: FlaggedPattern) {
 		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
 		const updatedGuild = {
 			...currentGuild,
@@ -63,6 +63,6 @@ export default class AddPhrase extends Command {
 		} as Guild
 
 		await this._guildCache.updateGuild(interaction.guildId!, updatedGuild)
-		this._logger.info(flaggedPattern, 'Added flagged pattern to guild')
+		logger.info(flaggedPattern, 'Added flagged pattern to guild')
 	}
 }

@@ -16,7 +16,7 @@ export default class DiceRoller extends Command {
 	private readonly _regex = /^\d+d\d+([+|-]\d)?/
 	private readonly _parser: Parser
 
-	constructor(private _logger: Logger) {
+	constructor() {
 		const name = 'roll'
 		const data = new SlashCommandBuilder()
 			.setName('roll')
@@ -28,8 +28,8 @@ export default class DiceRoller extends Command {
 		this._parser = new Parser()
 	}
 
-	execute = async (interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
-		this._logger.debug('Started to roll dice')
+	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
+		logger.debug('Started to roll dice')
 
 		const rollString = interaction.options.getString('dice')
 		const isWhisper = interaction.options.getBoolean('whisper') ?? false
@@ -50,10 +50,10 @@ export default class DiceRoller extends Command {
 			ephemeral: isWhisper,
 		})
 
-		this._logger.debug('Completed roll')
+		logger.debug('Completed roll')
 	}
 
-	private processRoll = async (rollString: string): Promise<string> => {
+	private async processRoll(rollString: string): Promise<string> {
 		const values = []
 		const split = rollString.split('d')
 		let dieType = 0
@@ -104,7 +104,7 @@ export default class DiceRoller extends Command {
 		return asciiTable.render(data)
 	}
 
-	private getRandomInt = (type: number) => {
+	private getRandomInt(type: number): number {
 		return Math.floor(Math.random() * type) + 1
 	}
 }
