@@ -40,7 +40,7 @@ export default class LogSession {
 			crypto.randomUUID(),
 			'',
 			'',
-			''
+			'',
 		)
 	}
 
@@ -55,7 +55,7 @@ export default class LogSession {
 			crypto.randomUUID(),
 			message.author.id,
 			message.guildId!,
-			message.guild?.name!,
+			message.guild!.name!,
 		)
 	}
 
@@ -70,7 +70,7 @@ export default class LogSession {
 			crypto.randomUUID(),
 			baseInteraction.user.id,
 			baseInteraction.guildId!,
-			baseInteraction.guild?.name!,
+			baseInteraction.guild!.name!,
 		)
 	}
 

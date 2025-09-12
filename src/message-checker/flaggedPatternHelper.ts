@@ -34,7 +34,7 @@ export default class FlaggedPatternHelper {
 		const date = this._matchedPattern!.messageHistory.lastFound
 		const timespan = (date as unknown as number) - (lastFound as unknown as number)
 
-		let response = this._matchedPattern.response
+		const response = this._matchedPattern.response
 			.replace('$k', this._matchedPattern.key)
 			.replace('$c', `${this._matchedPattern.messageHistory.count}`)
 			.replace(

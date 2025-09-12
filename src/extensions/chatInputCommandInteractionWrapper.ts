@@ -32,7 +32,7 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guildId
 	}
 
-	public get options(): Omit<CommandInteractionOptionResolver<CacheType>, "getMessage" | "getFocused"> {
+	public get options(): Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'> {
 		return this._interaction.options
 	}
 

@@ -10,14 +10,12 @@ import { Handler } from '.'
  * Handles a / command interaction from a user
  */
 export class InteractionCreatedReceivedHandler implements Handler {
-	constructor() {}
-
 	handle = async (
 		logger: Logger,
 		data: Notification<ChatInputCommandInteraction>,
 	): Promise<void> => {
 		logger.debug('Received interaction created event')
-		
+
 		try {
 			// Interaction handling logic would go here
 			const command = this.getCommand(logger, data.data)
@@ -32,9 +30,9 @@ export class InteractionCreatedReceivedHandler implements Handler {
 
 	/**
 	 * Retrieves the command associated with the interaction
-	 * @param logger 
-	 * @param interaction 
-	 * @returns 
+	 * @param logger
+	 * @param interaction
+	 * @returns
 	 */
 	getCommand(logger: Logger, interaction: ChatInputCommandInteraction): Command {
 		if (!interaction.client) {
@@ -58,7 +56,7 @@ export class InteractionCreatedReceivedHandler implements Handler {
 
 	/**
 	 * Resolves the client interaction so it is not left pending in the discord view
-	 * @param interaction 
+	 * @param interaction
 	 */
 	private async resolveErroredInteraction(interaction: ChatInputCommandInteraction) {
 		if (!interaction.deferred && !interaction.replied) {

@@ -12,14 +12,14 @@ export default class Hug extends Command {
 	constructor(private _logger: Logger) {
 		const name = 'hug'
 		const data = new SlashCommandBuilder()
-		.setName('hug')
-		.setDescription('Sends a hug to a user.')
-		.addMentionableOption(option =>
-			option
-				.setName('user')
-				.setDescription('The mentioned user to hug')
-				.setRequired(true),
-		)
+			.setName('hug')
+			.setDescription('Sends a hug to a user.')
+			.addMentionableOption(option =>
+				option
+					.setName('user')
+					.setDescription('The mentioned user to hug')
+					.setRequired(true),
+			)
 
 		super(name, data)
 

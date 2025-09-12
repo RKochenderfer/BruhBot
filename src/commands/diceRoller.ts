@@ -3,7 +3,6 @@ import { Parser } from 'expr-eval'
 import { AsciiTable } from '../ascii-table'
 import Command from '../command'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
-import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
 
 interface RollInformation {

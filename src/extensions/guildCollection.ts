@@ -4,6 +4,7 @@ import Guild from '../models/guild'
 import { Nullable } from 'typescript-nullable'
 import Pin from '../models/pin'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class GuildCollection {
 	private existingGuilds = new Set()
 
@@ -66,7 +67,7 @@ export class GuildCollection {
 	removePattern = async (guildId: string, keyToBeRemoved: string): Promise<void> => {
 		await this._serverCollection.updateOne(
 			{ guildId: guildId },
-			{ $pull: { flaggedPatterns: { key: keyToBeRemoved } } }
+			{ $pull: { flaggedPatterns: { key: keyToBeRemoved } } },
 		)
 	}
 
@@ -75,9 +76,9 @@ export class GuildCollection {
 			{ guildId: guildId },
 			{
 				$set: {
-					pins: pins
-				}
-			}
+					pins: pins,
+				},
+			},
 		)
 	}
 
@@ -114,3 +115,4 @@ export class GuildCollection {
 		return false
 	}
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */

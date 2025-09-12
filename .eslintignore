@@ -3,3 +3,11 @@ src-old/
 deployments/
 src/deploy-dev-commands.ts
 src/deploy-prod-commands.ts
+objection-engine/
+assets/
+.vscode/
+bash-scripts/
+config/
+coverage/
+node_modules/
+jest.config.js

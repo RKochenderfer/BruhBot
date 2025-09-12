@@ -43,9 +43,9 @@ export class UserMessageReceivedHandler implements Handler {
 
 	/**
 	 * Update the flagged pattern history and notify the channel with the response
-	 * @param flaggedPatternHelper 
-	 * @param message 
-	 * @param guild 
+	 * @param flaggedPatternHelper
+	 * @param message
+	 * @param guild
 	 */
 	private async updateFlaggedPattern(
 		flaggedPatternHelper: FlaggedPatternHelper,

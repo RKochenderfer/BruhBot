@@ -148,26 +148,26 @@ const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
 	DiscordCommandRegister.register(
 		EditPhrase.name,
-		(logger: Logger) => new EditPhrase(guildCache, logger),
+		(commandLogger: Logger) => new EditPhrase(guildCache, commandLogger),
 	)
 	DiscordCommandRegister.register(
 		AddPhrase.name,
-		(logger: Logger) => new AddPhrase(guildCache, logger),
+		(commandLogger: Logger) => new AddPhrase(guildCache, commandLogger),
 	)
-	DiscordCommandRegister.register(Bruh.name, (logger: Logger) => new Bruh(guildCache, logger))
+	DiscordCommandRegister.register(Bruh.name, (commandLogger: Logger) => new Bruh(guildCache, commandLogger))
 	DiscordCommandRegister.register(
 		AddPins.name,
-		(logger: Logger) => new AddPins(guildCache, logger),
+		(commandLogger: Logger) => new AddPins(guildCache, commandLogger),
 	)
 	DiscordCommandRegister.register(
 		Clipshow.name,
-		(logger: Logger) => new Clipshow(guildCache, logger),
+		(commandLogger: Logger) => new Clipshow(guildCache, commandLogger),
 	)
-	DiscordCommandRegister.register(DiceRoller.name, (logger: Logger) => new DiceRoller(logger))
-	DiscordCommandRegister.register(Hug.name, (logger: Logger) => new Hug(logger))
+	DiscordCommandRegister.register(DiceRoller.name, (commandLogger: Logger) => new DiceRoller(commandLogger))
+	DiscordCommandRegister.register(Hug.name, (commandLogger: Logger) => new Hug(commandLogger))
 	DiscordCommandRegister.register(
 		RemovePhrase.name,
-		(logger: Logger) => new RemovePhrase(guildCache, logger),
+		(commandLogger: Logger) => new RemovePhrase(guildCache, commandLogger),
 	)
 }
 

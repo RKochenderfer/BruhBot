@@ -13,5 +13,6 @@ export interface Handler {
 	 * Perform an intended action based on the received event
 	 * @param data - The data associated with the event
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	handle: (logger: Logger, ...data: any[]) => Promise<void>
 }

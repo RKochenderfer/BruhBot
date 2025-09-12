@@ -4,6 +4,7 @@ import { Logger } from 'pino'
 
 const isPublishingStorage = new AsyncLocalStorage<{ isPublishing: boolean }>()
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventHandler = (logger: Logger, notification: Notification<any>) => Promise<void>
 
 /**
@@ -12,8 +13,6 @@ type EventHandler = (logger: Logger, notification: Notification<any>) => Promise
 export class EventBuss {
 	private static instance?: EventBuss
 	private events: Map<string, EventHandler[]> = new Map()
-
-	private constructor() {}
 
 	/**
 	 * Retrieve the singleton instance of the EventBus
@@ -43,13 +42,14 @@ export class EventBuss {
 	 * @param eventType
 	 * @param data
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async publish(eventType: DiscordEvent, data: Notification<any>, logger: Logger) {
 		const handlers = this.events.get(eventType) || []
 		for (const handler of handlers) {
 			try {
 				await handler(logger, data)
 			} catch (error) {
-				console.error(`Error in event handler for event type "${eventType}":`, error)
+				throw new Error(`Error in event handler for event type "${eventType}":`, error)
 			}
 		}
 	}

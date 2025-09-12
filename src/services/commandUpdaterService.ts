@@ -15,7 +15,7 @@ export class CommandUpdaterService {
 		const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
 
 		try {
-			for (let commandJSON of this.commandRegistry.generateCommandDataJSON()) {
+			for (const commandJSON of this.commandRegistry.generateCommandDataJSON()) {
 				commands.push(commandJSON)
 				this.logger.debug(commandJSON)
 			}

@@ -12,23 +12,23 @@ export class NotificationBuilder {
 	 * @returns
 	 */
 	static buildNotification<T>(botEvent: DiscordEvent, data: T): Notification<T> | undefined {
-		// all message events can all be handled very simlarly 
+		// all message events can all be handled very simlarly
 		if (isMessageEvent(botEvent)) {
 			return this.fromDiscordMessageEvent(botEvent as DiscordMessageEvent, data)
 		} if (isInteractionEvent(botEvent)) {
 			return this.fromDiscordInteractionEvent(botEvent, data)
 		}
 		switch (botEvent) {
-			default:
-				throw new Error(`No builder implemented for event type: ${botEvent}`)
+		default:
+			throw new Error(`No builder implemented for event type: ${botEvent}`)
 		}
 	}
 
 	/**
 	 * Builds a notification for interaction events
-	 * @param botEvent 
-	 * @param data 
-	 * @returns 
+	 * @param botEvent
+	 * @param data
+	 * @returns
 	 */
 	static fromDiscordInteractionEvent<T>(botEvent: DiscordEvent, data: T): Notification<T> {
 		if (data == undefined) {
@@ -43,9 +43,9 @@ export class NotificationBuilder {
 
 	/**
 	 * Builds a notification for message events
-	 * @param botEvent 
-	 * @param data 
-	 * @returns 
+	 * @param botEvent
+	 * @param data
+	 * @returns
 	 */
 	private static fromDiscordMessageEvent<T>(botEvent: DiscordMessageEvent, data: T): Notification<T> {
 		if (data == undefined) {

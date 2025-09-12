@@ -2,7 +2,6 @@ import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import Command from '../command'
 import FlaggedPattern from '../message-checker/flaggedPattern'
-import { MessageChecker } from '..'
 import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
 

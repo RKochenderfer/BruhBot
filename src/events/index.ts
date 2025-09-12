@@ -22,8 +22,8 @@ export const isMessageEvent = (discordEvent: DiscordEvent): boolean => {
 
 /**
  * Checks if event is an interaction event
- * @param discordEvent 
- * @returns 
+ * @param discordEvent
+ * @returns
  */
 export const isInteractionEvent = (discordEvent: DiscordEvent): boolean => {
 	return discordEvent === 'interactionCreated'
@@ -49,7 +49,7 @@ export class Notification<T> {
 	 * @param data The data to be passed along with the event
 	 * @returns
 	 */
-	static from<T>(event: DiscordEvent, data: T): Notification<T> {
+	static from<V>(event: DiscordEvent, data: V): Notification<V> {
 		return new Notification(event, new Date(), data)
 	}
 }

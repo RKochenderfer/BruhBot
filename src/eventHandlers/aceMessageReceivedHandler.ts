@@ -8,8 +8,6 @@ import { Notification } from '../events'
  * Handles events to render ace attorney renderings messages
  */
 export class AceMessageReceivedHandler implements Handler {
-	constructor() {}
-
 	handle = async (logger: Logger, data: Notification<Message>): Promise<void> => {
 		logger.debug('Started to handle ace message')
 		const message = data.data
