@@ -1,3 +1,1 @@
-export default class Cache {
-
-}
+export default class Cache {}

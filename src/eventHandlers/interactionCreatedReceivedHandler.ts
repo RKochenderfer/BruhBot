@@ -10,10 +10,7 @@ import { Handler } from '.'
  * Handles a / command interaction from a user
  */
 export class InteractionCreatedReceivedHandler implements Handler {
-	handle = async (
-		logger: Logger,
-		data: Notification<ChatInputCommandInteraction>,
-	): Promise<void> => {
+	handle = async (logger: Logger, data: Notification<ChatInputCommandInteraction>): Promise<void> => {
 		logger.debug('Received interaction created event')
 
 		try {

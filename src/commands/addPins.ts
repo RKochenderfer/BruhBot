@@ -1,9 +1,4 @@
-import {
-	BaseGuildTextChannel,
-	Collection,
-	GuildBasedChannel,
-	SlashCommandBuilder,
-} from 'discord.js'
+import { BaseGuildTextChannel, Collection, GuildBasedChannel, SlashCommandBuilder } from 'discord.js'
 import Command from '../command'
 import GuildCache from '../caches/guildCache'
 import { Logger } from 'pino'
@@ -13,9 +8,7 @@ import Pin from '../models/pin'
 export default class AddPins extends Command {
 	constructor(private _guildCache: GuildCache, private _logger: Logger) {
 		const name = 'addpins'
-		const data = new SlashCommandBuilder()
-			.setName('addpins')
-			.setDescription('Adds all pinned comments to quote database')
+		const data = new SlashCommandBuilder().setName('addpins').setDescription('Adds all pinned comments to quote database')
 
 		super(name, data)
 	}
@@ -29,9 +22,7 @@ export default class AddPins extends Command {
 		this._logger.debug('Completed adding pins')
 	}
 
-	private aggregatePins = async (
-		guildChannels: Collection<string, GuildBasedChannel>,
-	): Promise<Pin[]> => {
+	private aggregatePins = async (guildChannels: Collection<string, GuildBasedChannel>): Promise<Pin[]> => {
 		let pins: Pin[] = []
 
 		for (const [_channelId, guildBaseChannel] of guildChannels) {
@@ -41,14 +32,7 @@ export default class AddPins extends Command {
 
 				pins = [
 					...pins,
-					...pinnedMessages.map(
-						(message, _id) =>
-							new Pin(
-								message.content,
-								message.createdTimestamp.toString(),
-								message.author.id,
-							),
-					),
+					...pinnedMessages.map((message, _id) => new Pin(message.content, message.createdTimestamp.toString(), message.author.id)),
 				]
 			}
 		}

@@ -22,7 +22,8 @@
     "test": "jest",
     "start": "pnpm run dev",
     "lint": "pnpm exec eslint .",
-    "format": "pnpm exec prettier . --check",
+    "check-format": "pnpm exec prettier src/**/* --check",
+    "format": "pnpm exec prettier src/**/* --write",
     "dev": "tsc && node -r dotenv/config build/index.js dotenv_config_path=./config/.env.dev dotenv_config_debug=true",
     "prepare": "husky || true"
   },
@@ -42,7 +43,7 @@
     "tabWidth": 4,
     "useTabs": true,
     "arrowParens": "avoid",
-    "printWidth": 100
+    "printWidth": 150
   },
   "homepage": "https://github.com/RKochenderfer/BruhBot#readme",
   "devDependencies": {

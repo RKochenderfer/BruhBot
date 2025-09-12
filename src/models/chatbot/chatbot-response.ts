@@ -1,5 +1,5 @@
 export interface ChatbotMessage {
-	receipient_id: string,
+	receipient_id: string
 	text: string
 }
 

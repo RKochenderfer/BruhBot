@@ -33,9 +33,7 @@ export default class FlaggedPattern {
 		return flagCheckRegex.test(this.flags!)
 	}
 
-	static from = (
-		options: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>,
-	): FlaggedPattern => {
+	static from = (options: Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'>): FlaggedPattern => {
 		return new FlaggedPattern(
 			options.getString('key', true),
 			options.getString('regex_expression', true),

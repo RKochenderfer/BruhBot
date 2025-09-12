@@ -94,7 +94,9 @@ export class LFUCache<T> {
 	 * @param {V} data - the data to replace the current one
 	 */
 	public updateCacheEntry(keyToUpdate: string, data: T) {
-		if (!this._cacheMap.has(keyToUpdate)) throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
+		if (!this._cacheMap.has(keyToUpdate)) {
+			throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
+		}
 
 		const oldEntry = this._cacheMap.get(keyToUpdate)!
 		const newEntry = new CacheEntry(data)

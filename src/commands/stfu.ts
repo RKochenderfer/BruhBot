@@ -3,9 +3,7 @@ import { getVoiceConnection } from '@discordjs/voice'
 import { logger } from '../log/logger'
 
 module.exports = {
-	data: new SlashCommandBuilder()
-		.setName('stfu')
-		.setDescription('Disconnects bruhbot from a voice channel'),
+	data: new SlashCommandBuilder().setName('stfu').setDescription('Disconnects bruhbot from a voice channel'),
 
 	async execute(interaction: ChatInputCommandInteraction) {
 		if (!interaction.guildId) return

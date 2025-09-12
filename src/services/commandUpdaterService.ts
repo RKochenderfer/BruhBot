@@ -24,10 +24,7 @@ export class CommandUpdaterService {
 			if (!message.guildId) return
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const data: any = await rest.put(
-				Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
-				{ body: commands },
-			)
+			const data: any = await rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId), { body: commands })
 			this.logger.info(`Successfully reloaded ${data.length} application (/) commands`)
 		} catch (error) {
 			message.reply({ content: 'Failed to update commands' })

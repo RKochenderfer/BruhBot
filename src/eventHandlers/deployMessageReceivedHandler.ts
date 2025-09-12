@@ -12,8 +12,7 @@ export class DeployMessageReceivedHandler implements Handler {
 
 	handle = async (logger: Logger, data: Notification<Message>): Promise<void> => {
 		logger.debug('Started to handle deploy message')
-		await data.data.react('👍'),
-		await this.commandUpdaterService.updateCommands(data.data)
+		await data.data.react('👍'), await this.commandUpdaterService.updateCommands(data.data)
 		await data.data.reply('Commands updated')
 		logger.debug('Completed handling deploy message')
 	}

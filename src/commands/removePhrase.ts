@@ -10,12 +10,7 @@ export default class RemovePhrase extends Command {
 		const data = new SlashCommandBuilder()
 			.setName('rmphrase')
 			.setDescription('Removes a phrase from the message checker')
-			.addStringOption(option =>
-				option
-					.setName('key')
-					.setDescription('Removes a phrase from the message checker')
-					.setRequired(true),
-			)
+			.addStringOption(option => option.setName('key').setDescription('Removes a phrase from the message checker').setRequired(true))
 
 		super(name, data)
 	}
@@ -39,5 +34,4 @@ export default class RemovePhrase extends Command {
 
 		this._logger.info('Completed removing flagged phrase from guild')
 	}
-
 }

@@ -21,18 +21,8 @@ export default class DiceRoller extends Command {
 		const data = new SlashCommandBuilder()
 			.setName('roll')
 			.setDescription('rolls the specified die and the number of dice to be rolled')
-			.addStringOption(option =>
-				option
-					.setName('dice')
-					.setDescription('Number and type of dice to roll. ex: 2d6+1')
-					.setRequired(true),
-			)
-			.addBooleanOption(option =>
-				option
-					.setName('whisper')
-					.setDescription('whisper the roll to the sender')
-					.setRequired(false),
-			)
+			.addStringOption(option => option.setName('dice').setDescription('Number and type of dice to roll. ex: 2d6+1').setRequired(true))
+			.addBooleanOption(option => option.setName('whisper').setDescription('whisper the roll to the sender').setRequired(false))
 
 		super(name, data)
 		this._parser = new Parser()
@@ -106,11 +96,7 @@ export default class DiceRoller extends Command {
 		const mod = rollInfo.modifier === '' ? 0 : this._parser.evaluate(rollInfo.modifier)
 		const data = [
 			['Roll', 'Values', 'Total'],
-			[
-				rollEntry,
-				rollInfo.values.toString(),
-				rollInfo.values.reduce((prev, curr) => prev + curr, 0) + mod,
-			],
+			[rollEntry, rollInfo.values.toString(), rollInfo.values.reduce((prev, curr) => prev + curr, 0) + mod],
 		]
 
 		const asciiTable = new AsciiTable()

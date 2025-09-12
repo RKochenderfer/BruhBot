@@ -15,12 +15,12 @@ export class NotificationBuilder {
 		// all message events can all be handled very simlarly
 		if (isMessageEvent(botEvent)) {
 			return this.fromDiscordMessageEvent(botEvent as DiscordMessageEvent, data)
-		} if (isInteractionEvent(botEvent)) {
+		}
+		if (isInteractionEvent(botEvent)) {
 			return this.fromDiscordInteractionEvent(botEvent, data)
 		}
 		switch (botEvent) {
-		default:
-			throw new Error(`No builder implemented for event type: ${botEvent}`)
+		default: throw new Error(`No builder implemented for event type: ${botEvent}`)
 		}
 	}
 
