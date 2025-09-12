@@ -45,12 +45,12 @@ export default class GuildCache extends LFUCache<Guild> {
 
 	public async updateGuild(guildId: string, guild: Guild) {
 		this.logInfo('Started to update guild')
-		if (guildId !== guild.guildId)
-			throw new Error(
-				`Provided guildId ${guildId} does not match guildId in server ${guild.guildId}`,
-			)
-		if (!(await this.has(guildId)))
+		if (guildId !== guild.guildId) {
+			throw new Error(`Provided guildId ${guildId} does not match guildId in server ${guild.guildId}`)
+		}
+		if (!(await this.has(guildId))) {
 			throw new Error(`Guild with id ${guildId} does not exist in cache`)
+		}
 
 		super.updateCacheEntry(guildId, guild)
 
@@ -64,13 +64,15 @@ export default class GuildCache extends LFUCache<Guild> {
 		const guild = await this.get(guildId)
 
 		if (!guild) throw new Error(`GuildId ${guildId} not found`)
-		if (guild.flaggedPatterns == undefined)
+		if (guild.flaggedPatterns == undefined) {
 			throw new Error(`Guild ${guildId} contains no flagged patterns to update`)
+		}
 
 		const index = guild.flaggedPatterns.findIndex(x => x.key === flaggedPattern.key)
 
-		if (index === -1)
+		if (index === -1) {
 			throw new Error(`Index for flagged pattern ${flaggedPattern.key} was not found`)
+		}
 
 		guild.flaggedPatterns[index] = flaggedPattern
 
@@ -85,12 +87,14 @@ export default class GuildCache extends LFUCache<Guild> {
 		const guild = await this.get(guildId)
 
 		if (!guild) throw new Error(`GuildId ${guildId} not found`)
-		if (guild.flaggedPatterns == undefined)
+		if (guild.flaggedPatterns == undefined) {
 			throw new Error(`Guild ${guildId} contains no flagged patterns to update`)
+		}
 
 		const index = guild.flaggedPatterns.findIndex(x => x.key === key)
-		if (index === -1)
+		if (index === -1) {
 			throw new Error(`Index for flagged pattern ${key} was not found`)
+		}
 
 		guild.flaggedPatterns.splice(index, 1)
 
@@ -107,7 +111,7 @@ export default class GuildCache extends LFUCache<Guild> {
 		const guild = await this.get(guildId)
 
 		if (!guild) throw new Error(`GuildId ${guildId} not found`)
-		
+
 		guild.pins = [...pins]
 		super.updateCacheEntry(guildId, guild)
 		await this._guildCollection.updatePins(guildId, pins)
@@ -118,7 +122,7 @@ export default class GuildCache extends LFUCache<Guild> {
 
 	public async get(guildId: string): Promise<Guild | undefined> {
 		this.logDebug(`Attempting to get guild ${guildId}`)
-		let guildCacheEntry = super.getCacheEntry(guildId)
+		const guildCacheEntry = super.getCacheEntry(guildId)
 
 		if (guildCacheEntry) return guildCacheEntry
 
@@ -178,28 +182,16 @@ export default class GuildCache extends LFUCache<Guild> {
 
 		// setup flagged patterns
 		if (uninitializedGuild.flaggedPatterns) {
-			guild.flaggedPatterns = [
-				...this.initializeFlaggedPatterns(uninitializedGuild.flaggedPatterns),
-			]
+			guild.flaggedPatterns = [...this.initializeFlaggedPatterns(uninitializedGuild.flaggedPatterns)]
 		}
 
 		return guild
 	}
 
-	private initializeFlaggedPatterns(
-		uninitializedFlaggedPatterns: FlaggedPattern[],
-	): FlaggedPattern[] {
+	private initializeFlaggedPatterns(uninitializedFlaggedPatterns: FlaggedPattern[]): FlaggedPattern[] {
 		const patterns = []
 		for (const pattern of uninitializedFlaggedPatterns) {
-			patterns.push(
-				new FlaggedPattern(
-					pattern.key,
-					pattern.expression,
-					pattern.response,
-					pattern.flags,
-					pattern.messageHistory,
-				),
-			)
+			patterns.push(new FlaggedPattern(pattern.key, pattern.expression, pattern.response, pattern.flags, pattern.messageHistory))
 		}
 
 		return patterns

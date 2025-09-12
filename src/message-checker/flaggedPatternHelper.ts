@@ -13,9 +13,7 @@ export default class FlaggedPatternHelper {
 
 	isTextFlagged = (text: string): boolean => {
 		for (const flaggedPattern of this._flaggedPatterns) {
-			const regex = flaggedPattern.flags
-				? new RegExp(flaggedPattern.expression, flaggedPattern.flags)
-				: new RegExp(flaggedPattern.expression)
+			const regex = flaggedPattern.flags ? new RegExp(flaggedPattern.expression, flaggedPattern.flags) : new RegExp(flaggedPattern.expression)
 
 			if (regex.test(text)) {
 				this._matchedPattern = flaggedPattern
@@ -34,13 +32,10 @@ export default class FlaggedPatternHelper {
 		const date = this._matchedPattern!.messageHistory.lastFound
 		const timespan = (date as unknown as number) - (lastFound as unknown as number)
 
-		let response = this._matchedPattern.response
+		const response = this._matchedPattern.response
 			.replace('$k', this._matchedPattern.key)
 			.replace('$c', `${this._matchedPattern.messageHistory.count}`)
-			.replace(
-				'$d',
-				`${lastFound.getMonth() + 1}/${lastFound.getDate()}/${lastFound.getFullYear()}`,
-			)
+			.replace('$d', `${lastFound.getMonth() + 1}/${lastFound.getDate()}/${lastFound.getFullYear()}`)
 			.replace('$s', `${timespan / 1000}`)
 			.replace('$h', `${timespan / (1000 * 60 * 60)}`)
 			.replace(

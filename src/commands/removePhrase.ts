@@ -8,14 +8,9 @@ export default class RemovePhrase extends Command {
 	constructor(private _guildCache: GuildCache, private _logger: Logger) {
 		const name = 'rmphrase'
 		const data = new SlashCommandBuilder()
-		.setName('rmphrase')
-		.setDescription('Removes a phrase from the message checker')
-		.addStringOption(option =>
-			option
-				.setName('key')
-				.setDescription('Removes a phrase from the message checker')
-				.setRequired(true),
-		)
+			.setName('rmphrase')
+			.setDescription('Removes a phrase from the message checker')
+			.addStringOption(option => option.setName('key').setDescription('Removes a phrase from the message checker').setRequired(true))
 
 		super(name, data)
 	}
@@ -31,13 +26,12 @@ export default class RemovePhrase extends Command {
 
 		const key = interaction.options.getString('key')!
 		await this._guildCache.removeFlaggedPattern(interaction.guildId!, key)
-		
+
 		await interaction.followUp({
 			content: `Pattern with key ${key} has been removed`,
-			ephemeral: true
+			ephemeral: true,
 		})
 
 		this._logger.info('Completed removing flagged phrase from guild')
 	}
-	
 }

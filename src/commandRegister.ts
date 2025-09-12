@@ -8,8 +8,6 @@ export default class CommandRegister {
 	private static _instance: CommandRegister
 	private readonly _commands: Map<string, (logger: Logger) => Command> = new Map()
 
-	private constructor() { }
-
 	public static get Instance(): CommandRegister {
 		return this._instance || (this._instance = new this())
 	}
@@ -19,14 +17,14 @@ export default class CommandRegister {
 	}
 
 	*generateCommandDataJSON(): IterableIterator<RESTPostAPIChatInputApplicationCommandsJSONBody> {
-		for (const [name, construct] of this._commands) {
+		for (const [_name, construct] of this._commands) {
 			const command = construct(baseLogger)
 			yield command.toJSON()
 		}
 	}
 
 	*generateCommandDetails(): IterableIterator<Command> {
-		for (const [name, construct] of this._commands) {
+		for (const [_name, construct] of this._commands) {
 			yield construct(baseLogger)
 		}
 	}

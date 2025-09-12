@@ -6,25 +6,27 @@
 	"configurations": [
 
 		{
-			"name": "Docker: Attach to Node",
+			"name": "BruhBot Container Debug",
 			"type": "node",
 			"request": "attach",
 			"remoteRoot": "/usr/src/app",
 			"port": 9229
 		},
 		{
-			"command": "npm run dev",
-			"name": "Run npm dev",
-			"request": "launch",
-			"type": "node-terminal"
-		},
-		{
-			"type": "pwa-node",
-			"request": "launch",
-			"name": "Launch Program",
-			"skipFiles": ["<node_internals>/**"],
-			"program": "build/index.js",
-			"outFiles": ["build/**/*.js"]
+			"name": "Objection Engine Debug",
+            "type": "debugpy",
+            "request": "attach",
+            "justMyCode": false,
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/objection-engine",
+                    "remoteRoot": "/app/"
+                }
+            ]
 		},
 		{
 			"name": "Docker Nod.js Launch",
@@ -40,6 +42,25 @@
             "runtimeArgs": ["--inspect-brk", "${workspaceRoot}/node_modules/jest/bin/jest.js", "--runInBand", "--coverage", "false"],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
-        }
+        },
+		{
+        "name": "Python: Flask (python3.9)",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "flask",
+        "env": {
+            "FLASK_APP": "app.py",
+            "FLASK_ENV": "development",
+            "PYTHONPATH": "${workspaceFolder}/objection-engine"
+        },
+        "args": [
+            "run",
+            "--host=0.0.0.0"
+        ],
+        // Optionally specify the Python interpreter:
+        // "pythonPath": "/usr/bin/python3.9",
+        "cwd": "${workspaceFolder}/objection-engine",
+        "justMyCode": false
+    }
 	]
 }

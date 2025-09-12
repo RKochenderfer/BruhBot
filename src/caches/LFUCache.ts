@@ -1,5 +1,5 @@
 export class CacheEntry<T> {
-	private _frequency: number = 0
+	private _frequency = 0
 
 	constructor(private _data: T) {}
 
@@ -55,7 +55,7 @@ export class LFUCache<T> {
 		let minValue = Number.MAX_SAFE_INTEGER
 		let keyToReturn: string | undefined = undefined
 
-		for (let [key, entry] of this._cacheMap) {
+		for (const [key, entry] of this._cacheMap) {
 			if (minValue > entry.frequency) {
 				minValue = entry.frequency
 				keyToReturn = key
@@ -94,7 +94,9 @@ export class LFUCache<T> {
 	 * @param {V} data - the data to replace the current one
 	 */
 	public updateCacheEntry(keyToUpdate: string, data: T) {
-		if (!this._cacheMap.has(keyToUpdate)) throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
+		if (!this._cacheMap.has(keyToUpdate)) {
+			throw new Error(`Provided key ${keyToUpdate} was not found in cache`)
+		}
 
 		const oldEntry = this._cacheMap.get(keyToUpdate)!
 		const newEntry = new CacheEntry(data)

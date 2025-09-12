@@ -14,9 +14,7 @@ import {
 export class ChatInputCommandInteractionWrapper {
 	private constructor(private _interaction: ChatInputCommandInteraction) {}
 
-	static from = (
-		interaction: ChatInputCommandInteraction,
-	): ChatInputCommandInteractionWrapper => {
+	static from = (interaction: ChatInputCommandInteraction): ChatInputCommandInteractionWrapper => {
 		return new ChatInputCommandInteractionWrapper(interaction)
 	}
 
@@ -32,7 +30,7 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guildId
 	}
 
-	public get options(): Omit<CommandInteractionOptionResolver<CacheType>, "getMessage" | "getFocused"> {
+	public get options(): Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'> {
 		return this._interaction.options
 	}
 
@@ -40,19 +38,14 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guild!.name
 	}
 
-	followUp = async (followUpOptions: string | InteractionReplyOptions | MessagePayload): Promise<Message<boolean>> => (
+	followUp = async (followUpOptions: string | InteractionReplyOptions | MessagePayload): Promise<Message<boolean>> =>
 		await await this._interaction.followUp(followUpOptions)
-	)
 
-	reply = async (
-		replyOptions: string | InteractionReplyOptions | MessagePayload,
-	): Promise<InteractionResponse<boolean>> => {
+	reply = async (replyOptions: string | InteractionReplyOptions | MessagePayload): Promise<InteractionResponse<boolean>> => {
 		return await this._interaction.reply(replyOptions)
 	}
 
-	deferReply = async (
-		options?: InteractionDeferReplyOptions | undefined,
-	): Promise<InteractionResponse<boolean>> => {
+	deferReply = async (options?: InteractionDeferReplyOptions | undefined): Promise<InteractionResponse<boolean>> => {
 		return await this.interaction.deferReply(options)
 	}
 

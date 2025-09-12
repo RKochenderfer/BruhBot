@@ -1,4 +1,5 @@
 export class Against {
+	/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
 	public NullOrUndefined(obj: any) {
 		if (obj == undefined) {
 			throw 'Value is null or undefined'

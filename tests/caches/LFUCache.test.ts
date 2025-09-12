@@ -208,7 +208,7 @@ describe('LFU Cache tests', () => {
 
 		// Act
 		lfuCache.updateCacheEntry(key, updatedEntry)
-		
+
 		// Assert
 		const result = lfuCache.getCacheEntry(key)
 

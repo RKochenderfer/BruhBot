@@ -24,9 +24,7 @@ export class CachedServerPatterns {
 
 	hasKey = (key: string): boolean => this.patterns.find(x => x.flaggedPattern.key == key) !== null
 	updatePattern = (toUpdate: FlaggedPattern) => {
-		const indexOfPatternToUpdate = this.patterns.findIndex(
-			x => x.flaggedPattern.key === toUpdate.key,
-		)
+		const indexOfPatternToUpdate = this.patterns.findIndex(x => x.flaggedPattern.key === toUpdate.key)
 		this.patterns[indexOfPatternToUpdate] = new CachedPattern(toUpdate)
 	}
 }
@@ -80,9 +78,7 @@ export class MessageChecker {
 		logger.debug(`Removing pattern key: "${toRemove}" with guildId: ${guildId}`)
 		if (MessageChecker.cache.has(guildId)) {
 			const cached = MessageChecker.cache.get(guildId)!
-			cached.patterns = [
-				...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove),
-			]
+			cached.patterns = [...cached.patterns.filter(val => val.flaggedPattern.key !== toRemove)]
 		}
 	}
 
@@ -104,10 +100,8 @@ export class MessageChecker {
 				if (pattern.regex.test(message.content)) {
 					pattern.flaggedPattern.messageHistory.count++
 					pattern.flaggedPattern.messageHistory.lastAuthorId = message.author.id
-					pattern.flaggedPattern.messageHistory.lastAuthorUsername =
-						message.author.username
-					pattern.flaggedPattern.messageHistory.dateTimePreviouslyFound =
-						pattern.flaggedPattern.messageHistory.lastFound
+					pattern.flaggedPattern.messageHistory.lastAuthorUsername = message.author.username
+					pattern.flaggedPattern.messageHistory.dateTimePreviouslyFound = pattern.flaggedPattern.messageHistory.lastFound
 					pattern.flaggedPattern.messageHistory.lastFound = new Date()
 
 					this.updateDb(guildId, pattern.flaggedPattern)
@@ -133,10 +127,7 @@ export class MessageChecker {
 		return pattern.flaggedPattern.response
 			.replace('$k', pattern.flaggedPattern.key)
 			.replace('$c', `${pattern.flaggedPattern.messageHistory.count}`)
-			.replace(
-				'$d',
-				`${lastFound.getMonth() + 1}/${lastFound.getDate()}/${lastFound.getFullYear()}`,
-			)
+			.replace('$d', `${lastFound.getMonth() + 1}/${lastFound.getDate()}/${lastFound.getFullYear()}`)
 			.replace(
 				'$t',
 				`${

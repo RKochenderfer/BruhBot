@@ -1,8 +1,4 @@
-import {
-	AttachmentBuilder,
-	Message,
-	MessageType,
-} from 'discord.js'
+import { AttachmentBuilder, Message, MessageType } from 'discord.js'
 import fs from 'fs'
 import crypto from 'crypto'
 import { logger } from './log/logger'
@@ -132,7 +128,12 @@ export class RenderQueue {
 	}
 
 	private static performRender(request: RenderRequest) {
-		request.render().then(() => RenderQueue.cleanup(request))
+		request
+			.render()
+			.then(() => RenderQueue.cleanup(request))
+			.catch(err => {
+				logger.error(err)
+			})
 	}
 
 	private static cleanup(request: RenderRequest) {

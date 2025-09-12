@@ -3,3 +3,7 @@ rest/
 flask/
 assets/
 *.mp4
+output/
+venv/
+temp/
+__pychache__/

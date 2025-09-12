@@ -9,9 +9,7 @@ export default class Clipshow extends Command {
 		const name = 'clipshow'
 		const data = new SlashCommandBuilder()
 			.setName('clipshow')
-			.setDescription(
-				'Gets a random quote from the pinned list or previously pinned comments',
-			)
+			.setDescription('Gets a random quote from the pinned list or previously pinned comments')
 
 		super(name, data)
 	}
@@ -31,11 +29,7 @@ export default class Clipshow extends Command {
 		const randomPinnedMessage = guild.pins[Math.floor(Math.random() * guild.pins.length)]
 		const author = await interaction.guild?.members.fetch(randomPinnedMessage.userId!)
 
-		await interaction.followUp(
-			`> ${randomPinnedMessage.message}\n\t-**${
-				author?.nickname ? author.nickname : author?.user.username
-			}**`,
-		)
+		await interaction.followUp(`> ${randomPinnedMessage.message}\n\t-**${author?.nickname ? author.nickname : author?.user.username}**`)
 
 		this._logger.debug('Completed clipshow')
 	}

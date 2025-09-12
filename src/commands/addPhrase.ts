@@ -12,31 +12,16 @@ export default class AddPhrase extends Command {
 		const data = new SlashCommandBuilder()
 			.setName(name)
 			.setDescription('Adds a phrase to the message checker')
-			.addStringOption(option =>
-				option
-					.setName('key')
-					.setDescription('The word that is being checked for.')
-					.setRequired(true),
-			)
+			.addStringOption(option => option.setName('key').setDescription('The word that is being checked for.').setRequired(true))
 			.addStringOption(option =>
 				option
 					.setName('regex_expression')
-					.setDescription(
-						'The regex expression for bruhbot to check against (ex: gonk). Do not include flags here',
-					)
+					.setDescription('The regex expression for bruhbot to check against (ex: gonk). Do not include flags here')
 					.setRequired(true),
 			)
+			.addStringOption(option => option.setName('response').setDescription('The response Bruhbot will give to the sender').setRequired(true))
 			.addStringOption(option =>
-				option
-					.setName('response')
-					.setDescription('The response Bruhbot will give to the sender')
-					.setRequired(true),
-			)
-			.addStringOption(option =>
-				option
-					.setName('regex_flags')
-					.setDescription('The flags to be applied to the regex expression')
-					.setRequired(false),
+				option.setName('regex_flags').setDescription('The flags to be applied to the regex expression').setRequired(false),
 			)
 
 		super(name, data)
@@ -55,8 +40,7 @@ export default class AddPhrase extends Command {
 		if (!flaggedPatternToAdd.areFlagsValid()) {
 			this._logger.warn(flaggedPatternToAdd, 'Invalid flags in add pattern request')
 			await interaction.followUp({
-				content:
-					'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
+				content: 'Invalid flag found. Here is the list of valid EMCAScript flags: g|m|i|x|s|u|U|A|J|D',
 				ephemeral: true,
 			})
 		} else {
@@ -71,10 +55,7 @@ export default class AddPhrase extends Command {
 		this._logger.info('Completed adding flagged phrase to guild')
 	}
 
-	private addPattern = async (
-		interaction: ChatInputCommandInteractionWrapper,
-		flaggedPattern: FlaggedPattern,
-	) => {
+	private addPattern = async (interaction: ChatInputCommandInteractionWrapper, flaggedPattern: FlaggedPattern) => {
 		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
 		const updatedGuild = {
 			...currentGuild,
