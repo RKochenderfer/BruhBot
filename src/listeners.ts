@@ -2,7 +2,6 @@ import {
 	BaseGuildTextChannel,
 	BaseInteraction,
 	ChatInputCommandInteraction,
-	Message,
 	TextBasedChannel,
 } from 'discord.js'
 import { State } from '.'
@@ -11,10 +10,6 @@ import { logger } from './log/logger'
 import { ServerState } from './models/state'
 import BotClient from './models/bot-client'
 import Command from './command'
-import { ChatInputCommandInteractionWrapper } from './extensions/chatInputCommandInteractionWrapper'
-import * as db from './db'
-import LogSession from './log/logSession'
-import { HandlerType } from './models/handlerType'
 
 /**
  * Handles the ChannelPinsUpdate event

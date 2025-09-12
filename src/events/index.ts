@@ -21,6 +21,15 @@ export const isMessageEvent = (discordEvent: DiscordEvent): boolean => {
 }
 
 /**
+ * Checks if event is an interaction event
+ * @param discordEvent 
+ * @returns 
+ */
+export const isInteractionEvent = (discordEvent: DiscordEvent): boolean => {
+	return discordEvent === 'interactionCreated'
+}
+
+/**
  * An event to be published to the event bus
  */
 export class Notification<T> {

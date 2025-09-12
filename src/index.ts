@@ -1,5 +1,4 @@
 import {
-	Base,
 	BaseInteraction,
 	Client,
 	Collection,
@@ -20,7 +19,6 @@ import * as db from './db'
 import { logger } from './log/logger'
 import CommandRegister from './commandRegister'
 import EditPhrase from './commands/editPhrase'
-import { RequestMiddleware } from './middleware/requestMiddleware'
 import GuildCache from './caches/guildCache'
 import AddPhrase from './commands/addPhrase'
 import { Logger } from 'pino'
@@ -61,11 +59,7 @@ const botClient: BotClient = new Client({
 })
 
 const registerBotClientHandlers = (eventBus: EventBus) => {
-	const guildCache = GuildCache.getInstance()
-	const requestMiddleware = new RequestMiddleware(guildCache)
-
 	botClient.on(Events.MessageCreate, async message => {
-		await requestMiddleware.onMessageCreate(message)
 		await publishMessage(eventBus, message)
 	})
 	botClient.on(Events.ChannelPinsUpdate, listeners.onChannelPinsUpdate)
@@ -134,7 +128,7 @@ const init = () => {
 const setupSubscribers = (eventBus: EventBus) => {
 	const commandUpdaterService = new CommandUpdaterService(logger, DiscordCommandRegister)
 
-	const messageReceivedHandler = new MessageReceivedHandler(eventBus)
+	const messageReceivedHandler = new MessageReceivedHandler(eventBus, GuildCache.getInstance())
 	const userMessageReceivedHandler = new UserMessageReceivedHandler(GuildCache.getInstance())
 	const botMessageReceivedHandler = new BotMessageReceivedHandler()
 	const deployMessageReceivedHandler = new DeployMessageReceivedHandler(commandUpdaterService)
