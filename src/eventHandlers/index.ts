@@ -3,6 +3,7 @@ import { Logger } from 'pino'
 export { UserMessageReceivedHandler } from './userMessageReceivedHandler'
 export { BotMessageReceivedHandler } from './botMessageReceivedHandler'
 export { MessageReceivedHandler } from './messageReceivedHandler'
+export { AceMessageReceivedHandler } from './aceMessageReceivedHandler'
 
 /**
  * Handles an event

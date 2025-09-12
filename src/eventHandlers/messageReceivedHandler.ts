@@ -29,6 +29,8 @@ export class MessageReceivedHandler implements Handler {
 			this.eventBus.publish('botMessageReceived', data, logger)
 		} else if (this.isDeploy(data.data.content)) {
 			this.eventBus.publish('deployMessageReceived', data, logger)
+		} else if(this.isAce(data.data.content)) {
+			this.eventBus.publish('aceRenderRequestMessageReceived', data, logger)
 		} else {
 			this.eventBus.publish('userMessageReceived', data, logger)
 		}
@@ -36,5 +38,9 @@ export class MessageReceivedHandler implements Handler {
 
 	private isDeploy(messageContent: string): boolean {
 		return messageContent === '!deploy'
+	}
+
+	private isAce(messageContent: string): boolean {
+		return messageContent.startsWith('!ace')
 	}
 }

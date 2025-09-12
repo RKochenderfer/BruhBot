@@ -31,6 +31,7 @@ import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
 import { EventBuss as EventBus } from './events'
 import {
+	AceMessageReceivedHandler,
 	BotMessageReceivedHandler,
 	MessageReceivedHandler,
 	UserMessageReceivedHandler,
@@ -116,12 +117,14 @@ const setupSubscribers = (eventBus: EventBus) => {
 	const userMessageReceivedHandler = new UserMessageReceivedHandler()
 	const botMessageReceivedHandler = new BotMessageReceivedHandler()
 	const deployMessageReceivedHandler = new DeployMessageReceivedHandler(commandUpdaterService)
+	const aceMessageReceivedHandler = new AceMessageReceivedHandler()
 
 	// setup subscriptions
 	eventBus.subscribe('messageReceived', messageReceivedHandler.handle)
 	eventBus.subscribe('userMessageReceived', userMessageReceivedHandler.handle)
 	eventBus.subscribe('botMessageReceived', botMessageReceivedHandler.handle)
 	eventBus.subscribe('deployMessageReceived', deployMessageReceivedHandler.handle)
+	eventBus.subscribe('aceRenderRequestMessageReceived', aceMessageReceivedHandler.handle)
 }
 
 const registerCommands = () => {

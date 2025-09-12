@@ -22,13 +22,13 @@ export default class MessageHandler implements Handler {
 		}
 
 		if (this.isDeploy(this._message.content)) {
-			await updateCommands(this._message, DiscordCommandRegister)
+			// await updateCommands(this._message, DiscordCommandRegister)
 			return
 		}
 
 		if (this.isAce(this._message.content)) {
-			const aceHandler = new OnAceHandler(this._logger, this._message)
-			await aceHandler.execute()
+			// const aceHandler = new OnAceHandler(this._logger, this._message)
+			// await aceHandler.execute()
 		}
 
 		await this.handleFlaggedMessages(this._message.content)

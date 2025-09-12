@@ -5,6 +5,7 @@ const discordMessageEvents = [
 	'userMessageReceived',
 	'botMessageReceived',
 	'deployMessageReceived',
+	'aceRenderRequestMessageReceived',
 ] as const
 const discordEvents = [...discordMessageEvents, 'interactionCreated', 'channelPinsUpdated'] as const
 export type DiscordEvent = typeof discordEvents[number]
