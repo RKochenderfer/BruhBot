@@ -12,7 +12,7 @@ export class AceMessageReceivedHandler implements Handler {
 		logger.debug('Started to handle ace message')
 		const message = data.data
 		try {
-			message.reply('Your request has beben added to the queue')
+			message.reply('Your request has been added to the queue')
 			await render(data.data)
 		} catch (error) {
 			logger.error(error, 'Error occurred while handling ace message')

@@ -20,7 +20,8 @@ export class NotificationBuilder {
 			return this.fromDiscordInteractionEvent(botEvent, data)
 		}
 		switch (botEvent) {
-		default: throw new Error(`No builder implemented for event type: ${botEvent}`)
+			default:
+				throw new Error(`No builder implemented for event type: ${botEvent}`)
 		}
 	}
 
