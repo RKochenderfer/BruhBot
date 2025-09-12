@@ -37,9 +37,13 @@ services:
     container_name: bruhbot-objection-engine-dev
     ports:
       - '5000:5000'
+      - '5678:5678'
     volumes:
+      - ../objection-engine/app.py:/app/app.py
       - ../objection-engine/assets:/usr/src/app/assets/
-      - objection_engine:/usr/src/app/output/
+      - objection_engine:/app/output/
+    environment:
+      - DEBUG=True
   mongodb:
     container_name: bruhbot-mongodb-dev
     networks:
@@ -64,3 +68,9 @@ volumes:
       type: none
       device: ./.temp
   objection_engine:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ../objection-engine/temp
+    

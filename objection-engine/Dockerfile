@@ -1,43 +1,35 @@
-FROM python:3.10.11-slim-buster
+# ---------- 1. Builder Stage ----------
+FROM python:3.9 as builder
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Install build dependencies
 RUN apt-get update && \
-	apt-get install ffmpeg libsm6 g++ pkg-config libicu-dev python3-tk -y && \
-	pip install -r requirements.txt && \
-	apt-get clean && \
-	rm -rf ~/.cache/pip/*
+    apt-get install -y --no-install-recommends \
+        ffmpeg libsm6 g++ pkg-config libicu-dev python3-tk python3-dev && \
+    rm -rf /var/lib/apt/lists/*
 
+# Upgrade pip and install dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --prefix=/install --no-cache-dir -r requirements.txt
+
+# ---------- 2. Runtime Stage ----------
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install only runtime system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ffmpeg libsm6 libicu-dev python3-tk && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy installed Python packages from builder
+COPY --from=builder /install /usr/local
+
+# Copy application code
 COPY . .
 
 EXPOSE 5000
-
-# CMD FLASK_APP=app.py flask run
 CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]
-# FROM python:3.10.11 AS build
-
-
-# WORKDIR /app
-
-# COPY requirements.txt requirements.txt
-# RUN apt-get update && \
-# 	apt-get install -y libicu-dev && \
-# 	pip3 install --user --no-cache-dir -r requirements.txt
-
-# COPY . .
-
-# # Production stage
-# FROM python:3.10.11-slim-buster
-# LABEL org.opencontainers.image.source https://github.com/RKochenderfer/BruhBot
-
-# WORKDIR /app
-
-# COPY --from=build /root/.local /root/.local
-# ENV PATH=/root/.local/bin:$PATH
-
-# COPY . .
-
-# EXPOSE 5000/tcp
-
-# CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0"]

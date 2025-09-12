@@ -19,6 +19,9 @@ build/
 docs/_build/
 assets/
 .vscode
+output/
+__pychache__/
+temp/
 
 # Coverage reports
 htmlcov/

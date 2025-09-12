@@ -3,11 +3,21 @@ import shutil
 import requests
 import uuid
 import os
+import debugpy
+import shutil
+
 from objection_engine.renderer import render_comment_list
 from objection_engine.beans.comment import Comment
 from flask import Flask, request, Response
 from pathlib import Path
 from threading import Thread
+
+if os.getenv('DEBUG', 'false').lower() == 'true':
+    debugpy.listen(("0.0.0.0", 5678))
+    print("⏳ Waiting for debugger attach on port 5678...")
+
+if not Path('./output').exists():
+    Path('./output').mkdir(exist_ok=True)
 
 app = Flask(__name__)
 
@@ -48,9 +58,10 @@ def render_messages():
                     )
             )
 
-    filename='output/{}'.format(filename)
+    filename='{}'.format(filename)
     render_comment_list(comment_list=comments, output_filename=filename)
     cleanup_temp_imgs(messages)
+    shutil.move(filename, f'./output/{filename}')
     return Response(status=200)
 
 def download_all_attachments(messages):
