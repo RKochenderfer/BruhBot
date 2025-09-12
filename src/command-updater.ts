@@ -1,7 +1,4 @@
-import * as fs from 'fs'
-import * as path from 'path'
 import BotClient from './models/bot-client'
-import { Message, REST, Routes } from 'discord.js'
 import { logger } from './log/logger'
 import CommandRegister from './commandRegister'
 
@@ -16,46 +13,3 @@ export const getCommands = (client: BotClient, commandRegister: CommandRegister)
 	logger.info(client.commands)
 }
 
-/**
- * Updates the / commands for a server
- * @param message The sent message
- */
-export const updateCommands = async (message: Message, commandRegister: CommandRegister) => {
-	logger.info(`Updating commands for guild: ${message.guildId}`)
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const commands: any[] = []
-	const rest = new REST({ version: '10' }).setToken(process.env.TOKEN!)
-
-	try {
-		const commandsPath = path.join(__dirname, 'commands')
-		const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
-
-		// for (const file of commandFiles) {
-		// 	// eslint-disable-next-line @typescript-eslint/no-var-requires
-		// 	const command = require(`./commands/${file}`)
-		// 	if (file.includes('edit') || file.includes('add')) {
-		// 		continue
-		// 	}
-		// 	commands.push(command.data.toJSON())
-		// 	logger.debug(command.data.toJSON())
-		// }
-
-		for (let commandJSON of commandRegister.generateCommandDataJSON()) {
-			commands.push(commandJSON)
-			logger.debug(commandJSON)
-		}
-		logger.info(`Started refreshing ${commands.length} application (/) commands`)
-
-		if (!message.guildId) return
-
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const data: any = await rest.put(
-			Routes.applicationGuildCommands(process.env.CLIENT_ID!, message.guildId),
-			{ body: commands },
-		)
-		logger.info(`Successfully reloaded ${data.length} application (/) commands`)
-	} catch (error) {
-		message.reply({ content: 'Failed to update commands' })
-		logger.error(error)
-	}
-}
