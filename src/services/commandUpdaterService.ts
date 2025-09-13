@@ -1,9 +1,9 @@
 import { Message, REST, Routes } from 'discord.js'
 import { Logger } from 'pino'
-import CommandRegister from '../commandRegister'
+import CommandRegistry from '../commandRegister'
 
 export class CommandUpdaterService {
-	constructor(private logger: Logger, private commandRegistry: CommandRegister) {}
+	constructor(private logger: Logger, private commandRegistry: CommandRegistry) {}
 
 	/**
 	 * Updates the / commands for a guild

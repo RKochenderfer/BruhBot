@@ -9,7 +9,7 @@ import * as listeners from './listeners'
 import * as utils from './utils/utils'
 import * as db from './db'
 import { logger } from './log/logger'
-import CommandRegister from './commandRegister'
+import CommandRegistry from './commandRegister'
 import EditPhrase from './commands/editPhrase'
 import GuildCache from './caches/guildCache'
 import AddPhrase from './commands/addPhrase'
@@ -31,7 +31,7 @@ import { InteractionCreatedReceivedHandler } from './eventHandlers/interactionCr
 export const State = new AppState()
 export const MessageChecker = new Checker()
 export const ENV = process.env.ENVIRONMENT ?? 'Dev'
-export const DiscordCommandRegister = CommandRegister.Instance
+export const DiscordCommandRegister = CommandRegistry.Instance
 
 const botClient: BotClient = new Client({
 	intents: [

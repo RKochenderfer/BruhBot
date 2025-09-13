@@ -1,12 +1,12 @@
 import BotClient from './models/bot-client'
 import { logger } from './log/logger'
-import CommandRegister from './commandRegister'
+import CommandRegistry from './commandRegister'
 
 /**
  * Reads the files in commands and builds the commands
  * @param client The bot client instance
  */
-export const getCommands = (client: BotClient, commandRegister: CommandRegister) => {
+export const getCommands = (client: BotClient, commandRegister: CommandRegistry) => {
 	for (const command of commandRegister.generateCommandDetails()) {
 		client.commands?.set(command.name, command)
 	}

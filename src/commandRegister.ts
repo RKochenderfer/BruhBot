@@ -1,31 +1,43 @@
 import { RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
 import Command from './command';
-import { Logger } from 'pino';
-import { logger as baseLogger } from './log/logger'
 
+/**
+ * The registry for all interaction commands available to users on the guild servers
+ */
+export default class CommandRegistry {
+	private static _instance: CommandRegistry
+	private readonly _commands: Map<string, () => Command> = new Map()
 
-export default class CommandRegister {
-	private static _instance: CommandRegister
-	private readonly _commands: Map<string, (logger: Logger) => Command> = new Map()
-
-	public static get Instance(): CommandRegister {
+	public static get Instance(): CommandRegistry {
 		return this._instance || (this._instance = new this())
 	}
 
-	register = (name: string, create: (logger: Logger) => Command) => {
+	/**
+	 * Registers a command to the command registry
+	 * @param name the name of the command to register
+	 * @param create
+	 */
+	register(name: string, create: () => Command) {
 		this._commands.set(name, create)
 	}
 
+	/**
+	 * Generate the JSON data for all registered commands to be used in the registration
+	 * request to Discord
+	 */
 	*generateCommandDataJSON(): IterableIterator<RESTPostAPIChatInputApplicationCommandsJSONBody> {
 		for (const [_name, construct] of this._commands) {
-			const command = construct(baseLogger)
+			const command = construct()
 			yield command.toJSON()
 		}
 	}
 
+	/**
+	 * Generate the
+	 */
 	*generateCommandDetails(): IterableIterator<Command> {
 		for (const [_name, construct] of this._commands) {
-			yield construct(baseLogger)
+			yield construct()
 		}
 	}
 }
