@@ -5,17 +5,16 @@ export class RenderRequest {
 		if (headers.length === 0) {
 			throw new Error('Headers cannot be empty')
 		}
-		if (dataRows.length === 0) {
-			throw new Error('dataRows cannot be empty')
+		if (dataRows.length > 0) {
+			dataRows.forEach(dataRow => {
+				if (headers.length > dataRow.length) {
+					throw new Error('There are more headers than columns in the data row')
+				}
+				if (dataRow.length !== headers.length) {
+					throw new Error('Every data row must have a header')
+				}
+			})
 		}
-		dataRows.forEach(dataRow => {
-			if (headers.length > dataRow.length) {
-				throw new Error('There are more headers than columns in the data row')
-			}
-			if (dataRow.length !== headers.length) {
-				throw new Error('Every data row must have a header')
-			}
-		})
 
 		return new RenderRequest(headers, dataRows)
 	}
@@ -40,10 +39,12 @@ export class AsciiTable {
 		const headerRow = this.buildRow(request.headers, columnWidths)
 		tableRows.push(headerRow)
 
-		request.dataRows.forEach(dataRow => {
-			const stringDataRow = this.buildRow(dataRow, columnWidths)
-			tableRows.push(stringDataRow)
-		})
+		if (request.dataRows.length > 0) {
+			request.dataRows.forEach(dataRow => {
+				const stringDataRow = this.buildRow(dataRow, columnWidths)
+				tableRows.push(stringDataRow)
+			})
+		}
 
 		return tableRows.join('\n')
 	}

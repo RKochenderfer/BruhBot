@@ -30,7 +30,7 @@ export class InitiativeEndedHandler implements Handler {
 
 	private createDisplayString(rolls: DiceRolledInfo[]): string {
 		const headers = ['Name', 'Modifiers', 'Total']
-		const data: string[][] = rolls.map(x => [x.userName, x.roll.modifier, x.roll.total.toString()])
+		const data: string[][] = rolls.map(x => [x.name, x.roll.modifier, x.roll.total.toString()])
 
 		const renderRequest = RenderRequest.from(headers, data)
 		// the encasing ` are there so discord will format the table as code and use mono-spacing font

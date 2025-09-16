@@ -142,6 +142,7 @@ const setupSubscribers = (eventBus: EventBus) => {
 const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
 	const eventBus = EventBus.getinstance()
+	const asciiTable = new AsciiTable()
 
 	DiscordCommandRegister.register(EditPhrase.name, () => new EditPhrase(guildCache))
 	DiscordCommandRegister.register(AddPhrase.name, () => new AddPhrase(guildCache))
@@ -151,7 +152,7 @@ const registerCommands = () => {
 	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller(eventBus))
 	DiscordCommandRegister.register(Hug.name, () => new Hug())
 	DiscordCommandRegister.register(RemovePhrase.name, () => new RemovePhrase(guildCache))
-	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus))
+	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus, InitiativeCache.getInstance(), asciiTable))
 }
 
 try {

@@ -32,6 +32,10 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guildId
 	}
 
+	public get channelId(): string {
+		return this._interaction.channelId
+	}
+
 	public get options(): Omit<CommandInteractionOptionResolver<CacheType>, 'getMessage' | 'getFocused'> {
 		return this._interaction.options
 	}
@@ -53,6 +57,10 @@ export class ChatInputCommandInteractionWrapper {
 			return undefined
 		}
 		return this._interaction.channel as TextChannel
+	}
+
+	public get subcommand(): string | undefined {
+		return this._interaction.options.getSubcommand()
 	}
 
 	async followUp(followUpOptions: string | InteractionReplyOptions | MessagePayload): Promise<Message<boolean>> {

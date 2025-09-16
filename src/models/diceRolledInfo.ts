@@ -7,7 +7,7 @@ export class DiceRolledInfo {
 	private constructor(
 		readonly roll: RollInformation,
 		readonly userId: string,
-		readonly userName: string,
+		readonly name: string,
 		readonly guildId: string,
 		readonly channelId: string,
 		readonly rolledAt: Date,

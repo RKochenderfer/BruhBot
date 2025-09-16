@@ -35,9 +35,9 @@ class InitiativeCacheEntry {
 		if (!this._allowNewEntries) {
 			throw new Error('Initiative has been closed')
 		}
-		if (this.hasUserRolled(roll.userName)) {
+		if (this.hasUserRolled(roll.name)) {
 			// replace existing entries
-			const updatedRolls = [...this._diceRolledInfo].filter(x => x.userName !== roll.userName)
+			const updatedRolls = [...this._diceRolledInfo].filter(x => x.name !== roll.name)
 			updatedRolls.push(roll)
 			this._diceRolledInfo = updatedRolls
 		} else {
@@ -49,6 +49,22 @@ class InitiativeCacheEntry {
 	}
 
 	/**
+	 * Removes a roll saved with the provided name from the dice rolls
+	 * @param name the name of the entity whose roll is to be removed
+	 * @returns true if a roll was removed, false otherwise
+	 */
+	public removeRollByName(name: string): boolean {
+		if (!this.hasUserRolled(name)) {
+			return false
+		}
+
+		this._diceRolledInfo = [...this._diceRolledInfo].filter(d => d.name !== name)
+		this._timeUpdated = new Date()
+
+		return true
+	}
+
+	/**
 	 * Ends the initiative gathering process and no longer allow
 	 * new rolls
 	 */
@@ -57,22 +73,12 @@ class InitiativeCacheEntry {
 		this._timeUpdated = new Date()
 	}
 
-	public removeRollByName(name: string): DiceRolledInfo | undefined {
-		const entry = this._diceRolledInfo.find(d => d.userName === name)
-		if (entry) {
-			this._diceRolledInfo = [...this.diceRolls].filter(d => d.userName === name)
-			this._timeUpdated = new Date()
-		}
-
-		return entry
-	}
-
 	static new(): InitiativeCacheEntry {
 		return new InitiativeCacheEntry([], true, new Date(), new Date())
 	}
 
 	private hasUserRolled(name: string): boolean {
-		const entry = this._diceRolledInfo.find(d => d.userName === name)
+		const entry = this._diceRolledInfo.find(d => d.name === name)
 
 		return entry ? true : false
 	}
@@ -104,12 +110,11 @@ export class InitiativeCache {
 	 * @param channelId the channel where initiative is being tracked
 	 */
 	startInitiative(guildId: string, channelId: string) {
-		const key = this.buildCacheKey(guildId, channelId)
-
 		if (this.hasInitiativeTrackingStartedFor(guildId, channelId)) {
 			throw new Error('Initiative has already been started on this channel')
 		}
 
+		const key = this.buildCacheKey(guildId, channelId)
 		const newCacheEntry = InitiativeCacheEntry.new()
 		InitiativeCache._initiativeCache.set(key, newCacheEntry)
 
@@ -123,11 +128,9 @@ export class InitiativeCache {
 	 * @returns the unordered dice rolls gathered while the channel was in initiative rolling mode
 	 */
 	endInitiative(guildId: string, channelId: string): DiceRolledInfo[] {
-		const key = this.buildCacheKey(guildId, channelId)
-		if (this.hasInitiativeTrackingNotStartedFor(guildId, channelId)) {
-			throw new Error('Initiative rolling for the channel has not been started')
-		}
+		this.guardAgainstInitiativeNotStarted(guildId, channelId)
 
+		const key = this.buildCacheKey(guildId, channelId)
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 		cacheEntry.endInitiative()
 		InitiativeCache._initiativeCache.set(key, cacheEntry)
@@ -144,10 +147,8 @@ export class InitiativeCache {
 	 * @param roll the users roll
 	 */
 	addDiceRoll(roll: DiceRolledInfo) {
+		this.guardAgainstInitiativeNotStarted(roll.guildId, roll.channelId)
 		const key = this.buildCacheKey(roll.guildId, roll.channelId)
-		if (this.hasInitiativeTrackingNotStartedFor(roll.guildId, roll.channelId)) {
-			throw new Error('Initiative tracking has not started in this channel')
-		}
 
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 		cacheEntry.addRoll(roll)
@@ -177,7 +178,15 @@ export class InitiativeCache {
 		return !this.hasInitiativeTrackingStartedFor(guildId, channelId)
 	}
 
+	/**
+	 * Check to see if initiatives are still being gathered for a channel
+	 * @param guildId
+	 * @param channelId
+	 * @returns
+	 */
 	isInitiativeActive(guildId: string, channelId: string): boolean {
+		this.guardAgainstInitiativeNotStarted(guildId, channelId)
+
 		const key = this.buildCacheKey(guildId, channelId)
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)
 
@@ -196,15 +205,57 @@ export class InitiativeCache {
 	 * @returns the current dice results of the dice that have been rolled
 	 */
 	getRolls(guildId: string, channelId: string): DiceRolledInfo[] {
+		this.guardAgainstInitiativeNotStarted(guildId, channelId)
+
 		const key = this.buildCacheKey(guildId, channelId)
-		if (this.hasInitiativeTrackingNotStartedFor(guildId, channelId)) {
-			throw new Error('Channel has not started to roll initiative')
+		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
+		this.cleanCache()
+
+		return cacheEntry.diceRolls
+	}
+
+	// TODO: Test this
+	/**
+	 * Retrieves the ordered list of rolls
+	 * @param guildId the guild id the channel is in
+	 * @param channelId the channel id to retrieve the rolls from
+	 * @param isDescending the order it should be sorted in
+	 */
+	getOrderedRolls(guildId: string, channelId: string, isDescending: boolean): DiceRolledInfo[] {
+		this.guardAgainstInitiativeNotStarted(guildId, channelId)
+
+		const key = this.buildCacheKey(guildId, channelId)
+		const cacheEntries = InitiativeCache._initiativeCache.get(key)!
+
+		let sortedEntries = []
+		if (isDescending) {
+			sortedEntries = [...cacheEntries.diceRolls].sort((a, b) => b.roll.total - a.roll.total) // TODO: Modify algorithm to handle ties where higher modifier wins
+		} else {
+			sortedEntries = [...cacheEntries.diceRolls].sort((a, b) => a.roll.total - b.roll.total) // TODO: Modify algorithm to handle ties where higher modifier wins
 		}
 
 		this.cleanCache()
-		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 
-		return cacheEntry.diceRolls
+		return sortedEntries
+	}
+
+	/**
+	 * Removes the entry with the passed in
+	 * @param guildId
+	 * @param channelId
+	 * @param name
+	 */
+	removeFor(guildId: string, channelId: string, name: string): boolean {
+		this.guardAgainstInitiativeNotStarted(guildId, channelId)
+
+		const key = this.buildCacheKey(guildId, channelId)
+		const entry = InitiativeCache._initiativeCache.get(key)!
+		const wasRemoved = entry.removeRollByName(name)
+		InitiativeCache._initiativeCache.set(key, entry)
+
+		this.cleanCache()
+
+		return wasRemoved
 	}
 
 	private buildCacheKey(guildId: string, channelId: string): CacheKey {
@@ -215,6 +266,7 @@ export class InitiativeCache {
 	 * Removes expired cache entries
 	 */
 	private cleanCache() {
+		// TODO: Figure out how to offload this to a worker or something so it doesn't bog everything down
 		const keysToRemove = []
 		for (const [key, entry] of InitiativeCache._initiativeCache.entries()) {
 			if (this.isEntryExpired(entry)) {
@@ -236,5 +288,16 @@ export class InitiativeCache {
 		const threeHoursInMs = 3 * 60 * 60 * 1000
 
 		return now.getTime() - entry.timeUpdated.getTime() >= threeHoursInMs
+	}
+
+	/**
+	 * Guards against the initiative not being started for the
+	 * @param guildId
+	 * @param channelId
+	 */
+	private guardAgainstInitiativeNotStarted(guildId: string, channelId: string) {
+		if (this.hasInitiativeTrackingNotStartedFor(guildId, channelId)) {
+			throw new Error('Initiative was never started for this channel')
+		}
 	}
 }
