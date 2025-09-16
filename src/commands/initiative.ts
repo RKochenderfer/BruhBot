@@ -156,9 +156,9 @@ export default class Initiative extends Command {
 
 	private async replyToUserForStateSubcommand(interaction: ChatInputCommandInteractionWrapper, isStart: boolean) {
 		if (isStart) {
-			await interaction.reply({ content: 'Started initiative tracking', flags: 'Ephemeral' })
+			await interaction.reply('Started initiative tracking')
 		} else {
-			await interaction.reply({ content: 'Ended initiative tracking', flags: 'Ephemeral' })
+			await interaction.reply('Ended initiative tracking')
 		}
 	}
 }
