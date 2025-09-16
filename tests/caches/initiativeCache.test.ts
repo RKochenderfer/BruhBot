@@ -344,4 +344,101 @@ describe('initiativeCache tests', () => {
 		expect(otherEntry.channelId).toBe(differentChannelId)
 		expect(otherEntry.rolledAt).toBe(differentRolledAt)
 	})
+
+	test('getRolls should return the roll results for only that channel even if initiative has ended', () => {
+		// arrange
+		// arrange
+		// arrange initiative
+		const differentChannelGuildId = crypto.randomUUID()
+		const differentChannelId = crypto.randomUUID()
+		const cache = InitiativeCache.getInstance()
+		cache.startInitiative(differentChannelGuildId, differentChannelId)
+
+		// arrange roll
+		const differentChannel = {
+			diceCount: 2,
+			dieType: 20,
+			modifier: '+1',
+			values: [3, 4],
+		} as RollInformation
+		const differentUserId = crypto.randomUUID()
+		const differentUserName = 'different'
+		const differentRolledAt = new Date()
+		const differentChannelRolledInfo = DiceRolledInfo.from(
+			differentChannel,
+			differentUserId,
+			differentUserName,
+			differentChannelGuildId,
+			differentChannelId,
+			differentRolledAt,
+		)
+
+		cache.addDiceRoll(differentChannelRolledInfo)
+
+		const newRolledInformation = {
+			diceCount: 1,
+			dieType: 6,
+			modifier: '-1',
+			values: [2, 1],
+		} as RollInformation
+		const guildId = crypto.randomUUID()
+		const channelId = crypto.randomUUID()
+		const userId = crypto.randomUUID()
+		const userName = 'test'
+		const rolledAt = new Date()
+		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, rolledAt)
+		cache.startInitiative(guildId, channelId)
+		cache.addDiceRoll(newRollInfo)
+		cache.endInitiative(guildId, channelId)
+
+		// act
+		const rolls = cache.getRolls(guildId, channelId)
+
+		// assert
+		// assert returned rolls is only from the passed in guild
+		expect(rolls.length).toBe(1)
+		const entry = rolls[0]
+
+		expect(entry.roll.diceCount).toBe(newRolledInformation.diceCount)
+		expect(entry.roll.dieType).toBe(newRolledInformation.dieType)
+		expect(entry.roll.modifier).toBe(newRolledInformation.modifier)
+
+		expect(entry.roll.values.length).toBe(newRolledInformation.values.length)
+		for (let i = 0; i < entry.roll.values.length; i++) {
+			expect(entry.roll.values[i]).toBe(newRolledInformation.values[i])
+		}
+
+		expect(entry.userId).toBe(userId)
+		expect(entry.userName).toBe(userName)
+		expect(entry.guildId).toBe(guildId)
+		expect(entry.channelId).toBe(channelId)
+		expect(entry.rolledAt).toBe(rolledAt)
+
+		// assert other initiative is still active and unchanged
+		const otherChannelHasInitiativeTrackingStarted = cache.hasInitiativeTrackingStartedFor(
+			differentChannelGuildId,
+			differentChannelId,
+		)
+		expect(otherChannelHasInitiativeTrackingStarted).toBe(true)
+
+		const entries = cache.getRolls(differentChannelGuildId, differentChannelId)
+
+		expect(entries.length).toBe(1)
+		const otherEntry = entries[0]
+
+		expect(otherEntry.roll.diceCount).toBe(differentChannel.diceCount)
+		expect(otherEntry.roll.dieType).toBe(differentChannel.dieType)
+		expect(otherEntry.roll.modifier).toBe(differentChannel.modifier)
+
+		expect(otherEntry.roll.values.length).toBe(differentChannel.values.length)
+		for (let i = 0; i < otherEntry.roll.values.length; i++) {
+			expect(otherEntry.roll.values[i]).toBe(differentChannel.values[i])
+		}
+
+		expect(otherEntry.userId).toBe(differentUserId)
+		expect(otherEntry.userName).toBe(differentUserName)
+		expect(otherEntry.guildId).toBe(differentChannelGuildId)
+		expect(otherEntry.channelId).toBe(differentChannelId)
+		expect(otherEntry.rolledAt).toBe(differentRolledAt)
+	})
 })

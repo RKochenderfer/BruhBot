@@ -110,7 +110,6 @@ export class InitiativeCache {
 			throw new Error('Initiative has already been started on this channel')
 		}
 
-		
 		const newCacheEntry = InitiativeCacheEntry.new()
 		InitiativeCache._initiativeCache.set(key, newCacheEntry)
 
@@ -129,7 +128,6 @@ export class InitiativeCache {
 			throw new Error('Initiative rolling for the channel has not been started')
 		}
 
-		
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 		cacheEntry.endInitiative()
 		InitiativeCache._initiativeCache.set(key, cacheEntry)
@@ -151,11 +149,10 @@ export class InitiativeCache {
 			throw new Error('Initiative tracking has not started in this channel')
 		}
 
-		
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 		cacheEntry.addRoll(roll)
 		InitiativeCache._initiativeCache.set(key, cacheEntry)
-		
+
 		this.cleanCache()
 	}
 
@@ -232,7 +229,7 @@ export class InitiativeCache {
 
 	/**
 	 * Checks if an entry has not been updated in 3 hours
-	 * @param entry 
+	 * @param entry
 	 */
 	private isEntryExpired(entry: InitiativeCacheEntry): boolean {
 		const now = new Date()
