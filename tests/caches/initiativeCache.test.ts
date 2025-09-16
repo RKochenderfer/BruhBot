@@ -17,7 +17,7 @@ describe('initiativeCache tests', () => {
 		expect(hasInitiativeStarted).toBe(true)
 	})
 
-	test('endInitiative should remove the cache entry', () => {
+	test('endInitiative should not allow new entries', () => {
 		// arrange
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
@@ -28,8 +28,25 @@ describe('initiativeCache tests', () => {
 		cache.endInitiative(guildId, channelId)
 
 		// assert
-		const hasInitiativeStarted = cache.hasInitiativeTrackingStartedFor(guildId, channelId)
-		expect(hasInitiativeStarted).toBe(false)
+		const isInitiativeActive = cache.isInitiativeActive(guildId, channelId)
+		expect(isInitiativeActive).toBe(false)
+
+		const rollInformation = {
+			diceCount: 2,
+			dieType: 20,
+			modifier: '+1',
+			values: [3, 4],
+		} as RollInformation
+		const userId = crypto.randomUUID()
+		const userName = 'test'
+		const rolledAt = new Date()
+		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
+
+		const add = () => {
+			cache.addDiceRoll(diceRolledInfo)
+		}
+
+		expect(add).toThrow(Error)
 	})
 
 	test('endInitiative when it has not been started should throw an error', () => {
@@ -103,6 +120,50 @@ describe('initiativeCache tests', () => {
 		expect(entry.guildId).toBe(guildId)
 		expect(entry.channelId).toBe(channelId)
 		expect(entry.rolledAt).toBe(rolledAt)
+	})
+
+	test('addDiceRoll should throw error if initiative has ended', () => {
+		// arrange
+		// arrange initiative
+		const guildId = crypto.randomUUID()
+		const channelId = crypto.randomUUID()
+		const cache = InitiativeCache.getInstance()
+		cache.startInitiative(guildId, channelId)
+
+		// arrange first roll
+		const rollInformation = {
+			diceCount: 2,
+			dieType: 20,
+			modifier: '+1',
+			values: [3, 4],
+		} as RollInformation
+		const userId = crypto.randomUUID()
+		const userName = 'test'
+		const rolledAt = new Date()
+		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
+		cache.addDiceRoll(diceRolledInfo)
+
+		// arrange roll that will fail
+		const newRollInformation = {
+			diceCount: 2,
+			dieType: 20,
+			modifier: '+1',
+			values: [3, 4],
+		} as RollInformation
+		const newUserId = crypto.randomUUID()
+		const newUserName = 'test'
+		const newRolledAt = new Date()
+		const newDiceRolledInfo = DiceRolledInfo.from(newRollInformation, newUserId, newUserName, guildId, channelId, newRolledAt)
+
+		cache.endInitiative(guildId, channelId)
+
+		// act
+		const act = () => {
+			cache.addDiceRoll(newDiceRolledInfo)
+		}
+
+		// assert
+		expect(act).toThrow(Error)
 	})
 
 	test('addDiceRoll should throw an error if a channel that is not tracking initiative tries to add a roll', () => {
