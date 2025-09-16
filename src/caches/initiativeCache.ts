@@ -110,9 +110,11 @@ export class InitiativeCache {
 			throw new Error('Initiative has already been started on this channel')
 		}
 
+		
 		const newCacheEntry = InitiativeCacheEntry.new()
-
 		InitiativeCache._initiativeCache.set(key, newCacheEntry)
+
+		this.cleanCache()
 	}
 
 	/**
@@ -127,9 +129,12 @@ export class InitiativeCache {
 			throw new Error('Initiative rolling for the channel has not been started')
 		}
 
+		
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 		cacheEntry.endInitiative()
 		InitiativeCache._initiativeCache.set(key, cacheEntry)
+
+		this.cleanCache()
 
 		return cacheEntry.diceRolls
 	}
@@ -146,9 +151,12 @@ export class InitiativeCache {
 			throw new Error('Initiative tracking has not started in this channel')
 		}
 
+		
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
 		cacheEntry.addRoll(roll)
 		InitiativeCache._initiativeCache.set(key, cacheEntry)
+		
+		this.cleanCache()
 	}
 
 	/**
@@ -196,11 +204,40 @@ export class InitiativeCache {
 			throw new Error('Channel has not started to roll initiative')
 		}
 
+		this.cleanCache()
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
+
 		return cacheEntry.diceRolls
 	}
 
 	private buildCacheKey(guildId: string, channelId: string): CacheKey {
 		return `${guildId}|${channelId}`
+	}
+
+	/**
+	 * Removes expired cache entries
+	 */
+	private cleanCache() {
+		const keysToRemove = []
+		for (const [key, entry] of InitiativeCache._initiativeCache.entries()) {
+			if (this.isEntryExpired(entry)) {
+				keysToRemove.push(key)
+			}
+		}
+
+		for (const key of keysToRemove) {
+			InitiativeCache._initiativeCache.delete(key)
+		}
+	}
+
+	/**
+	 * Checks if an entry has not been updated in 3 hours
+	 * @param entry 
+	 */
+	private isEntryExpired(entry: InitiativeCacheEntry): boolean {
+		const now = new Date()
+		const threeHoursInMs = 3 * 60 * 60 * 1000
+
+		return now.getTime() - entry.timeUpdated.getTime() >= threeHoursInMs
 	}
 }
