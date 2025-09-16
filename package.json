@@ -43,7 +43,7 @@
     "tabWidth": 4,
     "useTabs": true,
     "arrowParens": "avoid",
-    "printWidth": 150
+    "printWidth": 120
   },
   "homepage": "https://github.com/RKochenderfer/BruhBot#readme",
   "devDependencies": {

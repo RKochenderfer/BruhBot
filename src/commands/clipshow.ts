@@ -29,7 +29,9 @@ export default class Clipshow extends Command {
 		const randomPinnedMessage = guild.pins[Math.floor(Math.random() * guild.pins.length)]
 		const author = await interaction.guild?.members.fetch(randomPinnedMessage.userId!)
 
-		await interaction.followUp(`> ${randomPinnedMessage.message}\n\t-**${author?.nickname ? author.nickname : author?.user.username}**`)
+		await interaction.followUp(
+			`> ${randomPinnedMessage.message}\n\t-**${author?.nickname ? author.nickname : author?.user.username}**`,
+		)
 
 		logger.debug('Completed clipshow')
 	}

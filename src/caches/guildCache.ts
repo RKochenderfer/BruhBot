@@ -191,7 +191,15 @@ export default class GuildCache extends LFUCache<Guild> {
 	private initializeFlaggedPatterns(uninitializedFlaggedPatterns: FlaggedPattern[]): FlaggedPattern[] {
 		const patterns = []
 		for (const pattern of uninitializedFlaggedPatterns) {
-			patterns.push(new FlaggedPattern(pattern.key, pattern.expression, pattern.response, pattern.flags, pattern.messageHistory))
+			patterns.push(
+				new FlaggedPattern(
+					pattern.key,
+					pattern.expression,
+					pattern.response,
+					pattern.flags,
+					pattern.messageHistory,
+				),
+			)
 		}
 
 		return patterns

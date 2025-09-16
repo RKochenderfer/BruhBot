@@ -1,5 +1,5 @@
 import { Message } from 'discord.js'
-import { EventBuss, Notification } from '../events'
+import { EventBus, Notification } from '../events'
 import { Handler } from '.'
 import { Logger } from 'pino'
 import GuildCache from '../caches/guildCache'
@@ -9,7 +9,7 @@ import Guild from '../models/guild'
  * Handles a message event that originated from a user (not a bot)
  */
 export class MessageReceivedHandler implements Handler {
-	constructor(private readonly _eventBus: EventBuss, private readonly _guildCache: GuildCache) {}
+	constructor(private readonly _eventBus: EventBus, private readonly _guildCache: GuildCache) {}
 
 	handle = async (logger: Logger, data: Notification<Message>): Promise<void> => {
 		logger.debug('Started to handle generic message')

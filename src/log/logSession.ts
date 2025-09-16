@@ -44,7 +44,13 @@ export default class LogSession {
 		Guard.Against.EmptyOrWhitespace(message.guildId)
 		Guard.Against.EmptyOrWhitespace(message.guild?.name)
 
-		return new LogSession(message.author.username, crypto.randomUUID(), message.author.id, message.guildId!, message.guild!.name!)
+		return new LogSession(
+			message.author.username,
+			crypto.randomUUID(),
+			message.author.id,
+			message.guildId!,
+			message.guild!.name!,
+		)
 	}
 
 	public static fromBaseInteraction(baseInteraction: BaseInteraction): LogSession {
@@ -63,7 +69,13 @@ export default class LogSession {
 	}
 
 	public static fromBaseGuildTextChannel(channel: BaseGuildTextChannel): LogSession {
-		return new LogSession(`guild-	${channel.guild.name}`, crypto.randomUUID(), `guild-	${channel.guild.name}`, channel.guildId, channel.guild.name)
+		return new LogSession(
+			`guild-	${channel.guild.name}`,
+			crypto.randomUUID(),
+			`guild-	${channel.guild.name}`,
+			channel.guildId,
+			channel.guild.name,
+		)
 	}
 
 	public static fromCorrelationId(correlationId: UUID): LogSession {

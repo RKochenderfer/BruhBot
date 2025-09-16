@@ -4,28 +4,31 @@ import { AsciiTable } from '../ascii-table'
 import Command from '../command'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import { Logger } from 'pino'
-
-interface RollInformation {
-	diceCount: number
-	dieType: number
-	modifier: string
-	values: number[]
-}
+import { EventBus } from '../events/eventBus'
+import { RollInformation } from '../models/rollInformation'
+import { DiceRolledInfo } from '../models/diceRolledInfo'
+import { Notification } from '../events'
 
 export default class DiceRoller extends Command {
 	private readonly _regex = /^\d+d\d+([+|-]\d)?/
 	private readonly _parser: Parser
+	private readonly _eventBus: EventBus
 
-	constructor() {
+	constructor(eventBus: EventBus) {
 		const name = 'roll'
 		const data = new SlashCommandBuilder()
 			.setName('roll')
 			.setDescription('rolls the specified die and the number of dice to be rolled')
-			.addStringOption(option => option.setName('dice').setDescription('Number and type of dice to roll. ex: 2d6+1').setRequired(true))
-			.addBooleanOption(option => option.setName('whisper').setDescription('whisper the roll to the sender').setRequired(false))
+			.addStringOption(option =>
+				option.setName('dice').setDescription('Number and type of dice to roll. ex: 2d6+1').setRequired(true),
+			)
+			.addBooleanOption(option =>
+				option.setName('whisper').setDescription('whisper the roll to the sender').setRequired(false),
+			)
 
 		super(name, data)
 		this._parser = new Parser()
+		this._eventBus = eventBus
 	}
 
 	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
@@ -44,16 +47,29 @@ export default class DiceRoller extends Command {
 			})
 			return
 		}
+		const rollInfo = this.processRoll(rollString)
+		const displayRoll = this.displayRoll(rollInfo)
+		const diceRolledInfo = DiceRolledInfo.from(
+			rollInfo,
+			interaction.userId,
+			interaction.username,
+			interaction.guildId!,
+			interaction.interaction.channelId,
+			new Date(),
+		)
+		const notification = Notification.from('diceRolled', diceRolledInfo)
+
+		this._eventBus.publish('diceRolled', notification, logger)
 
 		await interaction.reply({
-			content: await this.processRoll(rollString),
+			content: displayRoll,
 			ephemeral: isWhisper,
 		})
 
 		logger.debug('Completed roll')
 	}
 
-	private async processRoll(rollString: string): Promise<string> {
+	private processRoll(rollString: string): RollInformation {
 		const values = []
 		const split = rollString.split('d')
 		let dieType = 0
@@ -82,21 +98,17 @@ export default class DiceRoller extends Command {
 			values.push(this.getRandomInt(dieType))
 		}
 
-		return this.displayRoll({
-			diceCount: dieCount,
-			dieType: dieType,
-			modifier: modString,
-			values: values,
-		} as RollInformation)
+		const mod = modString === '' ? 0 : this._parser.evaluate(modString)
+		const total = values.reduce((prev, curr) => prev + curr, 0) + mod
+
+		return RollInformation.from(dieCount, dieType, modString, values, total)
 	}
 
-	private displayRoll = (rollInfo: RollInformation): string => {
+	private displayRoll(rollInfo: RollInformation): string {
 		const rollEntry = `${rollInfo.diceCount}d${rollInfo.dieType}${rollInfo.modifier}`
-
-		const mod = rollInfo.modifier === '' ? 0 : this._parser.evaluate(rollInfo.modifier)
 		const data = [
 			['Roll', 'Values', 'Total'],
-			[rollEntry, rollInfo.values.toString(), rollInfo.values.reduce((prev, curr) => prev + curr, 0) + mod],
+			[rollEntry, rollInfo.values.toString(), rollInfo.total],
 		]
 
 		const asciiTable = new AsciiTable()

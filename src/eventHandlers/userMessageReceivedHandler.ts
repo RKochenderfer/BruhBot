@@ -29,8 +29,13 @@ export class UserMessageReceivedHandler implements Handler {
 			const isFlagged = flaggedPatternHelper.isTextFlagged(content)
 
 			if (isFlagged) {
-				logger.debug(flaggedPatternHelper.matchedFlag, `Flagged message found in guild ${message.guild?.name} ${message.guildId}`)
+				logger.debug(
+					flaggedPatternHelper.matchedFlag,
+					`Flagged message found in guild ${message.guild?.name} ${message.guildId}`,
+				)
 				await this.updateFlaggedPattern(flaggedPatternHelper, message, guild)
+				const channel = message.channel as TextChannel
+				await channel.send(flaggedPatternHelper.buildMatchedResponse())
 			}
 		} catch (error) {
 			logger.error(error, 'Error occurred while handling user message')
@@ -44,10 +49,12 @@ export class UserMessageReceivedHandler implements Handler {
 	 * @param message
 	 * @param guild
 	 */
-	private async updateFlaggedPattern(flaggedPatternHelper: FlaggedPatternHelper, message: Message<boolean>, guild: Guild) {
+	private async updateFlaggedPattern(
+		flaggedPatternHelper: FlaggedPatternHelper,
+		message: Message<boolean>,
+		guild: Guild,
+	) {
 		flaggedPatternHelper.updateHistory(message)
 		await this._guildCache.updateFlaggedPattern(guild.guildId, flaggedPatternHelper.matchedFlag!)
-		const channel = message.channel as TextChannel
-		await channel.send(flaggedPatternHelper.buildMatchedResponse())
 	}
 }

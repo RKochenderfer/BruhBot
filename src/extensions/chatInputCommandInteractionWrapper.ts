@@ -9,12 +9,14 @@ import {
 	Message,
 	MessagePayload,
 	PermissionsBitField,
+	TextChannel,
 } from 'discord.js'
 
 export class ChatInputCommandInteractionWrapper {
+	private hasResponded = false
 	private constructor(private _interaction: ChatInputCommandInteraction) {}
 
-	static from = (interaction: ChatInputCommandInteraction): ChatInputCommandInteractionWrapper => {
+	static from(interaction: ChatInputCommandInteraction): ChatInputCommandInteractionWrapper {
 		return new ChatInputCommandInteractionWrapper(interaction)
 	}
 
@@ -38,25 +40,47 @@ export class ChatInputCommandInteractionWrapper {
 		return this._interaction.guild!.name
 	}
 
-	followUp = async (followUpOptions: string | InteractionReplyOptions | MessagePayload): Promise<Message<boolean>> =>
-		await await this._interaction.followUp(followUpOptions)
+	public get userId(): string {
+		return this._interaction.user.id
+	}
 
-	reply = async (replyOptions: string | InteractionReplyOptions | MessagePayload): Promise<InteractionResponse<boolean>> => {
+	public get username(): string {
+		return this._interaction.user.username
+	}
+
+	public get textChannel(): TextChannel | undefined {
+		if (this._interaction.channel === null) {
+			return undefined
+		}
+		return this._interaction.channel as TextChannel
+	}
+
+	async followUp(followUpOptions: string | InteractionReplyOptions | MessagePayload): Promise<Message<boolean>> {
+		return await this._interaction.followUp(followUpOptions)
+	}
+
+	async reply(
+		replyOptions: string | InteractionReplyOptions | MessagePayload,
+	): Promise<InteractionResponse<boolean>> {
+		if (this.hasResponded) {
+			throw new Error('You have already responded to this interaction')
+		}
+		this.hasResponded = true
 		return await this._interaction.reply(replyOptions)
 	}
 
-	deferReply = async (options?: InteractionDeferReplyOptions | undefined): Promise<InteractionResponse<boolean>> => {
+	async deferReply(options?: InteractionDeferReplyOptions | undefined): Promise<InteractionResponse<boolean>> {
 		return await this.interaction.deferReply(options)
 	}
 
-	isAdmin = (): boolean => {
+	isAdmin(): boolean {
 		if (this._interaction.memberPermissions == null) {
 			throw 'Member permissions is null'
 		}
 		return this._interaction.memberPermissions.has(PermissionsBitField.Flags.Administrator)
 	}
 
-	isNotAdmin = (): boolean => {
+	isNotAdmin(): boolean {
 		return !this.isAdmin()
 	}
 }

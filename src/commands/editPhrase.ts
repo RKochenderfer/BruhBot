@@ -11,22 +11,37 @@ export default class EditPhrase extends Command {
 		const data = new SlashCommandBuilder()
 			.setName(name)
 			.setDescription('Edit a phrase to the message checker')
-			.addStringOption(option => option.setName('key').setDescription('The existing phrase in the database').setRequired(true))
+			.addStringOption(option =>
+				option.setName('key').setDescription('The existing phrase in the database').setRequired(true),
+			)
 			.addStringOption(option =>
 				option
 					.setName('regex_expression')
-					.setDescription('The regex expression for bruhbot to check against (ex: gonk). Do not include flags here')
+					.setDescription(
+						'The regex expression for bruhbot to check against (ex: gonk). Do not include flags here',
+					)
 					.setRequired(true),
 			)
-			.addStringOption(option => option.setName('response').setDescription('The response Bruhbot will give to the sender').setRequired(true))
 			.addStringOption(option =>
-				option.setName('regex_flags').setDescription('The flags to be applied to the regex expression').setRequired(false),
+				option
+					.setName('response')
+					.setDescription('The response Bruhbot will give to the sender')
+					.setRequired(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName('regex_flags')
+					.setDescription('The flags to be applied to the regex expression')
+					.setRequired(false),
 			)
 
 		super(name, data)
 	}
 
-	execute = async (logger: Logger, interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper): Promise<void> => {
+	execute = async (
+		logger: Logger,
+		interaction: ChatInputCommandInteraction | ChatInputCommandInteractionWrapper,
+	): Promise<void> => {
 		logger.debug('Started to edit a phrase')
 
 		interaction = interaction as ChatInputCommandInteractionWrapper

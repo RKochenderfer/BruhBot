@@ -12,16 +12,28 @@ export default class AddPhrase extends Command {
 		const data = new SlashCommandBuilder()
 			.setName(name)
 			.setDescription('Adds a phrase to the message checker')
-			.addStringOption(option => option.setName('key').setDescription('The word that is being checked for.').setRequired(true))
+			.addStringOption(option =>
+				option.setName('key').setDescription('The word that is being checked for.').setRequired(true),
+			)
 			.addStringOption(option =>
 				option
 					.setName('regex_expression')
-					.setDescription('The regex expression for bruhbot to check against (ex: gonk). Do not include flags here')
+					.setDescription(
+						'The regex expression for bruhbot to check against (ex: gonk). Do not include flags here',
+					)
 					.setRequired(true),
 			)
-			.addStringOption(option => option.setName('response').setDescription('The response Bruhbot will give to the sender').setRequired(true))
 			.addStringOption(option =>
-				option.setName('regex_flags').setDescription('The flags to be applied to the regex expression').setRequired(false),
+				option
+					.setName('response')
+					.setDescription('The response Bruhbot will give to the sender')
+					.setRequired(true),
+			)
+			.addStringOption(option =>
+				option
+					.setName('regex_flags')
+					.setDescription('The flags to be applied to the regex expression')
+					.setRequired(false),
 			)
 
 		super(name, data)
@@ -55,7 +67,11 @@ export default class AddPhrase extends Command {
 		logger.info('Completed adding flagged phrase to guild')
 	}
 
-	private async addPattern(logger: Logger, interaction: ChatInputCommandInteractionWrapper, flaggedPattern: FlaggedPattern) {
+	private async addPattern(
+		logger: Logger,
+		interaction: ChatInputCommandInteractionWrapper,
+		flaggedPattern: FlaggedPattern,
+	) {
 		const currentGuild = this._guildCache.getCacheEntry(interaction.guildId!)
 		const updatedGuild = {
 			...currentGuild,

@@ -65,7 +65,10 @@ export class GuildCollection {
 	}
 
 	removePattern = async (guildId: string, keyToBeRemoved: string): Promise<void> => {
-		await this._serverCollection.updateOne({ guildId: guildId }, { $pull: { flaggedPatterns: { key: keyToBeRemoved } } })
+		await this._serverCollection.updateOne(
+			{ guildId: guildId },
+			{ $pull: { flaggedPatterns: { key: keyToBeRemoved } } },
+		)
 	}
 
 	updatePins = async (guildId: string, pins: Pin[]): Promise<void> => {

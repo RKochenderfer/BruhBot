@@ -1,5 +1,8 @@
-export { EventBuss } from './eventBus'
+export { EventBus } from './eventBus'
 
+/** Events that occur while bruhbot is processing */
+const bruhBotEvents = ['diceRolled', 'initiativeStarted', 'initiativeEnded'] as const
+/** Events produced from discord messages */
 const discordMessageEvents = [
 	'messageReceived',
 	'userMessageReceived',
@@ -7,7 +10,7 @@ const discordMessageEvents = [
 	'deployMessageReceived',
 	'aceRenderRequestMessageReceived',
 ] as const
-const discordEvents = [...discordMessageEvents, 'interactionCreated', 'channelPinsUpdated'] as const
+const discordEvents = [...discordMessageEvents, ...bruhBotEvents, 'interactionCreated', 'channelPinsUpdated'] as const
 export type DiscordEvent = typeof discordEvents[number]
 export type DiscordMessageEvent = typeof discordMessageEvents[number]
 

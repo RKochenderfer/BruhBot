@@ -8,7 +8,9 @@ import Pin from '../models/pin'
 export default class AddPins extends Command {
 	constructor(private _guildCache: GuildCache) {
 		const name = 'addpins'
-		const data = new SlashCommandBuilder().setName('addpins').setDescription('Adds all pinned comments to quote database')
+		const data = new SlashCommandBuilder()
+			.setName('addpins')
+			.setDescription('Adds all pinned comments to quote database')
 
 		super(name, data)
 	}
@@ -32,7 +34,10 @@ export default class AddPins extends Command {
 
 				pins = [
 					...pins,
-					...pinnedMessages.map((message, _id) => new Pin(message.content, message.createdTimestamp.toString(), message.author.id)),
+					...pinnedMessages.map(
+						(message, _id) =>
+							new Pin(message.content, message.createdTimestamp.toString(), message.author.id),
+					),
 				]
 			}
 		}

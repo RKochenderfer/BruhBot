@@ -13,20 +13,25 @@ import CommandRegistry from './commandRegister'
 import EditPhrase from './commands/editPhrase'
 import GuildCache from './caches/guildCache'
 import AddPhrase from './commands/addPhrase'
-import { Logger } from 'pino'
 import Bruh from './commands/bruh'
 import AddPins from './commands/addPins'
 import Clipshow from './commands/clipshow'
 import DiceRoller from './commands/diceRoller'
 import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
-import { EventBuss as EventBus } from './events'
+import { EventBus } from './events'
 import { AceMessageReceivedHandler, BotMessageReceivedHandler, MessageReceivedHandler, UserMessageReceivedHandler } from './eventHandlers'
 import { NotificationBuilder } from './extensions/notificationBuilder'
 import LogSession from './log/logSession'
 import { CommandUpdaterService } from './services/commandUpdaterService'
 import { DeployMessageReceivedHandler } from './eventHandlers/deployMessageReceivedHandler'
 import { InteractionCreatedReceivedHandler } from './eventHandlers/interactionCreatedReceivedHandler'
+import { InitiativeStartedHandler } from './eventHandlers/initiativeStartedHandler'
+import { InitiativeCache } from './caches/initiativeCache'
+import { InitiativeEndedHandler } from './eventHandlers/initiativeEndedHandler'
+import { AsciiTable } from './ascii-table'
+import Initiative from './commands/initiative'
+import { DiceRolledHandler } from './eventHandlers/diceRolledHandler'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -110,14 +115,17 @@ const init = () => {
  * Sets up the event bus and subscriptions for events
  */
 const setupSubscribers = (eventBus: EventBus) => {
+	const asciiTable = new AsciiTable()
 	const commandUpdaterService = new CommandUpdaterService(logger, DiscordCommandRegister)
-
 	const messageReceivedHandler = new MessageReceivedHandler(eventBus, GuildCache.getInstance())
 	const userMessageReceivedHandler = new UserMessageReceivedHandler(GuildCache.getInstance())
 	const botMessageReceivedHandler = new BotMessageReceivedHandler()
 	const deployMessageReceivedHandler = new DeployMessageReceivedHandler(commandUpdaterService)
 	const aceMessageReceivedHandler = new AceMessageReceivedHandler()
 	const interactionCreatedReceivedHandler = new InteractionCreatedReceivedHandler()
+	const initiativeStartedHandler = new InitiativeStartedHandler(InitiativeCache.getInstance())
+	const initiativeEndedHandler = new InitiativeEndedHandler(InitiativeCache.getInstance(), asciiTable)
+	const diceRolledHandler = new DiceRolledHandler(InitiativeCache.getInstance())
 
 	// setup subscriptions
 	eventBus.subscribe('messageReceived', messageReceivedHandler.handle)
@@ -126,18 +134,24 @@ const setupSubscribers = (eventBus: EventBus) => {
 	eventBus.subscribe('deployMessageReceived', deployMessageReceivedHandler.handle)
 	eventBus.subscribe('aceRenderRequestMessageReceived', aceMessageReceivedHandler.handle)
 	eventBus.subscribe('interactionCreated', interactionCreatedReceivedHandler.handle)
+	eventBus.subscribe('initiativeStarted', initiativeStartedHandler.handle)
+	eventBus.subscribe('initiativeEnded', initiativeEndedHandler.handle)
+	eventBus.subscribe('diceRolled', diceRolledHandler.handle)
 }
 
 const registerCommands = () => {
 	const guildCache = GuildCache.getInstance()
+	const eventBus = EventBus.getinstance()
+
 	DiscordCommandRegister.register(EditPhrase.name, () => new EditPhrase(guildCache))
 	DiscordCommandRegister.register(AddPhrase.name, () => new AddPhrase(guildCache))
 	DiscordCommandRegister.register(Bruh.name, () => new Bruh(guildCache))
 	DiscordCommandRegister.register(AddPins.name, () => new AddPins(guildCache))
 	DiscordCommandRegister.register(Clipshow.name, () => new Clipshow(guildCache))
-	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller())
+	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller(eventBus))
 	DiscordCommandRegister.register(Hug.name, () => new Hug())
 	DiscordCommandRegister.register(RemovePhrase.name, () => new RemovePhrase(guildCache))
+	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus))
 }
 
 try {

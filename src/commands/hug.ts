@@ -11,7 +11,9 @@ export default class Hug extends Command {
 		const data = new SlashCommandBuilder()
 			.setName('hug')
 			.setDescription('Sends a hug to a user.')
-			.addMentionableOption(option => option.setName('user').setDescription('The mentioned user to hug').setRequired(true))
+			.addMentionableOption(option =>
+				option.setName('user').setDescription('The mentioned user to hug').setRequired(true),
+			)
 
 		super(name, data)
 

@@ -101,7 +101,8 @@ export class MessageChecker {
 					pattern.flaggedPattern.messageHistory.count++
 					pattern.flaggedPattern.messageHistory.lastAuthorId = message.author.id
 					pattern.flaggedPattern.messageHistory.lastAuthorUsername = message.author.username
-					pattern.flaggedPattern.messageHistory.dateTimePreviouslyFound = pattern.flaggedPattern.messageHistory.lastFound
+					pattern.flaggedPattern.messageHistory.dateTimePreviouslyFound =
+						pattern.flaggedPattern.messageHistory.lastFound
 					pattern.flaggedPattern.messageHistory.lastFound = new Date()
 
 					this.updateDb(guildId, pattern.flaggedPattern)

@@ -10,19 +10,19 @@ type EventHandler = (logger: Logger, notification: Notification<any>) => Promise
 /**
  * A simple event bus implementation for subscribing to and publishing events.
  */
-export class EventBuss {
-	private static instance?: EventBuss
+export class EventBus {
+	private static instance?: EventBus
 	private events: Map<string, EventHandler[]> = new Map()
 
 	/**
 	 * Retrieve the singleton instance of the EventBus
 	 * @returns an instance of EventBus
 	 */
-	static getinstance(): EventBuss {
-		if (!EventBuss.instance) {
-			EventBuss.instance = new EventBuss()
+	static getinstance(): EventBus {
+		if (!EventBus.instance) {
+			EventBus.instance = new EventBus()
 		}
-		return EventBuss.instance
+		return EventBus.instance
 	}
 
 	/**
@@ -44,10 +44,12 @@ export class EventBuss {
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	async publish(eventType: DiscordEvent, data: Notification<any>, logger: Logger) {
+		logger.debug(`Publishing event: ${eventType}`)
 		const handlers = this.events.get(eventType) || []
 		for (const handler of handlers) {
 			try {
-				await handler(logger, data)
+				// This is purposefully not await as the publishing should not block
+				handler(logger, data)
 			} catch (error) {
 				throw new Error(`Error in event handler for event type "${eventType}":`, error)
 			}
