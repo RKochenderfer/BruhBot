@@ -4,11 +4,13 @@
 	"typescript.preferences.quoteStyle": "single",
 	"cSpell.words": [
 		"Bruh",
+		"bruhbot",
 		"Clipshow",
 		"CONNSTRING",
 		"getinstance",
 		"namefromtable",
-		"pino"
+		"pino",
+		"rkochenderfer"
 	],
 	"docker.commands.composeUp": [
 		{
