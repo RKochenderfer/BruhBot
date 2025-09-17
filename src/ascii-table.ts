@@ -24,20 +24,15 @@ export class RenderRequest {
 export class AsciiTable {
 	/** This is the extra space to account for the paddings and the dividers */
 	private readonly _extraSpaceForEachColumn = 4
-	/**
-	 * Render table
-	 * @param rows Data to be entered. First row is the column headers
-	 * @returns
-	 */
-	render(rows: any[][]): string {
-		return '`' + this.buildRows(rows) + '`'
-	}
 
 	renderRequest(request: RenderRequest): string {
 		const columnWidths = this.calculateColumnWidths(request)
 		const tableRows = []
 		const headerRow = this.buildRow(request.headers, columnWidths)
 		tableRows.push(headerRow)
+
+		const splitRow = this.createMarkdownTableSplitRow(columnWidths)
+		tableRows.push(splitRow)
 
 		if (request.dataRows.length > 0) {
 			request.dataRows.forEach(dataRow => {
@@ -62,54 +57,26 @@ export class AsciiTable {
 			while (columnString.length < columnWidths[i]) {
 				columnString += ' '
 			}
-			columnString += '|'
 			row += columnString
 		}
+		const newStr = row.replace(/.$/, '|');
 
-		return row
+		return newStr
 	}
 
-	private buildRows(data: any[][]): string {
-		// Go through all rows
-		const colWidths = this.getWidthOfColumns(data)
-		const builtRows = this.buildTable(data, colWidths)
-
-		return builtRows.join('\n')
-	}
-
-	private buildTable(data: any[][], colWidths: number[]): string[] {
-		const builtRows = []
-		for (let i = 0; i < data.length; i++) {
-			let row = ''
-			for (let j = 0; j < data[i].length; j++) {
-				let initial = `| ${data[i][j]}`
-				while (initial.length < colWidths[j]) {
-					initial += ' '
-				}
-				initial += '|'
-				row += initial
+	private createMarkdownTableSplitRow(columnWidths: number[]): string {
+		let dividerString = ''
+		for (const width of columnWidths) {
+			let columnString = '| '
+			for (let i = 2; i < width - 1; i++) {
+				columnString += '-'
 			}
-			builtRows.push(`${row}`)
+			columnString += ' '
+			dividerString += columnString
 		}
+		const newStr = dividerString.slice(0, -2) + ' |'
 
-		return this.splitDataHeaderRow(builtRows)
-	}
-
-	private splitDataHeaderRow(builtRows: string[]): string[] {
-		const totalWidth = this.getTotalWidth(builtRows)
-		const firstRow = builtRows[0]
-		const modified = builtRows.slice(1)
-
-		let splitRow = ''
-		while (splitRow.length !== totalWidth) {
-			splitRow += '-'
-		}
-
-		return [firstRow, splitRow, ...modified]
-	}
-
-	private getTotalWidth(builtRows: string[]) {
-		return Math.max(...builtRows.map(row => row.length))
+		return newStr
 	}
 
 	/**

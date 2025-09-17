@@ -96,10 +96,11 @@ describe('InteractionEndedHandler tests', () => {
 
 		// assert
 		expect(mockTextChannel.send).toHaveBeenCalled()
-		const expected = `\`\`\`
-| Name      || Modifiers  || Total  |
-| player B  || -1         || 11     |
-| player A  || +1         || 9      |
+		const expected = `\`\`\`md
+| Name      | Modifiers  | Total |
+| --------- | ---------- | ----- |
+| player B  | -1         | 11    |
+| player A  | +1         | 9     |
 \`\`\``
 
 		expect(mockTextChannel.send).toHaveBeenCalledWith(expected)

@@ -39,6 +39,6 @@ export class RollDisplayService {
 	}
 
 	private formatAsCodeBlock(table: string): string {
-		return '```\n' + table + '\n```'
+		return '```md\n' + table + '\n```'
 	}
 }
