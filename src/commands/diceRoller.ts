@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { GuildMember, SlashCommandBuilder } from 'discord.js'
 import { Parser } from 'expr-eval'
 import Command from '../command'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
@@ -52,7 +52,8 @@ export default class DiceRoller extends Command {
 		const rollString = interaction.options.getString(DiceRoller._diceOptionName)
 		const isWhisper = interaction.options.getBoolean(DiceRoller._whisperOptionName) ?? false
 		const optionalName = interaction.options.getString(DiceRoller._nameOptionName)
-		const name = optionalName === null ? interaction.username : optionalName
+		const member = interaction.interaction.member! as GuildMember
+		const name = optionalName === null ? member.displayName : optionalName
 
 		if (!rollString) return
 
