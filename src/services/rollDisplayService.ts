@@ -12,7 +12,7 @@ export class RollDisplayService {
 	 * to discord made from an individual roll
 	 */
 	createSingleRollDisplay(rollInfo: DiceRolledInfo): string {
-		const rollEntry = `${rollInfo.roll.diceCount}d${rollInfo.roll.dieType}${rollInfo.roll.modifier}`
+		const rollEntry = `${rollInfo.roll.diceCount}d${rollInfo.roll.dieType}${rollInfo.roll.modifierString}`
 		const headers = ['Name', 'Roll', 'Values', 'Total']
 		const dataRows: string[][] = [
 			[rollInfo.name, rollEntry, rollInfo.roll.values.toString(), rollInfo.roll.total.toString()],
@@ -30,7 +30,7 @@ export class RollDisplayService {
 	 */
 	createInitiativeDisplay(rolls: DiceRolledInfo[]): string {
 		const headers = ['Name', 'Modifiers', 'Total']
-		const data: string[][] = rolls.map(x => [x.name, x.roll.modifier, x.roll.total.toString()])
+		const data: string[][] = rolls.map(x => [x.name, x.roll.modifierString, x.roll.total.toString()])
 
 		const renderRequest = RenderRequest.from(headers, data)
 		const tableString = this._asciiTableHelper.renderRequest(renderRequest)

@@ -120,7 +120,7 @@ export default class DiceRoller extends Command {
 		const mod = modString === '' ? 0 : this._parser.evaluate(modString)
 		const total = values.reduce((prev, curr) => prev + curr, 0) + mod
 
-		return RollInformation.from(dieCount, dieType, modString, values, total)
+		return RollInformation.from(dieCount, dieType, modString, mod, values, total)
 	}
 
 	private getRandomInt(type: number): number {

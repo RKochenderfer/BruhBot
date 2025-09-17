@@ -2,7 +2,8 @@ export class RollInformation {
 	private constructor(
 		readonly diceCount: number,
 		readonly dieType: number,
-		readonly modifier: string,
+		readonly modifierString: string,
+		readonly evaluatedModifierString: number,
 		readonly values: number[],
 		readonly total: number,
 	) {}
@@ -10,7 +11,8 @@ export class RollInformation {
 	static from(
 		diceCount: number,
 		dieType: number,
-		modifier: string,
+		modifierString: string,
+		evaluatedModifierString: number,
 		values: number[],
 		total: number,
 	): RollInformation {
@@ -21,6 +23,6 @@ export class RollInformation {
 			throw new Error('values cannot be empty')
 		}
 
-		return new RollInformation(diceCount, dieType, modifier, values, total)
+		return new RollInformation(diceCount, dieType, modifierString, evaluatedModifierString, values, total)
 	}
 }

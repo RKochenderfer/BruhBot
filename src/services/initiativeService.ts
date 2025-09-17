@@ -4,7 +4,7 @@ import { InitiativeEnded } from '../events/initiativeEnded'
 import { InitiativeStarted } from '../events/initiativeStarted'
 import { DiceRolledInfo } from '../models/diceRolledInfo'
 
-export class ChannelKey {
+class ChannelKey {
 	private constructor(private readonly _guildId: string, private readonly _channelId: string) {}
 
 	static from(guildId: string, channelId: string): ChannelKey {
@@ -39,7 +39,7 @@ export class InitiativeService {
 	constructor(private readonly _initiativeCache: InitiativeCache) {}
 
 	/**
-	 * Ends the channels initiative
+	 * Ends the channels initiative and returns the final collected results
 	 * @param initiativeEnded the initiative ended event
 	 * @returns
 	 */
@@ -47,9 +47,9 @@ export class InitiativeService {
 		const channelKey = ChannelKey.fromInitiativeEnded(initiativeEnded)
 		this.guardAgainstInitiativeNotStarted(channelKey)
 
-		const unorderedRolls = this._initiativeCache.endInitiative(channelKey.key)
+		this._initiativeCache.endInitiative(channelKey.key)
 
-		return this.sortRollsDescending(unorderedRolls)
+		return this.getOrderedRollsDesc(initiativeEnded.guildId, initiativeEnded.channelId)
 	}
 
 	/**
@@ -66,11 +66,26 @@ export class InitiativeService {
 	/**
 	 * Checks if the roll is part of a channel building an initiative order
 	 * @param diceRolled
-	 * @returns
+	 * @returns true if a call has already been done to start taking initiative, false otherwise
 	 */
-	hasActiveInitiativeGathering(diceRolled: DiceRolledInfo): boolean {
+	hasInitiativeStarted(diceRolled: DiceRolledInfo): boolean {
 		const channelKey = ChannelKey.fromDiceRolledInfo(diceRolled)
 		return this._initiativeCache.hasInitiativeTrackingStartedFor(channelKey.key)
+	}
+
+	/**
+	 * Checks to see if initiative rolls are still being collected on the channel
+	 * @param diceRolled the dice rolled
+	 * @returns true if rolls are still being collected false otherwise
+	 */
+	isInitiativeStillBeingCollected(diceRolled: DiceRolledInfo): boolean {
+		const channelKey = ChannelKey.fromDiceRolledInfo(diceRolled)
+
+		if (!this.hasInitiativeStarted(diceRolled)) {
+			return false
+		}
+
+		return this._initiativeCache.isInitiativeActive(channelKey.key)
 	}
 
 	/**
@@ -81,6 +96,7 @@ export class InitiativeService {
 	addDiceRoll(diceRolledInfo: DiceRolledInfo) {
 		const channelKey = ChannelKey.fromDiceRolledInfo(diceRolledInfo)
 		this.guardAgainstInitiativeNotStarted(channelKey)
+		this.guardAgainstInitiativeNotBeingCollectedAnyMore(channelKey)
 
 		this._initiativeCache.addDiceRoll(channelKey.key, diceRolledInfo)
 	}
@@ -118,7 +134,20 @@ export class InitiativeService {
 	 */
 	private sortRollsDescending(rolls: DiceRolledInfo[]): DiceRolledInfo[] {
 		// TODO: Modify algorithm to handle ties where higher modifier wins
-		return [...rolls].sort((a, b) => b.roll.total - a.roll.total)
+		return [...rolls].sort((a, b) => this.sortRolls(b, a))
+	}
+
+	private sortRolls(b: DiceRolledInfo, a: DiceRolledInfo): number {
+		if (b.roll.total === a.roll.total) {
+			return b.roll.evaluatedModifierString - a.roll.evaluatedModifierString
+		}
+		return b.roll.total - a.roll.total
+	}
+
+	private guardAgainstInitiativeNotBeingCollectedAnyMore(channelKey: ChannelKey) {
+		if (!this._initiativeCache.isInitiativeActive(channelKey.key)) {
+			throw new InitiativeError('Initiative is no longer being gathered for this channel')
+		}
 	}
 
 	private guardAgainstInitiativeNotStarted(channelKey: ChannelKey) {

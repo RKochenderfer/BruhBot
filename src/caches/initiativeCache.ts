@@ -126,7 +126,7 @@ export class InitiativeCache {
 	 * @param channelId the channel where initiatives were being gathered
 	 * @returns the unordered dice rolls gathered while the channel was in initiative rolling mode
 	 */
-	endInitiative(key: CacheKey): DiceRolledInfo[] {
+	endInitiative(key: CacheKey) {
 		this.guardAgainstInitiativeNotStarted(key)
 
 		const cacheEntry = InitiativeCache._initiativeCache.get(key)!
@@ -134,8 +134,6 @@ export class InitiativeCache {
 		InitiativeCache._initiativeCache.set(key, cacheEntry)
 
 		this.cleanCache()
-
-		return cacheEntry.diceRolls
 	}
 
 	/**

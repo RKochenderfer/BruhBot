@@ -36,7 +36,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -82,7 +82,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -96,7 +96,7 @@ describe('initiativeCache tests', () => {
 		const otherRollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const otherRolledAt = new Date()
@@ -143,7 +143,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -155,7 +155,7 @@ describe('initiativeCache tests', () => {
 		const newRollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const newUserId = crypto.randomUUID()
@@ -180,7 +180,7 @@ describe('initiativeCache tests', () => {
 
 		expect(firstEntry.roll.diceCount).toBe(rollInformation.diceCount)
 		expect(firstEntry.roll.dieType).toBe(rollInformation.dieType)
-		expect(firstEntry.roll.modifier).toBe(rollInformation.modifier)
+		expect(firstEntry.roll.modifierString).toBe(rollInformation.modifierString)
 
 		expect(firstEntry.roll.values.length).toBe(rollInformation.values.length)
 		for (let i = 0; i < firstEntry.roll.values.length; i++) {
@@ -197,7 +197,7 @@ describe('initiativeCache tests', () => {
 
 		expect(secondEntry.roll.diceCount).toBe(newRollInformation.diceCount)
 		expect(secondEntry.roll.dieType).toBe(newRollInformation.dieType)
-		expect(secondEntry.roll.modifier).toBe(newRollInformation.modifier)
+		expect(secondEntry.roll.modifierString).toBe(newRollInformation.modifierString)
 
 		expect(secondEntry.roll.values.length).toBe(newRollInformation.values.length)
 		for (let i = 0; i < secondEntry.roll.values.length; i++) {
@@ -224,7 +224,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -243,7 +243,7 @@ describe('initiativeCache tests', () => {
 
 		expect(entry.roll.diceCount).toBe(rollInformation.diceCount)
 		expect(entry.roll.dieType).toBe(rollInformation.dieType)
-		expect(entry.roll.modifier).toBe(rollInformation.modifier)
+		expect(entry.roll.modifierString).toBe(rollInformation.modifierString)
 
 		expect(entry.roll.values.length).toBe(rollInformation.values.length)
 		for (let i = 0; i < entry.roll.values.length; i++) {
@@ -270,7 +270,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -283,7 +283,7 @@ describe('initiativeCache tests', () => {
 		const newRollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const newUserId = crypto.randomUUID()
@@ -316,7 +316,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const guildId = crypto.randomUUID()
@@ -350,7 +350,7 @@ describe('initiativeCache tests', () => {
 		const rollInformation = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -363,7 +363,7 @@ describe('initiativeCache tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
-			modifier: '-1',
+			modifierString: '-1',
 			values: [2, 1],
 		} as RollInformation
 		const newRolledAt = new Date()
@@ -380,7 +380,7 @@ describe('initiativeCache tests', () => {
 
 		expect(entry.roll.diceCount).toBe(newRolledInformation.diceCount)
 		expect(entry.roll.dieType).toBe(newRolledInformation.dieType)
-		expect(entry.roll.modifier).toBe(newRolledInformation.modifier)
+		expect(entry.roll.modifierString).toBe(newRolledInformation.modifierString)
 
 		expect(entry.roll.values.length).toBe(newRolledInformation.values.length)
 		for (let i = 0; i < entry.roll.values.length; i++) {
@@ -408,7 +408,7 @@ describe('initiativeCache tests', () => {
 		const differentChannel = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const differentUserId = crypto.randomUUID()
@@ -428,7 +428,7 @@ describe('initiativeCache tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
-			modifier: '-1',
+			modifierString: '-1',
 			values: [2, 1],
 		} as RollInformation
 		const guildId = crypto.randomUUID()
@@ -442,16 +442,17 @@ describe('initiativeCache tests', () => {
 		cache.addDiceRoll(key, newRollInfo)
 
 		// act
-		const rolls = cache.endInitiative(key)
+		cache.endInitiative(key)
 
 		// assert
 		// assert returned rolls is only from the passed in guild
+		const rolls = cache.getRolls(key)
 		expect(rolls.length).toBe(1)
 		const entry = rolls[0]
 
 		expect(entry.roll.diceCount).toBe(newRolledInformation.diceCount)
 		expect(entry.roll.dieType).toBe(newRolledInformation.dieType)
-		expect(entry.roll.modifier).toBe(newRolledInformation.modifier)
+		expect(entry.roll.modifierString).toBe(newRolledInformation.modifierString)
 
 		expect(entry.roll.values.length).toBe(newRolledInformation.values.length)
 		for (let i = 0; i < entry.roll.values.length; i++) {
@@ -477,7 +478,7 @@ describe('initiativeCache tests', () => {
 
 		expect(otherEntry.roll.diceCount).toBe(differentChannel.diceCount)
 		expect(otherEntry.roll.dieType).toBe(differentChannel.dieType)
-		expect(otherEntry.roll.modifier).toBe(differentChannel.modifier)
+		expect(otherEntry.roll.modifierString).toBe(differentChannel.modifierString)
 
 		expect(otherEntry.roll.values.length).toBe(differentChannel.values.length)
 		for (let i = 0; i < otherEntry.roll.values.length; i++) {
@@ -504,7 +505,7 @@ describe('initiativeCache tests', () => {
 		const differentChannel = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const differentUserId = crypto.randomUUID()
@@ -524,7 +525,7 @@ describe('initiativeCache tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
-			modifier: '-1',
+			modifierString: '-1',
 			values: [2, 1],
 		} as RollInformation
 		const guildId = crypto.randomUUID()
@@ -548,7 +549,7 @@ describe('initiativeCache tests', () => {
 
 		expect(entry.roll.diceCount).toBe(newRolledInformation.diceCount)
 		expect(entry.roll.dieType).toBe(newRolledInformation.dieType)
-		expect(entry.roll.modifier).toBe(newRolledInformation.modifier)
+		expect(entry.roll.modifierString).toBe(newRolledInformation.modifierString)
 
 		expect(entry.roll.values.length).toBe(newRolledInformation.values.length)
 		for (let i = 0; i < entry.roll.values.length; i++) {
@@ -574,7 +575,7 @@ describe('initiativeCache tests', () => {
 
 		expect(otherEntry.roll.diceCount).toBe(differentChannel.diceCount)
 		expect(otherEntry.roll.dieType).toBe(differentChannel.dieType)
-		expect(otherEntry.roll.modifier).toBe(differentChannel.modifier)
+		expect(otherEntry.roll.modifierString).toBe(differentChannel.modifierString)
 
 		expect(otherEntry.roll.values.length).toBe(differentChannel.values.length)
 		for (let i = 0; i < otherEntry.roll.values.length; i++) {
@@ -601,7 +602,7 @@ describe('initiativeCache tests', () => {
 		const differentChannel = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const differentUserId = crypto.randomUUID()
@@ -622,7 +623,7 @@ describe('initiativeCache tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
-			modifier: '-1',
+			modifierString: '-1',
 			values: [2, 1],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -641,7 +642,7 @@ describe('initiativeCache tests', () => {
 
 		expect(entry.roll.diceCount).toBe(newRolledInformation.diceCount)
 		expect(entry.roll.dieType).toBe(newRolledInformation.dieType)
-		expect(entry.roll.modifier).toBe(newRolledInformation.modifier)
+		expect(entry.roll.modifierString).toBe(newRolledInformation.modifierString)
 
 		expect(entry.roll.values.length).toBe(newRolledInformation.values.length)
 		for (let i = 0; i < entry.roll.values.length; i++) {
@@ -669,7 +670,7 @@ describe('initiativeCache tests', () => {
 		const differentChannel = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const differentUserId = crypto.randomUUID()
@@ -692,7 +693,7 @@ describe('initiativeCache tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
-			modifier: '-1',
+			modifierString: '-1',
 			values: [2, 1],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -725,7 +726,7 @@ describe('initiativeCache tests', () => {
 		const differentChannel = {
 			diceCount: 2,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
 			values: [3, 4],
 		} as RollInformation
 		const differentUserId = crypto.randomUUID()
@@ -746,7 +747,7 @@ describe('initiativeCache tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
-			modifier: '-1',
+			modifierString: '-1',
 			values: [2, 1],
 		} as RollInformation
 		const userId = crypto.randomUUID()
@@ -765,7 +766,7 @@ describe('initiativeCache tests', () => {
 
 		expect(entry.roll.diceCount).toBe(newRolledInformation.diceCount)
 		expect(entry.roll.dieType).toBe(newRolledInformation.dieType)
-		expect(entry.roll.modifier).toBe(newRolledInformation.modifier)
+		expect(entry.roll.modifierString).toBe(newRolledInformation.modifierString)
 
 		expect(entry.roll.values.length).toBe(newRolledInformation.values.length)
 		for (let i = 0; i < entry.roll.values.length; i++) {

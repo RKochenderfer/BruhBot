@@ -52,7 +52,8 @@ describe('InteractionEndedHandler tests', () => {
 		const differentChannel = {
 			diceCount: 1,
 			dieType: 20,
-			modifier: '+1',
+			modifierString: '+1',
+			evaluatedModifierString: 1,
 			values: [8],
 			total: 9,
 		} as RollInformation
@@ -73,7 +74,8 @@ describe('InteractionEndedHandler tests', () => {
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 20,
-			modifier: '-1',
+			modifierString: '-1',
+			evaluatedModifierString: -1,
 			values: [12],
 			total: 11,
 		} as RollInformation

@@ -10,7 +10,7 @@ export class DiceRolledHandler implements Handler {
 	handle = async (logger: Logger, data: Notification<DiceRolledInfo>): Promise<void> => {
 		logger.debug('Started to handle dice rolled event')
 
-		if (this._initiativeService.hasActiveInitiativeGathering(data.data)) {
+		if (this._initiativeService.isInitiativeStillBeingCollected(data.data)) {
 			this._initiativeService.addDiceRoll(data.data)
 		}
 
