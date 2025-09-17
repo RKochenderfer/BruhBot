@@ -1,13 +1,16 @@
 import { Logger } from 'pino'
 import { Handler } from '.'
 import { Notification } from '../events'
-import { InitiativeCache } from '../caches/initiativeCache'
 import { InitiativeEnded } from '../events/initiativeEnded'
 import { DiceRolledInfo } from '../models/diceRolledInfo'
 import { AsciiTable, RenderRequest } from '../ascii-table'
+import { InitiativeService } from '../services/initiativeService'
 
 export class InitiativeEndedHandler implements Handler {
-	constructor(private readonly _initiativeCache: InitiativeCache, private readonly _asciiTableHelper: AsciiTable) {}
+	constructor(
+		private readonly _initiativeService: InitiativeService,
+		private readonly _asciiTableHelper: AsciiTable,
+	) {}
 
 	handle = async (logger: Logger, data: Notification<InitiativeEnded>) => {
 		logger.debug(
@@ -15,10 +18,8 @@ export class InitiativeEndedHandler implements Handler {
 		)
 
 		try {
-			const unorderedRolls = this._initiativeCache.endInitiative(data.data.guildId, data.data.channelId)
-			const sortedRolls = [...unorderedRolls].sort((a, b) => b.roll.total - a.roll.total) // TODO: Modify algorithm to handle ties where higher modifier wins
-
-			const displayString = this.createDisplayString(sortedRolls)
+			const rolls = this._initiativeService.endInitiative(data.data)
+			const displayString = this.createDisplayString(rolls)
 			const channel = data.data.interaction.textChannel!
 			await channel.send(displayString)
 		} catch (error) {

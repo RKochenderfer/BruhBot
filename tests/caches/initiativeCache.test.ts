@@ -8,12 +8,13 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
+		const key = `${guildId}|${channelId}`
 
 		// act
-		cache.startInitiative(guildId, channelId)
+		cache.startInitiative(key)
 
 		// assert
-		const hasInitiativeStarted = cache.hasInitiativeTrackingStartedFor(guildId, channelId)
+		const hasInitiativeStarted = cache.hasInitiativeTrackingStartedFor(key)
 		expect(hasInitiativeStarted).toBe(true)
 	})
 
@@ -22,13 +23,14 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		const key = `${guildId}|${channelId}`
+		cache.startInitiative(key)
 
 		// act
-		cache.endInitiative(guildId, channelId)
+		cache.endInitiative(key)
 
 		// assert
-		const isInitiativeActive = cache.isInitiativeActive(guildId, channelId)
+		const isInitiativeActive = cache.isInitiativeActive(key)
 		expect(isInitiativeActive).toBe(false)
 
 		const rollInformation = {
@@ -43,7 +45,7 @@ describe('initiativeCache tests', () => {
 		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
 
 		const add = () => {
-			cache.addDiceRoll(diceRolledInfo)
+			cache.addDiceRoll(key, diceRolledInfo)
 		}
 
 		expect(add).toThrow(Error)
@@ -54,10 +56,13 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
+		const key = `${guildId}|${channelId}`
 
 		// act
 		const act = () => {
-			cache.endInitiative(guildId, channelId)
+			cache.endInitiative(
+				key,
+			)
 		}
 
 		// assert
@@ -70,7 +75,8 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		const key = `${guildId}|${channelId}`
+		cache.startInitiative(key)
 
 		// arrange roll
 		const rollInformation = {
@@ -95,16 +101,17 @@ describe('initiativeCache tests', () => {
 		} as RollInformation
 		const otherRolledAt = new Date()
 		const otherDiceRolledInfo = DiceRolledInfo.from(otherRollInformation, userId, userName, otherGuildId, otherChannelId, otherRolledAt)
-		cache.startInitiative(otherGuildId, otherChannelId)
-		cache.addDiceRoll(otherDiceRolledInfo)
+		const otherKey = `${otherGuildId}|${otherChannelId}`
+		cache.startInitiative(otherKey)
+		cache.addDiceRoll(otherKey, otherDiceRolledInfo)
 
 		// act
-		cache.endInitiative(otherGuildId, otherChannelId)
+		cache.endInitiative(otherKey)
 
 		// assert
-		cache.addDiceRoll(diceRolledInfo)
+		cache.addDiceRoll(key, diceRolledInfo)
 
-		const getRolls = cache.getRolls(guildId, channelId)
+		const getRolls = cache.getRolls(key)
 		expect(getRolls.length).toBe(1)
 	})
 
@@ -113,10 +120,11 @@ describe('initiativeCache tests', () => {
 		// arrange
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const cache = InitiativeCache.getInstance()
 
 		// act
-		const hasStarted = cache.hasInitiativeTrackingStartedFor(guildId, channelId)
+		const hasStarted = cache.hasInitiativeTrackingStartedFor(key)
 
 		// assert
 		expect(hasStarted).toBe(false)
@@ -128,7 +136,8 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		const key = `${guildId}|${channelId}`
+		cache.startInitiative(key)
 
 		// arrange roll
 		const rollInformation = {
@@ -141,7 +150,7 @@ describe('initiativeCache tests', () => {
 		const userName = 'test'
 		const rolledAt = new Date()
 		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.addDiceRoll(diceRolledInfo)
+		cache.addDiceRoll(key, diceRolledInfo)
 
 		const newRollInformation = {
 			diceCount: 2,
@@ -162,9 +171,9 @@ describe('initiativeCache tests', () => {
 		)
 
 		// act
-		cache.addDiceRoll(newDiceRolledInfo)
+		cache.addDiceRoll(key, newDiceRolledInfo)
 		// assert
-		const entries = cache.getRolls(guildId, channelId)
+		const entries = cache.getRolls(key)
 
 		expect(entries.length).toBe(2)
 		const firstEntry = entries[0]
@@ -208,7 +217,8 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		const key = `${guildId}|${channelId}`
+		cache.startInitiative(key)
 
 		// arrange roll
 		const rollInformation = {
@@ -223,10 +233,10 @@ describe('initiativeCache tests', () => {
 		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
 
 		// act
-		cache.addDiceRoll(diceRolledInfo)
+		cache.addDiceRoll(key, diceRolledInfo)
 
 		// assert
-		const entries = cache.getRolls(guildId, channelId)
+		const entries = cache.getRolls(key)
 
 		expect(entries.length).toBe(1)
 		const entry = entries[0]
@@ -253,7 +263,8 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		const key = `${guildId}|${channelId}`
+		cache.startInitiative(key)
 
 		// arrange first roll
 		const rollInformation = {
@@ -266,7 +277,7 @@ describe('initiativeCache tests', () => {
 		const userName = 'test'
 		const rolledAt = new Date()
 		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.addDiceRoll(diceRolledInfo)
+		cache.addDiceRoll(key, diceRolledInfo)
 
 		// arrange roll that will fail
 		const newRollInformation = {
@@ -287,11 +298,11 @@ describe('initiativeCache tests', () => {
 			newRolledAt,
 		)
 
-		cache.endInitiative(guildId, channelId)
+		cache.endInitiative(key)
 
 		// act
 		const act = () => {
-			cache.addDiceRoll(newDiceRolledInfo)
+			cache.addDiceRoll(key, newDiceRolledInfo)
 		}
 
 		// assert
@@ -310,6 +321,7 @@ describe('initiativeCache tests', () => {
 		} as RollInformation
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const userId = crypto.randomUUID()
 		const userName = 'test'
 		const rolledAt = new Date()
@@ -318,7 +330,7 @@ describe('initiativeCache tests', () => {
 		const cache = InitiativeCache.getInstance()
 		// act
 		const act = () => {
-			cache.addDiceRoll(diceRolledInfo)
+			cache.addDiceRoll(key, diceRolledInfo)
 		}
 
 		// assert
@@ -331,7 +343,8 @@ describe('initiativeCache tests', () => {
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		const key = `${guildId}|${channelId}`
+		cache.startInitiative(key)
 
 		// arrange roll
 		const rollInformation = {
@@ -345,7 +358,7 @@ describe('initiativeCache tests', () => {
 		const rolledAt = new Date()
 		const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
 
-		cache.addDiceRoll(diceRolledInfo)
+		cache.addDiceRoll(key, diceRolledInfo)
 
 		const newRolledInformation = {
 			diceCount: 1,
@@ -357,10 +370,10 @@ describe('initiativeCache tests', () => {
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, newRolledAt)
 
 		// act
-		cache.addDiceRoll(newRollInfo)
+		cache.addDiceRoll(key, newRollInfo)
 
 		// assert
-		const entries = cache.getRolls(guildId, channelId)
+		const entries = cache.getRolls(key)
 
 		expect(entries.length).toBe(1)
 		const entry = entries[0]
@@ -388,7 +401,8 @@ describe('initiativeCache tests', () => {
 		const differentChannelGuildId = crypto.randomUUID()
 		const differentChannelId = crypto.randomUUID()
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(differentChannelGuildId, differentChannelId)
+		const differentKey = `${differentChannelGuildId}|${differentChannelId}`
+		cache.startInitiative(differentKey)
 
 		// arrange roll
 		const differentChannel = {
@@ -409,7 +423,7 @@ describe('initiativeCache tests', () => {
 			differentRolledAt,
 		)
 
-		cache.addDiceRoll(differentChannelRolledInfo)
+		cache.addDiceRoll(differentKey, differentChannelRolledInfo)
 
 		const newRolledInformation = {
 			diceCount: 1,
@@ -419,15 +433,16 @@ describe('initiativeCache tests', () => {
 		} as RollInformation
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const userId = crypto.randomUUID()
 		const userName = 'test'
 		const rolledAt = new Date()
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.startInitiative(guildId, channelId)
-		cache.addDiceRoll(newRollInfo)
+		cache.startInitiative(key)
+		cache.addDiceRoll(key, newRollInfo)
 
 		// act
-		const rolls = cache.endInitiative(guildId, channelId)
+		const rolls = cache.endInitiative(key)
 
 		// assert
 		// assert returned rolls is only from the passed in guild
@@ -451,12 +466,11 @@ describe('initiativeCache tests', () => {
 
 		// assert other initiative is still active and unchanged
 		const otherChannelHasInitiativeTrackingStarted = cache.hasInitiativeTrackingStartedFor(
-			differentChannelGuildId,
-			differentChannelId,
+			differentKey,
 		)
 		expect(otherChannelHasInitiativeTrackingStarted).toBe(true)
 
-		const entries = cache.getRolls(differentChannelGuildId, differentChannelId)
+		const entries = cache.getRolls(differentKey)
 
 		expect(entries.length).toBe(1)
 		const otherEntry = entries[0]
@@ -482,8 +496,9 @@ describe('initiativeCache tests', () => {
 		// arrange initiative
 		const differentChannelGuildId = crypto.randomUUID()
 		const differentChannelId = crypto.randomUUID()
+		const differentKey = `${differentChannelGuildId}|${differentChannelId}`
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(differentChannelGuildId, differentChannelId)
+		cache.startInitiative(differentKey)
 
 		// arrange roll
 		const differentChannel = {
@@ -504,7 +519,7 @@ describe('initiativeCache tests', () => {
 			differentRolledAt,
 		)
 
-		cache.addDiceRoll(differentChannelRolledInfo)
+		cache.addDiceRoll(differentKey, differentChannelRolledInfo)
 
 		const newRolledInformation = {
 			diceCount: 1,
@@ -514,16 +529,17 @@ describe('initiativeCache tests', () => {
 		} as RollInformation
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const userId = crypto.randomUUID()
 		const userName = 'test'
 		const rolledAt = new Date()
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.startInitiative(guildId, channelId)
-		cache.addDiceRoll(newRollInfo)
-		cache.endInitiative(guildId, channelId)
+		cache.startInitiative(key)
+		cache.addDiceRoll(key, newRollInfo)
+		cache.endInitiative(key)
 
 		// act
-		const rolls = cache.getRolls(guildId, channelId)
+		const rolls = cache.getRolls(key)
 
 		// assert
 		// assert returned rolls is only from the passed in guild
@@ -547,12 +563,11 @@ describe('initiativeCache tests', () => {
 
 		// assert other initiative is still active and unchanged
 		const otherChannelHasInitiativeTrackingStarted = cache.hasInitiativeTrackingStartedFor(
-			differentChannelGuildId,
-			differentChannelId,
+			differentKey,
 		)
 		expect(otherChannelHasInitiativeTrackingStarted).toBe(true)
 
-		const entries = cache.getRolls(differentChannelGuildId, differentChannelId)
+		const entries = cache.getRolls(differentKey)
 
 		expect(entries.length).toBe(1)
 		const otherEntry = entries[0]
@@ -578,8 +593,9 @@ describe('initiativeCache tests', () => {
 		// arrange initiative
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		cache.startInitiative(key)
 
 		// arrange roll that will be removed
 		const differentChannel = {
@@ -600,7 +616,7 @@ describe('initiativeCache tests', () => {
 			differentRolledAt,
 		)
 
-		cache.addDiceRoll(differentChannelRolledInfo)
+		cache.addDiceRoll(key, differentChannelRolledInfo)
 
 		// arrange roll that will not be removed
 		const newRolledInformation = {
@@ -613,13 +629,13 @@ describe('initiativeCache tests', () => {
 		const userName = 'test'
 		const rolledAt = new Date()
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.addDiceRoll(newRollInfo)
+		cache.addDiceRoll(key, newRollInfo)
 
 		// act
-		cache.removeFor(guildId, channelId, differentUserName)
+		cache.removeFor(key, differentUserName)
 
 		// assert
-		const entries = cache.getRolls(guildId, channelId)
+		const entries = cache.getRolls(key)
 		expect(entries.length).toBe(1)
 		const entry = entries[0]
 
@@ -644,9 +660,10 @@ describe('initiativeCache tests', () => {
 		// arrange initiative
 		const otherGuildId = crypto.randomUUID()
 		const otherChannelId = crypto.randomUUID()
+		const otherKey = `${otherGuildId}|${otherChannelId}`
 		const cache = InitiativeCache.getInstance()
 		const name = 'test'
-		cache.startInitiative(otherGuildId, otherChannelId)
+		cache.startInitiative(otherKey)
 
 		// arrange roll that will be removed
 		const differentChannel = {
@@ -666,11 +683,12 @@ describe('initiativeCache tests', () => {
 			differentRolledAt,
 		)
 
-		cache.addDiceRoll(differentChannelRolledInfo)
+		cache.addDiceRoll(otherKey, differentChannelRolledInfo)
 
 		// arrange roll that will not be removed
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const newRolledInformation = {
 			diceCount: 1,
 			dieType: 6,
@@ -680,17 +698,17 @@ describe('initiativeCache tests', () => {
 		const userId = crypto.randomUUID()
 		const rolledAt = new Date()
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, name, guildId, channelId, rolledAt)
-		cache.startInitiative(guildId, channelId)
-		cache.addDiceRoll(newRollInfo)
+		cache.startInitiative(key)
+		cache.addDiceRoll(key, newRollInfo)
 
 		// act
-		cache.removeFor(guildId, channelId, name)
+		cache.removeFor(key, name)
 
 		// assert
-		const entriesThatHadTheRemoval = cache.getRolls(guildId, channelId)
+		const entriesThatHadTheRemoval = cache.getRolls(key)
 		expect(entriesThatHadTheRemoval.length).toBe(0)
 
-		const entriesThatShouldNotBeRemoved = cache.getRolls(otherGuildId, otherChannelId)
+		const entriesThatShouldNotBeRemoved = cache.getRolls(otherKey)
 		expect(entriesThatShouldNotBeRemoved.length).toBe(1)
 	})
 
@@ -699,8 +717,9 @@ describe('initiativeCache tests', () => {
 		// arrange initiative
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		cache.startInitiative(key)
 
 		// arrange roll that will be removed
 		const differentChannel = {
@@ -721,7 +740,7 @@ describe('initiativeCache tests', () => {
 			differentRolledAt,
 		)
 
-		cache.addDiceRoll(differentChannelRolledInfo)
+		cache.addDiceRoll(key, differentChannelRolledInfo)
 
 		// arrange roll that will not be removed
 		const newRolledInformation = {
@@ -734,13 +753,13 @@ describe('initiativeCache tests', () => {
 		const userName = 'test'
 		const rolledAt = new Date()
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.addDiceRoll(newRollInfo)
+		cache.addDiceRoll(key, newRollInfo)
 
 		// act
-		cache.removeFor(guildId, channelId, differentUserName)
+		cache.removeFor(key, differentUserName)
 
 		// assert
-		const entries = cache.getRolls(guildId, channelId)
+		const entries = cache.getRolls(key)
 		expect(entries.length).toBe(1)
 		const entry = entries[0]
 

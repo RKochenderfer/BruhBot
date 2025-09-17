@@ -2,10 +2,10 @@ import { Logger } from 'pino'
 import { Handler } from '.'
 import { InitiativeStarted } from '../events/initiativeStarted'
 import { Notification } from '../events'
-import { InitiativeCache } from '../caches/initiativeCache'
+import { InitiativeService } from '../services/initiativeService'
 
 export class InitiativeStartedHandler implements Handler {
-	constructor(private readonly _initiativeCache: InitiativeCache) {}
+	constructor(private readonly _initiativeService: InitiativeService) {}
 
 	handle = async (logger: Logger, data: Notification<InitiativeStarted>) => {
 		logger.debug(
@@ -13,11 +13,13 @@ export class InitiativeStartedHandler implements Handler {
 		)
 
 		try {
-			this._initiativeCache.startInitiative(data.data.guildId, data.data.channelId)
-		} catch (error) {
-			if (this._initiativeCache.hasInitiativeTrackingStartedFor(data.data.guildId, data.data.channelId)) {
+			this._initiativeService.startInitiative(data.data)
+		} catch (error: unknown) {
+			const err = error as Error
+			if (err.name === 'InitiativeError') {
+				logger.debug(err, 'an initiative error was thrown')
 				data.data.interaction.reply({
-					content: 'The initiative tracking has already started here',
+					content: err.message,
 					flags: 'Ephemeral',
 				})
 			} else {

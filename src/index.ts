@@ -32,6 +32,7 @@ import { InitiativeEndedHandler } from './eventHandlers/initiativeEndedHandler'
 import { AsciiTable } from './ascii-table'
 import Initiative from './commands/initiative'
 import { DiceRolledHandler } from './eventHandlers/diceRolledHandler'
+import { InitiativeService } from './services/initiativeService'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -90,16 +91,17 @@ const publishInteraction = async (eventBus: EventBus, interaction: BaseInteracti
 
 const init = () => {
 	const eventBus = EventBus.getinstance()
+	const initiativeService = new InitiativeService(InitiativeCache.getInstance())
 
 	GuildCache.initialize(db.collections.servers!)
-	setupSubscribers(eventBus)
+	setupSubscribers(eventBus, initiativeService)
 	registerBotClientHandlers(eventBus)
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
 	RenderQueue.timer = setInterval(async () => {
 		await RenderQueue.render()
 	}, 5000)
-	registerCommands()
+	registerCommands(initiativeService)
 	getCommands(botClient, DiscordCommandRegister)
 
 	// Log that client is online
@@ -114,7 +116,7 @@ const init = () => {
 /**
  * Sets up the event bus and subscriptions for events
  */
-const setupSubscribers = (eventBus: EventBus) => {
+const setupSubscribers = (eventBus: EventBus, initiativeService: InitiativeService) => {
 	const asciiTable = new AsciiTable()
 	const commandUpdaterService = new CommandUpdaterService(logger, DiscordCommandRegister)
 	const messageReceivedHandler = new MessageReceivedHandler(eventBus, GuildCache.getInstance())
@@ -123,9 +125,9 @@ const setupSubscribers = (eventBus: EventBus) => {
 	const deployMessageReceivedHandler = new DeployMessageReceivedHandler(commandUpdaterService)
 	const aceMessageReceivedHandler = new AceMessageReceivedHandler()
 	const interactionCreatedReceivedHandler = new InteractionCreatedReceivedHandler()
-	const initiativeStartedHandler = new InitiativeStartedHandler(InitiativeCache.getInstance())
-	const initiativeEndedHandler = new InitiativeEndedHandler(InitiativeCache.getInstance(), asciiTable)
-	const diceRolledHandler = new DiceRolledHandler(InitiativeCache.getInstance())
+	const initiativeStartedHandler = new InitiativeStartedHandler(initiativeService)
+	const initiativeEndedHandler = new InitiativeEndedHandler(initiativeService, asciiTable)
+	const diceRolledHandler = new DiceRolledHandler(initiativeService)
 
 	// setup subscriptions
 	eventBus.subscribe('messageReceived', messageReceivedHandler.handle)
@@ -139,7 +141,7 @@ const setupSubscribers = (eventBus: EventBus) => {
 	eventBus.subscribe('diceRolled', diceRolledHandler.handle)
 }
 
-const registerCommands = () => {
+const registerCommands = (initiativeService: InitiativeService) => {
 	const guildCache = GuildCache.getInstance()
 	const eventBus = EventBus.getinstance()
 	const asciiTable = new AsciiTable()
@@ -152,7 +154,7 @@ const registerCommands = () => {
 	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller(eventBus))
 	DiscordCommandRegister.register(Hug.name, () => new Hug())
 	DiscordCommandRegister.register(RemovePhrase.name, () => new RemovePhrase(guildCache))
-	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus, InitiativeCache.getInstance(), asciiTable))
+	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus, initiativeService, asciiTable))
 }
 
 try {

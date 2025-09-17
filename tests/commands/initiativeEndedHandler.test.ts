@@ -8,6 +8,7 @@ import { AsciiTable } from '../../src/ascii-table'
 import { InitiativeEnded } from '../../src/events/initiativeEnded'
 import { Notification } from '../../src/events'
 import { TextChannel } from 'discord.js'
+import { InitiativeService } from '../../src/services/initiativeService'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -42,8 +43,9 @@ describe('InteractionEndedHandler tests', () => {
 		// arrange rolls
 		const guildId = crypto.randomUUID()
 		const channelId = crypto.randomUUID()
+		const key = `${guildId}|${channelId}`
 		const cache = InitiativeCache.getInstance()
-		cache.startInitiative(guildId, channelId)
+		cache.startInitiative(key)
 
 		// arrange roll
 		const differentChannel = {
@@ -65,7 +67,7 @@ describe('InteractionEndedHandler tests', () => {
 			differentRolledAt,
 		)
 
-		cache.addDiceRoll(differentChannelRolledInfo)
+		cache.addDiceRoll(key, differentChannelRolledInfo)
 
 		const newRolledInformation = {
 			diceCount: 1,
@@ -78,13 +80,14 @@ describe('InteractionEndedHandler tests', () => {
 		const userName = 'player B'
 		const rolledAt = new Date()
 		const newRollInfo = DiceRolledInfo.from(newRolledInformation, userId, userName, guildId, channelId, rolledAt)
-		cache.addDiceRoll(newRollInfo)
+		cache.addDiceRoll(key, newRollInfo)
 
 		// arrange handler
 		const asciiTable = new AsciiTable()
+		const initiativeService = new InitiativeService(InitiativeCache.getInstance())
 		const initiativeEnded = InitiativeEnded.from(guildId, channelId, callToEndInteraction)
 		const notification = Notification.from('initiativeEnded', initiativeEnded)
-		const initiativeEndedHandler = new InitiativeEndedHandler(InitiativeCache.getInstance(), asciiTable)
+		const initiativeEndedHandler = new InitiativeEndedHandler(initiativeService, asciiTable)
 
 		// act
 		await initiativeEndedHandler.handle(mockLogger, notification)

@@ -4,13 +4,13 @@ import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputComma
 import { Logger } from 'pino'
 import { EventBus, Notification } from '../events'
 import { InitiativeStarted } from '../events/initiativeStarted'
-import { InitiativeCache } from '../caches/initiativeCache'
 import { AsciiTable, RenderRequest } from '../ascii-table'
 import { DiceRolledInfo } from '../models/diceRolledInfo'
+import { InitiativeService } from '../services/initiativeService'
 
 export default class Initiative extends Command {
 	private readonly _eventBus: EventBus
-	private readonly _initiativeCache: InitiativeCache
+	private readonly _initiativeService: InitiativeService
 	private readonly _asciiTableHelper: AsciiTable
 	private static readonly _stateSubcommandName: string = 'state'
 	private static readonly _stateName: string = 'state'
@@ -19,7 +19,7 @@ export default class Initiative extends Command {
 	private static readonly _removeSubcommandName: string = 'remove'
 	private static readonly _name: string = 'namefromtable'
 
-	constructor(eventBus: EventBus, initiativeCache: InitiativeCache, asciiTableHelper: AsciiTable) {
+	constructor(eventBus: EventBus, initiativeCache: InitiativeService, asciiTableHelper: AsciiTable) {
 		const name = 'initiative'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -53,7 +53,7 @@ export default class Initiative extends Command {
 
 		super(name, data)
 		this._eventBus = eventBus
-		this._initiativeCache = initiativeCache
+		this._initiativeService = initiativeCache
 		this._asciiTableHelper = asciiTableHelper
 	}
 
@@ -92,14 +92,18 @@ export default class Initiative extends Command {
 			return
 		}
 
-		const removed = this._initiativeCache.removeFor(interaction.guildId!, interaction.channelId, optionValue)
+		const removed = this._initiativeService.removeFromInitiative(
+			interaction.guildId!,
+			interaction.channelId,
+			optionValue,
+		)
 		if (!removed) {
 			interaction.reply({ content: 'There was no value to remove', flags: 'Ephemeral' })
 		} else {
 			interaction.reply({ content: 'Entry removed', flags: 'Ephemeral' })
 		}
 
-		const rolls = this._initiativeCache.getOrderedRolls(interaction.guildId!, interaction.channelId, true)
+		const rolls = this._initiativeService.getOrderedRollsDesc(interaction.guildId!, interaction.channelId)
 		const renderString = this.createDisplayString(rolls)
 
 		interaction.textChannel!.send(renderString)
