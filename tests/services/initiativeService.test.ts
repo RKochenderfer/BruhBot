@@ -8,6 +8,7 @@ import { InitiativeError } from '../../src/errors/initiativeError'
 import { InitiativeEnded } from '../../src/events/initiativeEnded'
 import { RollInformation } from '../../src/models/rollInformation'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const mockTextChannel: jest.Mocked<TextChannel> = {
 	send: jest.fn(),
 } as any

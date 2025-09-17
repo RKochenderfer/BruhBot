@@ -10,7 +10,11 @@ import { Notification } from '../events'
 import { RollDisplayService } from '../services/rollDisplayService'
 
 export default class DiceRoller extends Command {
-	private readonly _regex = /^\d+d\d+([+|-]\d)?/
+	/**
+	 * Checks to see if the string matches the values xdy where x and y are any number, and the letter d is in there.
+	 * Also adds a check to make sure if there is a modifier it is entered correctly
+	 */
+	private readonly _diceRollRegex = /^\d*d\d+([+|-]\d)?/
 	private readonly _parser: Parser
 	private readonly _eventBus: EventBus
 	private readonly _rollDisplayService: RollDisplayService
@@ -58,32 +62,36 @@ export default class DiceRoller extends Command {
 		if (!rollString) return
 
 		// validate that the roll is using the correct format
-		if (!this._regex.test(rollString)) {
+		if (!this._diceRollRegex.test(rollString)) {
 			await interaction.reply({
 				content: 'Your roll must be formatted as `#d# or `#d#[+|-]#`',
 				ephemeral: true,
 			})
 			return
 		}
-		const rollInfo = this.processRoll(rollString)
-		const diceRolledInfo = DiceRolledInfo.from(
-			rollInfo,
-			interaction.userId,
-			name,
-			interaction.guildId!,
-			interaction.interaction.channelId,
-			new Date(),
-		)
-		const displayRoll = this._rollDisplayService.createSingleRollDisplay(diceRolledInfo)
+		try {
+			const rollInfo = this.processRoll(rollString)
+			const diceRolledInfo = DiceRolledInfo.from(
+				rollInfo,
+				interaction.userId,
+				name,
+				interaction.guildId!,
+				interaction.interaction.channelId,
+				new Date(),
+			)
+			const displayRoll = this._rollDisplayService.createSingleRollDisplay(diceRolledInfo)
 
-		const notification = Notification.from('diceRolled', diceRolledInfo)
+			const notification = Notification.from('diceRolled', diceRolledInfo)
 
-		this._eventBus.publish('diceRolled', notification, logger)
+			this._eventBus.publish('diceRolled', notification, logger)
 
-		await interaction.reply({
-			content: displayRoll,
-			ephemeral: isWhisper,
-		})
+			await interaction.reply({
+				content: displayRoll,
+				ephemeral: isWhisper,
+			})
+		} catch (error) {
+			logger.error(error, 'There was an error while trying to roll a die')
+		}
 
 		logger.debug('Completed roll')
 	}
@@ -95,7 +103,7 @@ export default class DiceRoller extends Command {
 		let modString = ''
 		const additionIndex = split[1].indexOf('+')
 		const subtractionIndex = split[1].indexOf('-')
-		const dieCount = Number.parseInt(split[0])
+		const dieCount = split[0] === '' ? 1 : Number.parseInt(split[0])
 
 		let firstIndex = -1
 		if (additionIndex < 0 && subtractionIndex > 0) {
