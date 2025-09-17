@@ -4,8 +4,10 @@
 	"typescript.preferences.quoteStyle": "single",
 	"cSpell.words": [
 		"Bruh",
+		"Clipshow",
 		"CONNSTRING",
 		"getinstance",
+		"namefromtable",
 		"pino"
 	],
 	"docker.commands.composeUp": [

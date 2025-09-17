@@ -20,7 +20,12 @@ import DiceRoller from './commands/diceRoller'
 import Hug from './commands/hug'
 import RemovePhrase from './commands/removePhrase'
 import { EventBus } from './events'
-import { AceMessageReceivedHandler, BotMessageReceivedHandler, MessageReceivedHandler, UserMessageReceivedHandler } from './eventHandlers'
+import {
+	AceMessageReceivedHandler,
+	BotMessageReceivedHandler,
+	MessageReceivedHandler,
+	UserMessageReceivedHandler,
+} from './eventHandlers'
 import { NotificationBuilder } from './extensions/notificationBuilder'
 import LogSession from './log/logSession'
 import { CommandUpdaterService } from './services/commandUpdaterService'
@@ -33,6 +38,7 @@ import { AsciiTable } from './ascii-table'
 import Initiative from './commands/initiative'
 import { DiceRolledHandler } from './eventHandlers/diceRolledHandler'
 import { InitiativeService } from './services/initiativeService'
+import { RollDisplayService } from './services/rollDisplayService'
 
 export const State = new AppState()
 export const MessageChecker = new Checker()
@@ -91,17 +97,19 @@ const publishInteraction = async (eventBus: EventBus, interaction: BaseInteracti
 
 const init = () => {
 	const eventBus = EventBus.getinstance()
+	const asciiTable = new AsciiTable()
+	const rollDisplayService = new RollDisplayService(asciiTable)
 	const initiativeService = new InitiativeService(InitiativeCache.getInstance())
 
 	GuildCache.initialize(db.collections.servers!)
-	setupSubscribers(eventBus, initiativeService)
+	setupSubscribers(eventBus, initiativeService, rollDisplayService)
 	registerBotClientHandlers(eventBus)
 	botClient.commands = new Collection()
 	// Start objection-engine rendering queue
 	RenderQueue.timer = setInterval(async () => {
 		await RenderQueue.render()
 	}, 5000)
-	registerCommands(initiativeService)
+	registerCommands(initiativeService, rollDisplayService)
 	getCommands(botClient, DiscordCommandRegister)
 
 	// Log that client is online
@@ -116,8 +124,11 @@ const init = () => {
 /**
  * Sets up the event bus and subscriptions for events
  */
-const setupSubscribers = (eventBus: EventBus, initiativeService: InitiativeService) => {
-	const asciiTable = new AsciiTable()
+const setupSubscribers = (
+	eventBus: EventBus,
+	initiativeService: InitiativeService,
+	rollDisplayService: RollDisplayService,
+) => {
 	const commandUpdaterService = new CommandUpdaterService(logger, DiscordCommandRegister)
 	const messageReceivedHandler = new MessageReceivedHandler(eventBus, GuildCache.getInstance())
 	const userMessageReceivedHandler = new UserMessageReceivedHandler(GuildCache.getInstance())
@@ -126,7 +137,7 @@ const setupSubscribers = (eventBus: EventBus, initiativeService: InitiativeServi
 	const aceMessageReceivedHandler = new AceMessageReceivedHandler()
 	const interactionCreatedReceivedHandler = new InteractionCreatedReceivedHandler()
 	const initiativeStartedHandler = new InitiativeStartedHandler(initiativeService)
-	const initiativeEndedHandler = new InitiativeEndedHandler(initiativeService, asciiTable)
+	const initiativeEndedHandler = new InitiativeEndedHandler(initiativeService, rollDisplayService)
 	const diceRolledHandler = new DiceRolledHandler(initiativeService)
 
 	// setup subscriptions
@@ -141,20 +152,19 @@ const setupSubscribers = (eventBus: EventBus, initiativeService: InitiativeServi
 	eventBus.subscribe('diceRolled', diceRolledHandler.handle)
 }
 
-const registerCommands = (initiativeService: InitiativeService) => {
+const registerCommands = (initiativeService: InitiativeService, rollDisplayService: RollDisplayService) => {
 	const guildCache = GuildCache.getInstance()
 	const eventBus = EventBus.getinstance()
-	const asciiTable = new AsciiTable()
 
 	DiscordCommandRegister.register(EditPhrase.name, () => new EditPhrase(guildCache))
 	DiscordCommandRegister.register(AddPhrase.name, () => new AddPhrase(guildCache))
 	DiscordCommandRegister.register(Bruh.name, () => new Bruh(guildCache))
 	DiscordCommandRegister.register(AddPins.name, () => new AddPins(guildCache))
 	DiscordCommandRegister.register(Clipshow.name, () => new Clipshow(guildCache))
-	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller(eventBus))
+	DiscordCommandRegister.register(DiceRoller.name, () => new DiceRoller(eventBus, rollDisplayService))
 	DiscordCommandRegister.register(Hug.name, () => new Hug())
 	DiscordCommandRegister.register(RemovePhrase.name, () => new RemovePhrase(guildCache))
-	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus, initiativeService, asciiTable))
+	DiscordCommandRegister.register(Initiative.name, () => new Initiative(eventBus, initiativeService, rollDisplayService))
 }
 
 try {

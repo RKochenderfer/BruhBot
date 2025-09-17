@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js'
 import { Parser } from 'expr-eval'
-import { AsciiTable, RenderRequest } from '../ascii-table'
 import Command from '../command'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import { Logger } from 'pino'
@@ -8,18 +7,20 @@ import { EventBus } from '../events/eventBus'
 import { RollInformation } from '../models/rollInformation'
 import { DiceRolledInfo } from '../models/diceRolledInfo'
 import { Notification } from '../events'
+import { RollDisplayService } from '../services/rollDisplayService'
 
 export default class DiceRoller extends Command {
 	private readonly _regex = /^\d+d\d+([+|-]\d)?/
 	private readonly _parser: Parser
 	private readonly _eventBus: EventBus
+	private readonly _rollDisplayService: RollDisplayService
 
 	private static readonly _rollCommandName: string = 'roll'
 	private static readonly _diceOptionName: string = 'dice'
 	private static readonly _whisperOptionName: string = 'whisper'
 	private static readonly _nameOptionName: string = 'name'
 
-	constructor(eventBus: EventBus) {
+	constructor(eventBus: EventBus, rollDisplayService: RollDisplayService) {
 		const data = new SlashCommandBuilder()
 			.setName(DiceRoller._rollCommandName)
 			.setDescription('rolls the specified die and the number of dice to be rolled')
@@ -42,6 +43,7 @@ export default class DiceRoller extends Command {
 		super(DiceRoller._rollCommandName, data)
 		this._parser = new Parser()
 		this._eventBus = eventBus
+		this._rollDisplayService = rollDisplayService
 	}
 
 	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
@@ -71,7 +73,7 @@ export default class DiceRoller extends Command {
 			interaction.interaction.channelId,
 			new Date(),
 		)
-		const displayRoll = this.displayRoll(diceRolledInfo)
+		const displayRoll = this._rollDisplayService.createSingleRollDisplay(diceRolledInfo)
 
 		const notification = Notification.from('diceRolled', diceRolledInfo)
 
@@ -118,19 +120,6 @@ export default class DiceRoller extends Command {
 		const total = values.reduce((prev, curr) => prev + curr, 0) + mod
 
 		return RollInformation.from(dieCount, dieType, modString, values, total)
-	}
-
-	private displayRoll(rollInfo: DiceRolledInfo): string {
-		const rollEntry = `${rollInfo.roll.diceCount}d${rollInfo.roll.dieType}${rollInfo.roll.modifier}`
-		const headers = ['Name', 'Roll', 'Values', 'Total']
-		const dataRows: string[][] = [
-			[rollInfo.name, rollEntry, rollInfo.roll.values.toString(), rollInfo.roll.total.toString()],
-		]
-
-		const asciiTable = new AsciiTable()
-		const renderRequest = RenderRequest.from(headers, dataRows)
-
-		return '`' + asciiTable.renderRequest(renderRequest) + '`'
 	}
 
 	private getRandomInt(type: number): number {

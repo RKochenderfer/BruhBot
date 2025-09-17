@@ -4,14 +4,13 @@ import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputComma
 import { Logger } from 'pino'
 import { EventBus, Notification } from '../events'
 import { InitiativeStarted } from '../events/initiativeStarted'
-import { AsciiTable, RenderRequest } from '../ascii-table'
-import { DiceRolledInfo } from '../models/diceRolledInfo'
 import { InitiativeService } from '../services/initiativeService'
+import { RollDisplayService } from '../services/rollDisplayService'
 
 export default class Initiative extends Command {
 	private readonly _eventBus: EventBus
 	private readonly _initiativeService: InitiativeService
-	private readonly _asciiTableHelper: AsciiTable
+	private readonly _rollDisplayService: RollDisplayService
 	private static readonly _stateSubcommandName: string = 'state'
 	private static readonly _stateName: string = 'state'
 	private static readonly _startChoice: string = 'start'
@@ -19,7 +18,7 @@ export default class Initiative extends Command {
 	private static readonly _removeSubcommandName: string = 'remove'
 	private static readonly _name: string = 'namefromtable'
 
-	constructor(eventBus: EventBus, initiativeCache: InitiativeService, asciiTableHelper: AsciiTable) {
+	constructor(eventBus: EventBus, initiativeCache: InitiativeService, rollDisplayService: RollDisplayService) {
 		const name = 'initiative'
 		const data = new SlashCommandBuilder()
 			.setName(name)
@@ -54,7 +53,7 @@ export default class Initiative extends Command {
 		super(name, data)
 		this._eventBus = eventBus
 		this._initiativeService = initiativeCache
-		this._asciiTableHelper = asciiTableHelper
+		this._rollDisplayService = rollDisplayService
 	}
 
 	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
@@ -104,18 +103,9 @@ export default class Initiative extends Command {
 		}
 
 		const rolls = this._initiativeService.getOrderedRollsDesc(interaction.guildId!, interaction.channelId)
-		const renderString = this.createDisplayString(rolls)
+		const renderString = this._rollDisplayService.createInitiativeDisplay(rolls)
 
 		interaction.textChannel!.send(renderString)
-	}
-
-	private createDisplayString(rolls: DiceRolledInfo[]): string {
-		const headers = ['Name', 'Modifiers', 'Total']
-		const data: string[][] = rolls.map(x => [x.name, x.roll.modifier, x.roll.total.toString()])
-
-		const renderRequest = RenderRequest.from(headers, data)
-		// the encasing ` are there so discord will format the table as code and use mono-spacing font
-		return '`' + this._asciiTableHelper.renderRequest(renderRequest) + '`'
 	}
 
 	private async handleStateSubcommand(logger: Logger, interaction: ChatInputCommandInteractionWrapper) {

@@ -9,6 +9,7 @@ import { InitiativeEnded } from '../../src/events/initiativeEnded'
 import { Notification } from '../../src/events'
 import { TextChannel } from 'discord.js'
 import { InitiativeService } from '../../src/services/initiativeService'
+import { RollDisplayService } from '../../src/services/rollDisplayService'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -85,18 +86,21 @@ describe('InteractionEndedHandler tests', () => {
 		// arrange handler
 		const asciiTable = new AsciiTable()
 		const initiativeService = new InitiativeService(InitiativeCache.getInstance())
+		const rollDisplayService = new RollDisplayService(asciiTable)
 		const initiativeEnded = InitiativeEnded.from(guildId, channelId, callToEndInteraction)
 		const notification = Notification.from('initiativeEnded', initiativeEnded)
-		const initiativeEndedHandler = new InitiativeEndedHandler(initiativeService, asciiTable)
+		const initiativeEndedHandler = new InitiativeEndedHandler(initiativeService, rollDisplayService)
 
 		// act
 		await initiativeEndedHandler.handle(mockLogger, notification)
 
 		// assert
 		expect(mockTextChannel.send).toHaveBeenCalled()
-		const expected = `\`| Name      || Modifiers  || Total  |
+		const expected = `\`\`\`
+| Name      || Modifiers  || Total  |
 | player B  || -1         || 11     |
-| player A  || +1         || 9      |\``
+| player A  || +1         || 9      |
+\`\`\``
 
 		expect(mockTextChannel.send).toHaveBeenCalledWith(expected)
 	})

@@ -2,14 +2,13 @@ import { Logger } from 'pino'
 import { Handler } from '.'
 import { Notification } from '../events'
 import { InitiativeEnded } from '../events/initiativeEnded'
-import { DiceRolledInfo } from '../models/diceRolledInfo'
-import { AsciiTable, RenderRequest } from '../ascii-table'
 import { InitiativeService } from '../services/initiativeService'
+import { RollDisplayService } from '../services/rollDisplayService'
 
 export class InitiativeEndedHandler implements Handler {
 	constructor(
 		private readonly _initiativeService: InitiativeService,
-		private readonly _asciiTableHelper: AsciiTable,
+		private readonly _rollDisplayService: RollDisplayService,
 	) {}
 
 	handle = async (logger: Logger, data: Notification<InitiativeEnded>) => {
@@ -19,7 +18,7 @@ export class InitiativeEndedHandler implements Handler {
 
 		try {
 			const rolls = this._initiativeService.endInitiative(data.data)
-			const displayString = this.createDisplayString(rolls)
+			const displayString = this._rollDisplayService.createInitiativeDisplay(rolls)
 			const channel = data.data.interaction.textChannel!
 			await channel.send(displayString)
 		} catch (error) {
@@ -27,14 +26,5 @@ export class InitiativeEndedHandler implements Handler {
 		}
 
 		logger.debug('Completed handling initiative started event')
-	}
-
-	private createDisplayString(rolls: DiceRolledInfo[]): string {
-		const headers = ['Name', 'Modifiers', 'Total']
-		const data: string[][] = rolls.map(x => [x.name, x.roll.modifier, x.roll.total.toString()])
-
-		const renderRequest = RenderRequest.from(headers, data)
-		// the encasing ` are there so discord will format the table as code and use mono-spacing font
-		return '`' + this._asciiTableHelper.renderRequest(renderRequest) + '`'
 	}
 }

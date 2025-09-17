@@ -58,7 +58,7 @@ export class InitiativeService {
 	 */
 	startInitiative(initiativeStarted: InitiativeStarted) {
 		const channelKey = ChannelKey.fromInitiativeStarted(initiativeStarted)
-		this.guardAgainstInitiativeNotStarted(channelKey)
+		this.guardAgainstInitiativeAlreadyStarted(channelKey)
 
 		this._initiativeCache.startInitiative(channelKey.key)
 	}
@@ -123,6 +123,12 @@ export class InitiativeService {
 
 	private guardAgainstInitiativeNotStarted(channelKey: ChannelKey) {
 		if (this._initiativeCache.hasInitiativeTrackingNotStartedFor(channelKey.key)) {
+			throw new InitiativeError('Initiative has not started for this channel')
+		}
+	}
+
+	private guardAgainstInitiativeAlreadyStarted(channelKey: ChannelKey) {
+		if (this._initiativeCache.hasInitiativeTrackingStartedFor(channelKey.key)) {
 			throw new InitiativeError('Initiative has not started for this channel')
 		}
 	}
