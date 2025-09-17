@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from 'discord.js'
 import { Parser } from 'expr-eval'
-import { AsciiTable } from '../ascii-table'
+import { AsciiTable, RenderRequest } from '../ascii-table'
 import Command from '../command'
 import { ChatInputCommandInteractionWrapper } from '../extensions/chatInputCommandInteractionWrapper'
 import { Logger } from 'pino'
@@ -14,19 +14,32 @@ export default class DiceRoller extends Command {
 	private readonly _parser: Parser
 	private readonly _eventBus: EventBus
 
+	private static readonly _rollCommandName: string = 'roll'
+	private static readonly _diceOptionName: string = 'dice'
+	private static readonly _whisperOptionName: string = 'whisper'
+	private static readonly _nameOptionName: string = 'name'
+
 	constructor(eventBus: EventBus) {
-		const name = 'roll'
 		const data = new SlashCommandBuilder()
-			.setName('roll')
+			.setName(DiceRoller._rollCommandName)
 			.setDescription('rolls the specified die and the number of dice to be rolled')
 			.addStringOption(option =>
-				option.setName('dice').setDescription('Number and type of dice to roll. ex: 2d6+1').setRequired(true),
+				option
+					.setName(DiceRoller._diceOptionName)
+					.setDescription('Number and type of dice to roll. ex: 2d6+1')
+					.setRequired(true),
 			)
 			.addBooleanOption(option =>
-				option.setName('whisper').setDescription('whisper the roll to the sender').setRequired(false),
+				option
+					.setName(DiceRoller._whisperOptionName)
+					.setDescription('whisper the roll to the sender')
+					.setRequired(false),
+			)
+			.addStringOption(option =>
+				option.setName(DiceRoller._nameOptionName).setDescription('the name of the entity the roll is for'),
 			)
 
-		super(name, data)
+		super(DiceRoller._rollCommandName, data)
 		this._parser = new Parser()
 		this._eventBus = eventBus
 	}
@@ -34,8 +47,10 @@ export default class DiceRoller extends Command {
 	execute = async (logger: Logger, interaction: ChatInputCommandInteractionWrapper): Promise<void> => {
 		logger.debug('Started to roll dice')
 
-		const rollString = interaction.options.getString('dice')
-		const isWhisper = interaction.options.getBoolean('whisper') ?? false
+		const rollString = interaction.options.getString(DiceRoller._diceOptionName)
+		const isWhisper = interaction.options.getBoolean(DiceRoller._whisperOptionName) ?? false
+		const optionalName = interaction.options.getString(DiceRoller._nameOptionName)
+		const name = optionalName === null ? interaction.username : optionalName
 
 		if (!rollString) return
 
@@ -48,15 +63,16 @@ export default class DiceRoller extends Command {
 			return
 		}
 		const rollInfo = this.processRoll(rollString)
-		const displayRoll = this.displayRoll(rollInfo)
 		const diceRolledInfo = DiceRolledInfo.from(
 			rollInfo,
 			interaction.userId,
-			interaction.username,
+			name,
 			interaction.guildId!,
 			interaction.interaction.channelId,
 			new Date(),
 		)
+		const displayRoll = this.displayRoll(diceRolledInfo)
+
 		const notification = Notification.from('diceRolled', diceRolledInfo)
 
 		this._eventBus.publish('diceRolled', notification, logger)
@@ -104,16 +120,17 @@ export default class DiceRoller extends Command {
 		return RollInformation.from(dieCount, dieType, modString, values, total)
 	}
 
-	private displayRoll(rollInfo: RollInformation): string {
-		const rollEntry = `${rollInfo.diceCount}d${rollInfo.dieType}${rollInfo.modifier}`
-		const data = [
-			['Roll', 'Values', 'Total'],
-			[rollEntry, rollInfo.values.toString(), rollInfo.total],
+	private displayRoll(rollInfo: DiceRolledInfo): string {
+		const rollEntry = `${rollInfo.roll.diceCount}d${rollInfo.roll.dieType}${rollInfo.roll.modifier}`
+		const headers = ['Name', 'Roll', 'Values', 'Total']
+		const dataRows: string[][] = [
+			[rollInfo.name, rollEntry, rollInfo.roll.values.toString(), rollInfo.roll.total.toString()],
 		]
 
 		const asciiTable = new AsciiTable()
+		const renderRequest = RenderRequest.from(headers, dataRows)
 
-		return asciiTable.render(data)
+		return '`' + asciiTable.renderRequest(renderRequest) + '`'
 	}
 
 	private getRandomInt(type: number): number {
