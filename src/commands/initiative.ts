@@ -150,7 +150,9 @@ export default class Initiative extends Command {
 
 	private async replyToUserForStateSubcommand(interaction: ChatInputCommandInteractionWrapper, isStart: boolean) {
 		if (isStart) {
-			await interaction.reply('Started initiative tracking')
+			await interaction.reply(
+				'Started initiative tracking. All rolls until initiative is stopped in this channel will be tracked for initiative. This process is scoped to this channel so trying to view the initiative outside of here will not show this initiative roll.',
+			)
 		} else {
 			await interaction.reply('Ended initiative tracking')
 		}
