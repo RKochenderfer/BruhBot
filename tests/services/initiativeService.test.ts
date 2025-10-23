@@ -101,7 +101,10 @@ describe('initiativeService tests', () => {
 		initiativeService.endInitiative(initiativeEnded)
 
 		// assert
-		const isInitiativeActive = initiativeService.isInitiativeStillBeingCollected({ guildId: guildId, channelId: channelId } as DiceRolledInfo)
+		const isInitiativeActive = initiativeService.isInitiativeStillBeingCollected({
+			guildId: guildId,
+			channelId: channelId,
+		} as DiceRolledInfo)
 		expect(isInitiativeActive).toBe(false)
 
 		const rollInformation = {
@@ -130,7 +133,6 @@ describe('initiativeService tests', () => {
 		const initiativeStarted = InitiativeStarted.from(guildId, channelId, mockChatInputCommandInteractionWrapper)
 		const initiativeService = new InitiativeService(cache)
 		initiativeService.startInitiative(initiativeStarted)
-
 
 		const rollInformation = {
 			diceCount: 2,
@@ -168,7 +170,14 @@ describe('initiativeService tests', () => {
 		const userId3 = crypto.randomUUID()
 		const userName3 = 'test3'
 		const rolledAt3 = new Date()
-		const diceRolledInfo3 = DiceRolledInfo.from(rollInformation3, userId3, userName3, guildId, otherChannel, rolledAt3)
+		const diceRolledInfo3 = DiceRolledInfo.from(
+			rollInformation3,
+			userId3,
+			userName3,
+			guildId,
+			otherChannel,
+			rolledAt3,
+		)
 		initiativeService.addDiceRoll(diceRolledInfo3)
 
 		const initiativeEnded = InitiativeEnded.from(guildId, otherChannel, mockChatInputCommandInteractionWrapper)
@@ -196,6 +205,50 @@ describe('initiativeService tests', () => {
 
 		const firstChannelRolls = initiativeService.getOrderedRollsDesc(guildId, channelId)
 		expect(firstChannelRolls.length).toBe(2)
+	})
+
+	test('initiative can be started again after ending in a channel', () => {
+		// arrange
+		const guildId = crypto.randomUUID()
+		const channelId = crypto.randomUUID()
+		const interaction = mockChatInputCommandInteractionWrapper
+		const initiativeCache = InitiativeCache.getInstance()
+
+		const initiativeStarted = InitiativeStarted.from(guildId, channelId, interaction)
+		const initiativeService = new InitiativeService(initiativeCache)
+
+		initiativeService.startInitiative(initiativeStarted)
+		const roll1 = generateRandomRoll(guildId, channelId)
+		const roll2 = generateRandomRoll(guildId, channelId)
+		initiativeService.addDiceRoll(roll1)
+		initiativeService.addDiceRoll(roll2)
+
+		const initiativeEnded = InitiativeEnded.from(guildId, channelId, mockChatInputCommandInteractionWrapper)
+		initiativeService.endInitiative(initiativeEnded)
+
+		const newInteraction = mockChatInputCommandInteractionWrapper
+		const newInitiativeStarted = InitiativeStarted.from(guildId, channelId, newInteraction)
+
+		// act
+		initiativeService.startInitiative(newInitiativeStarted)
+
+		// assert
+		const isActive = initiativeService.hasInitiativeStarted({
+			guildId: guildId,
+			channelId: channelId,
+		} as DiceRolledInfo)
+
+		expect(isActive).toBe(true)
+
+		// assert old rolls are cleared out
+		const rolls = initiativeService.getOrderedRollsDesc(guildId, channelId)
+		expect(rolls.length).toBe(0)
+
+		// assert new rolls can be added
+		const newRoll = generateRandomRoll(guildId, channelId)
+		initiativeService.addDiceRoll(newRoll)
+		const newRolls = initiativeService.getOrderedRollsDesc(guildId, channelId)
+		expect(newRolls.length).toBe(1)
 	})
 
 	test('addDiceRoll when initiative is started, adds the roll to the initiative', () => {
@@ -267,9 +320,11 @@ describe('initiativeService tests', () => {
 			initiativeService.addDiceRoll(diceRolledInfo)
 		}
 
-
 		// assert
-		const isInitiativeActive = initiativeService.isInitiativeStillBeingCollected({ guildId: guildId, channelId: channelId } as DiceRolledInfo)
+		const isInitiativeActive = initiativeService.isInitiativeStillBeingCollected({
+			guildId: guildId,
+			channelId: channelId,
+		} as DiceRolledInfo)
 		expect(isInitiativeActive).toBe(false)
 		expect(act).toThrow(InitiativeError)
 	})
@@ -319,7 +374,14 @@ describe('initiativeService tests', () => {
 		const userId3 = crypto.randomUUID()
 		const userName3 = 'test3'
 		const rolledAt3 = new Date()
-		const diceRolledInfo3 = DiceRolledInfo.from(rollInformation3, userId3, userName3, guildId, otherChannel, rolledAt3)
+		const diceRolledInfo3 = DiceRolledInfo.from(
+			rollInformation3,
+			userId3,
+			userName3,
+			guildId,
+			otherChannel,
+			rolledAt3,
+		)
 		initiativeService.addDiceRoll(diceRolledInfo3)
 
 		// act
@@ -454,3 +516,36 @@ describe('initiativeService tests', () => {
 		expect(rolls[2].name).toBe(userName)
 	})
 })
+
+const generateRandomRoll = (
+	guildId: string,
+	channelId: string,
+	userId: string = crypto.randomUUID(),
+): DiceRolledInfo => {
+	const rollInformation = generateRandomRollInformation()
+	const userName = crypto.randomUUID()
+	const rolledAt = new Date()
+	const diceRolledInfo = DiceRolledInfo.from(rollInformation, userId, userName, guildId, channelId, rolledAt)
+
+	return diceRolledInfo
+}
+
+const generateRandomRollInformation = (): RollInformation => {
+	const diceType = [4, 6, 8, 10, 12, 20]
+	const diceCount = Math.floor(Math.random() * 5) + 1
+	const dieType = diceType[Math.floor(Math.random() * diceType.length)]
+	const modifier = Math.floor(Math.random() * 10) - 5
+	const values = []
+	for (let i = 0; i < diceCount; i++) {
+		values.push(Math.floor(Math.random() * dieType) + 1)
+	}
+	const total = values.reduce((prev, curr) => prev + curr, 0) + modifier
+
+	return {
+		diceCount: diceCount,
+		dieType: dieType,
+		modifierString: modifier >= 0 ? `+${modifier}` : `${modifier}`,
+		values: values,
+		total: total,
+	} as RollInformation
+}

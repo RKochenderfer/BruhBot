@@ -31,7 +31,7 @@ class InitiativeCacheEntry {
 	 * rolled for this initiative tracking period, replace the entry.
 	 * @param roll
 	 */
-	public addRoll(roll: DiceRolledInfo) {
+	addRoll(roll: DiceRolledInfo) {
 		if (!this._allowNewEntries) {
 			throw new Error('Initiative has been closed')
 		}
@@ -53,7 +53,7 @@ class InitiativeCacheEntry {
 	 * @param name the name of the entity whose roll is to be removed
 	 * @returns true if a roll was removed, false otherwise
 	 */
-	public removeRollByName(name: string): boolean {
+	removeRollByName(name: string): boolean {
 		if (!this.hasUserRolled(name)) {
 			return false
 		}
@@ -68,8 +68,17 @@ class InitiativeCacheEntry {
 	 * Ends the initiative gathering process and no longer allow
 	 * new rolls
 	 */
-	public endInitiative() {
+	endInitiative() {
 		this._allowNewEntries = false
+		this._timeUpdated = new Date()
+	}
+
+	/**
+	 * Refreshes the initiative entry to allow new rolls
+	 */
+	startInitiative() {
+		this._allowNewEntries = true
+		this._diceRolledInfo = []
 		this._timeUpdated = new Date()
 	}
 
@@ -110,12 +119,17 @@ export class InitiativeCache {
 	 * @param channelId the channel where initiative is being tracked
 	 */
 	startInitiative(key: CacheKey) {
-		if (this.hasInitiativeTrackingStartedFor(key)) {
-			throw new Error('Initiative has already been started on this channel')
+		const entry = InitiativeCache._initiativeCache.get(key)
+		if (entry) {
+			if (entry.allowNewEntries) {
+				throw new Error('Initiative has already been started on this channel')
+			}
+			entry.startInitiative()
+			InitiativeCache._initiativeCache.set(key, entry)
+		} else {
+			const newCacheEntry = InitiativeCacheEntry.new()
+			InitiativeCache._initiativeCache.set(key, newCacheEntry)
 		}
-
-		const newCacheEntry = InitiativeCacheEntry.new()
-		InitiativeCache._initiativeCache.set(key, newCacheEntry)
 
 		this.cleanCache()
 	}
@@ -158,7 +172,7 @@ export class InitiativeCache {
 	 * @param channelId
 	 * @returns
 	 */
-	hasInitiativeTrackingStartedFor(key: CacheKey): boolean {
+	hasTrackingEntry(key: CacheKey): boolean {
 		return InitiativeCache._initiativeCache.has(key)
 	}
 
@@ -169,7 +183,7 @@ export class InitiativeCache {
 	 * @returns
 	 */
 	hasInitiativeTrackingNotStartedFor(key: CacheKey): boolean {
-		return !this.hasInitiativeTrackingStartedFor(key)
+		return !this.hasTrackingEntry(key)
 	}
 
 	/**

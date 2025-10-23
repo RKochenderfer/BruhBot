@@ -14,7 +14,7 @@ describe('initiativeCache tests', () => {
 		cache.startInitiative(key)
 
 		// assert
-		const hasInitiativeStarted = cache.hasInitiativeTrackingStartedFor(key)
+		const hasInitiativeStarted = cache.hasTrackingEntry(key)
 		expect(hasInitiativeStarted).toBe(true)
 	})
 
@@ -124,7 +124,7 @@ describe('initiativeCache tests', () => {
 		const cache = InitiativeCache.getInstance()
 
 		// act
-		const hasStarted = cache.hasInitiativeTrackingStartedFor(key)
+		const hasStarted = cache.hasTrackingEntry(key)
 
 		// assert
 		expect(hasStarted).toBe(false)
@@ -466,7 +466,7 @@ describe('initiativeCache tests', () => {
 		expect(entry.rolledAt).toBe(rolledAt)
 
 		// assert other initiative is still active and unchanged
-		const otherChannelHasInitiativeTrackingStarted = cache.hasInitiativeTrackingStartedFor(
+		const otherChannelHasInitiativeTrackingStarted = cache.hasTrackingEntry(
 			differentKey,
 		)
 		expect(otherChannelHasInitiativeTrackingStarted).toBe(true)
@@ -563,7 +563,7 @@ describe('initiativeCache tests', () => {
 		expect(entry.rolledAt).toBe(rolledAt)
 
 		// assert other initiative is still active and unchanged
-		const otherChannelHasInitiativeTrackingStarted = cache.hasInitiativeTrackingStartedFor(
+		const otherChannelHasInitiativeTrackingStarted = cache.hasTrackingEntry(
 			differentKey,
 		)
 		expect(otherChannelHasInitiativeTrackingStarted).toBe(true)

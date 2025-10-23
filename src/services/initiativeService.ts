@@ -70,7 +70,7 @@ export class InitiativeService {
 	 */
 	hasInitiativeStarted(diceRolled: DiceRolledInfo): boolean {
 		const channelKey = ChannelKey.fromDiceRolledInfo(diceRolled)
-		return this._initiativeCache.hasInitiativeTrackingStartedFor(channelKey.key)
+		return this._initiativeCache.hasTrackingEntry(channelKey.key)
 	}
 
 	/**
@@ -157,8 +157,11 @@ export class InitiativeService {
 	}
 
 	private guardAgainstInitiativeAlreadyStarted(channelKey: ChannelKey) {
-		if (this._initiativeCache.hasInitiativeTrackingStartedFor(channelKey.key)) {
-			throw new InitiativeError('Initiative has not started for this channel')
+		if (
+			this._initiativeCache.hasTrackingEntry(channelKey.key) &&
+			this._initiativeCache.isInitiativeActive(channelKey.key)
+		) {
+			throw new InitiativeError('Initiative has already started for this channel')
 		}
 	}
 }
